@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navi_profile"
+        android:title="@string/navi_profile"
+        android:icon="@drawable/ic_baseline_person_24"/>
+
+    <item
+        android:id="@+id/navi_scan"
+        android:title="@string/navi_scan"
+        android:icon="@drawable/ic_baseline_scanner_24"/>
+
+    <item
+        android:id="@+id/navi_leaderboard"
+        android:title="@string/navi_leaderboard"
+        android:icon="@drawable/ic_baseline_leaderboard_24"/>
+
+    <item
+        android:id="@+id/navi_map"
+        android:title="@string/navi_map"
+        android:icon="@drawable/ic_baseline_location_24"/>
+</menu>
