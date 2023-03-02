@@ -16,14 +16,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater()); // getting the inflater to work with fragments
         setContentView(binding.getRoot());
         switchFragment(new ProfileFragment());
 
         binding.bottomNavi.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navi_profile:
-                    switchFragment(new ProfileFragment());
+                    switchFragment(new ProfileFragment()); // switching fragment made into a function
                     break;
                 case R.id.navi_scan:
                     switchFragment(new ScanFragment());
@@ -41,9 +41,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void switchFragment(Fragment fragment) {
+        // Fragment manager example from the developers guide
+        // https://developer.android.com/guide/fragments/fragmentmanager#java
         FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.fragments, fragment);
-        transaction.commit();
+        manager.beginTransaction()
+            .replace(R.id.fragments, fragment)
+            .setReorderingAllowed(true)
+            .addToBackStack(null)
+            .commit();
     }
 }
