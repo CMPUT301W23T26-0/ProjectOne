@@ -2,11 +2,14 @@ package com.example.qradventure;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +26,11 @@ public class ScanFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private String sha256_test_string;
+
+    private TextView sha256_text;
+    private TextView qr_value_text;
 
     public ScanFragment() {
         // Required empty public constructor
@@ -59,6 +67,43 @@ public class ScanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scan, container, false);
+        View fragmentScan = inflater.inflate(R.layout.fragment_scan, container, false);
+
+        sha256_text = fragmentScan.findViewById(R.id.sha256_sample);
+        qr_value_text = fragmentScan.findViewById(R.id.qr_value);
+
+        return fragmentScan;
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        sha256_test_string = "696ce4dbd7bb57cbfe58b64f530f428b74999cb37e2ee60980490cd9552de3a6  -";
+        sha256_text.setText(sha256_test_string);
+        qr_value_text.setText(Double.toString(calculateScore(sha256_test_string)));
+    }
+
+    public Double calculateScore(String content){
+        StringBuilder valuez = new StringBuilder();
+        Double value = 0d;
+        int streak = 1;
+        for (int i = 1; i < content.length()-1; i++) {
+            if (content.charAt(i) == content.charAt(i-1) && content.charAt(i) != ' ') {
+                streak += 1;
+            }
+            else if (streak > 1) {
+                valuez.append(content.charAt(i-1));
+                Character zero = '0';
+                if (content.charAt(i-1) == '0') {
+                    value += Math.pow(20, streak-1);
+                } else {
+                    value += Math.pow(Integer.parseInt(String.valueOf(content.charAt(i-1)), 16), streak - 1);
+                }
+                streak = 1;
+            }
+            else {
+                streak = 1;
+            }
+        }
+        return value;
     }
 }
