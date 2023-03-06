@@ -91,7 +91,6 @@ public class ScanFragment extends Fragment {
     public Double calculateScore(String content){
         // Calculates value from sha256 string
         // Can be improved later on, but for now it works
-        StringBuilder valuez = new StringBuilder();
         Double value = 0d;
         int streak = 1;
         for (int i = 1; i < content.length()-1; i++) {
@@ -99,8 +98,6 @@ public class ScanFragment extends Fragment {
                 streak += 1;
             }
             else if (streak > 1) {
-                valuez.append(content.charAt(i-1));
-                Character zero = '0';
                 if (content.charAt(i-1) == '0') {
                     value += Math.pow(20, streak-1);
                 } else {
