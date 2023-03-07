@@ -83,32 +83,8 @@ public class ScanFragment extends Fragment {
         // SetText for visual, then compute the value using a function
         sha256_test_string = "696ce4dbd7bb57cbfe58b64f530f428b74999cb37e2ee60980490cd9552de3a6  -";
         sha256_text.setText(sha256_test_string);
-
-        Double qr_score = calculateScore(sha256_test_string);
+        QRController qrController = new QRController();
+        Double qr_score = qrController.calculateScore(sha256_test_string);
         qr_value_text.setText(String.format(String.valueOf(qr_score)));
-    }
-
-    public Double calculateScore(String content){
-        // Calculates value from sha256 string
-        // Can be improved later on, but for now it works
-        Double value = 0d;
-        int streak = 1;
-        for (int i = 1; i < content.length()-1; i++) {
-            if (content.charAt(i) == content.charAt(i-1) && content.charAt(i) != ' ') {
-                streak += 1;
-            }
-            else if (streak > 1) {
-                if (content.charAt(i-1) == '0') {
-                    value += Math.pow(20, streak-1);
-                } else {
-                    value += Math.pow(Integer.parseInt(String.valueOf(content.charAt(i-1)), 16), streak - 1);
-                }
-                streak = 1;
-            }
-            else {
-                streak = 1;
-            }
-        }
-        return value;
     }
 }
