@@ -87,21 +87,20 @@ public class ProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        QRCode test = new QRCode("BFG5DGW54");
-        qrCodeDataList.add(test);
-        QRCode test1 = new QRCode("Amazing ore");
-        qrCodeDataList.add(test1);
-        qrCodeDataList.add(new QRCode("Random Content"));
+        qrCodeDataList.add(new QRCode("BFG5DGW54"));
+        qrCodeDataList.add(new QRCode("Amazing ore"));
+        qrCodeDataList.add(new QRCode("SHEESH 301"));
         updateScoreHighlights(view);
         qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
         Collections.reverse(qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
-
+        sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Collections.reverse(qrCodeDataList);
                 qrCodeList.setAdapter(qrCodeAdapter);
+                sortButton.setText(sortButton.getText() == "Ʌ" ? "V" : "Ʌ");
             }
         });
     }
