@@ -7,7 +7,7 @@
     tools:context=".ProfileFragment">
 
     <TextView
-        android:id="@+id/username_text2"
+        android:id="@+id/total_score_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -63,7 +63,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username_text2"
+        app:layout_constraintTop_toBottomOf="@+id/total_score_header"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
@@ -126,7 +126,7 @@
         app:layout_constraintStart_toEndOf="@+id/highest_score_header"
         app:layout_constraintTop_toBottomOf="@id/lowest_score_header" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ListView
         android:id="@+id/user_qr_code_list"
         android:layout_width="match_parent"
         android:layout_height="375dp"

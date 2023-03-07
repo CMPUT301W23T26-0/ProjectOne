@@ -1,12 +1,20 @@
 package com.example.qradventure;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,11 +62,56 @@ public class ProfileFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
+    ListView qrCodeList;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        qrCodeList = view.findViewById(R.id.user_qr_code_list);
+        qrCodeDataList = new ArrayList<>();
+        qrCodeAdapter = new CustomList(getContext(), qrCodeDataList);
+        qrCodeList.setAdapter(qrCodeAdapter);
+        return view;
+    }
+
+    CustomList qrCodeAdapter;
+    ArrayList<QRCode> qrCodeDataList;
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        QRCode test = new QRCode("Cool QR Code Name", (int) 69, "This is a comment on a QR Code.", "", "");
+        qrCodeDataList.add(test);
+        QRCode test1 = new QRCode("Another QR Code", (int) 420, "This is a another comment on a QR Code.", "", "");
+        qrCodeDataList.add(test1);
+        updateScoreHighlights(view);
+        qrCodeList.setAdapter(qrCodeAdapter);
+    }
+
+    public void updateScoreHighlights(View view) {
+        TextView totalScore = view.findViewById(R.id.total_score_value);
+        TextView highestScore = view.findViewById(R.id.highest_score_value);
+        TextView lowestScore = view.findViewById(R.id.lowest_score_value);
+
+        if (qrCodeDataList.size() < 1) {
+            totalScore.setText("0");
+            highestScore.setText("0");
+            lowestScore.setText("0");
+        } else {
+            int sumTotal = 0;
+            int highest = 0;
+            int lowest = 2147483647;
+            for (int i = 0; i < qrCodeDataList.size(); i++) {
+                QRCode qrCode = qrCodeDataList.get(i);
+                int score = qrCode.getScore();
+                sumTotal += score;
+                if (score > highest) {highest = score;}
+                if (score < lowest) {lowest = score;}
+            }
+            totalScore.setText(Integer.toString(sumTotal));
+            highestScore.setText(Integer.toString(highest));
+            lowestScore.setText(Integer.toString(lowest));
+        }
     }
 }
