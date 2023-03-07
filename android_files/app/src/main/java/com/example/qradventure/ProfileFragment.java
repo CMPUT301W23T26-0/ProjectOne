@@ -11,10 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +48,7 @@ public class ProfileFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment ProfileFragment.
      */
-    // TODO: Rename and change types and number of parameters
+    // TODO: Rename and change types and number of parameters2
     public static ProfileFragment newInstance(String param1, String param2) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
@@ -63,6 +67,7 @@ public class ProfileFragment extends Fragment {
         }
     }
     ListView qrCodeList;
+    Button sortButton;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,6 +75,7 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         qrCodeList = view.findViewById(R.id.user_qr_code_list);
+        sortButton = view.findViewById(R.id.sort_profileqr_button);
         qrCodeDataList = new ArrayList<>();
         qrCodeAdapter = new CustomList(getContext(), qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
@@ -81,12 +87,23 @@ public class ProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        QRCode test = new QRCode("Cool QR Code Name", (int) 69, "This is a comment on a QR Code.", "", "BFG5DGW54");
+        QRCode test = new QRCode("BFG5DGW54");
         qrCodeDataList.add(test);
-        QRCode test1 = new QRCode("Another QR Code", (int) 420, "This is a another comment on a QR Code.", "", "Amazing ore");
+        QRCode test1 = new QRCode("Amazing ore");
         qrCodeDataList.add(test1);
+        qrCodeDataList.add(new QRCode("Random Content"));
         updateScoreHighlights(view);
+        qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
+        Collections.reverse(qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
+
+        sortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.reverse(qrCodeDataList);
+                qrCodeList.setAdapter(qrCodeAdapter);
+            }
+        });
     }
 
     public void updateScoreHighlights(View view) {
