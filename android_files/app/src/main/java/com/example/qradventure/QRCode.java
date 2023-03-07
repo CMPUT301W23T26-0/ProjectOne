@@ -13,7 +13,7 @@ public class QRCode {
     private String qrContent;
 
     QRController qrController = new QRController();
-    QRCode(String Name, int Score, String Comment, String hashValue, String qrContent) {
+    QRCode(String qrContent) {
         this.hashValue = qrController.getHash(qrContent);
         this.Name = qrController.generateName(this.hashValue);
         this.Comment = qrController.getHash(qrContent);
