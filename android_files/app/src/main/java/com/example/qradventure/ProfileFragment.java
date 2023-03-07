@@ -89,12 +89,16 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         qrCodeDataList.add(new QRCode("BFG5DGW54"));
         qrCodeDataList.add(new QRCode("Amazing ore"));
-        qrCodeDataList.add(new QRCode("SHEESH 301"));
+        qrCodeDataList.add(new QRCode("Lots of points"));
+        qrCodeDataList.add(new QRCode("Not that much points"));
+
         updateScoreHighlights(view);
+
         qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
         Collections.reverse(qrCodeDataList);
-        qrCodeList.setAdapter(qrCodeAdapter);
+
         sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
+
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,6 +107,8 @@ public class ProfileFragment extends Fragment {
                 sortButton.setText(sortButton.getText() == "Ʌ" ? "V" : "Ʌ");
             }
         });
+
+        qrCodeList.setAdapter(qrCodeAdapter);
     }
 
     public void updateScoreHighlights(View view) {
