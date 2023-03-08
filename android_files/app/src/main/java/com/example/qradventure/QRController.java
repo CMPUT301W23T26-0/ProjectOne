@@ -1,10 +1,52 @@
 package com.example.qradventure;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
 
 public class QRController {
+
+    public Drawable generateImage(Context context, String hash) {
+        int[] colors = {
+                Color.rgb(255,206,0), Color.RED, Color.rgb(0,171,56), Color.CYAN, Color.rgb(255,20,10),
+                Color.rgb(154, 240, 0), Color.rgb(130,0,172), Color.rgb(204,114,245), Color.rgb(255,179,0),
+                Color.rgb(0,149,67), Color.rgb(2,136,217), Color.rgb(0,71,189), Color.rgb(255,100,59),
+                Color.rgb(255,130,42), Color.rgb(182,16,191), Color.rgb(7, 185, 252), Color.rgb(234, 0, 52)};
+
+        Drawable backgroundDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_background_64, null);
+        Drawable wrappedBGDrawable = DrawableCompat.wrap(backgroundDrawable);
+
+        Integer secondValue = Integer.parseInt(String.valueOf(hash.charAt(1)), 16);
+        Drawable shapeDrawable;
+        if (secondValue % 4 == 0) {
+            shapeDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_shape_plus_64, null);
+        } else if (secondValue % 4 == 1) {
+            shapeDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_shape_star_64, null);
+        } else if (secondValue % 4 == 2) {
+            shapeDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_shape_heart_64, null);
+        } else {
+            shapeDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_shape_diamond_64, null);
+        }
+        Drawable wrappedSHDrawable = DrawableCompat.wrap(shapeDrawable);
+
+        Drawable outlineDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_out_line_64, null);
+        Drawable wrappedOUTDrawable = DrawableCompat.wrap(outlineDrawable);
+
+        DrawableCompat.setTint(wrappedBGDrawable, colors[Integer.parseInt(String.valueOf(hash.charAt(0)), 16)]);
+        DrawableCompat.setTint(wrappedSHDrawable, colors[Integer.parseInt(String.valueOf(hash.charAt(2)), 16)]);
+        DrawableCompat.setTint(wrappedOUTDrawable, colors[Integer.parseInt(String.valueOf(hash.charAt(3)), 16)]);
+
+        LayerDrawable finalDrawable = new LayerDrawable(new Drawable[] {wrappedBGDrawable, wrappedSHDrawable, wrappedOUTDrawable});
+
+        return finalDrawable;
+    }
 
     public String generateName(String hash) {
         String[] preAdjectives = {"Super", "Amazing", "Massive", "Ultra", "Deluxe", "Giga",
