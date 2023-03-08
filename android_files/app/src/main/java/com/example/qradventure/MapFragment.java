@@ -1,3 +1,5 @@
+// https://www.youtube.com/watch?v=118wylgD_ig&t=353s&ab_channel=CodingWithMitch
+
 package com.example.qradventure;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
@@ -53,8 +55,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
+
     }
 
     @Override
@@ -68,7 +69,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mapBundle = savedInstanceState.getBundle(MAPS_API_KEY);
         }
         mapView.onCreate(mapBundle);
-        mapView.getMapAsync(this::onMapReady);
+        mapView.getMapAsync(this);
         return view;
     }
 
