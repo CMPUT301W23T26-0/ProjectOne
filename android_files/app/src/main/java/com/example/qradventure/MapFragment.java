@@ -1,5 +1,6 @@
 // https://www.youtube.com/watch?v=118wylgD_ig&t=353s&ab_channel=CodingWithMitch
-
+// https://developers.google.com/maps/documentation/android-sdk/map
+// https://github.com/googlemaps/android-samples/blob/main/ApiDemos/java/app/src/gms/java/com/example/mapdemo/RawMapViewDemoActivity.java
 package com.example.qradventure;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
@@ -14,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -31,7 +34,7 @@ import java.util.Map;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     // Views
     private MapView mapView;
-
+    public GoogleMapOptions options = new GoogleMapOptions();
     public MapFragment() {
         // Required empty public constructor
     }
@@ -93,9 +96,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));
+        GoogleMapOptions options = new GoogleMapOptions();
+        // to edit options in code
+//        options.mapType(GoogleMap.MAP_TYPE_SATELLITE)
+//                .compassEnabled(true)
+//                .rotateGesturesEnabled(true)
+//                .tiltGesturesEnabled(true);
+
+        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
+        googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
+                .position(uofa)
+                .title("University of Alberta"));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(50));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(uofa));      // move to uOfA and Zoom In
     }
 
     @Override
