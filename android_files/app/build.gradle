@@ -13,6 +13,7 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
+        resValue("string", "google_maps_api_key", "AIzaSyACNsReqZcHRoXV1bMiCohDQyN2VM2k0wU")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

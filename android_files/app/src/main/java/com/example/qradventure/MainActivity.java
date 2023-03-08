@@ -6,6 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.qradventure.databinding.ActivityMainBinding;
 
@@ -17,8 +19,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater()); // getting the inflater to work with fragments
-        setContentView(binding.getRoot());
-        switchFragment(new ProfileFragment());
+        setContentView(R.layout.fragment_login);
+
+        Button signInButton = (Button) findViewById(R.id.login_button);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setContentView(binding.getRoot());
+                switchFragment(new ProfileFragment());
+            }
+        });
 
         binding.bottomNavi.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
