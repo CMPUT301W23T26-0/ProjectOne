@@ -70,10 +70,8 @@ public class ProfileFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    //ListView qrCodeList;
     RecyclerView qrCodeList;
     Button sortButton;
-    //CustomList qrCodeAdapter;
     CustomListAdapter qrCodeAdapter;
     ArrayList<QRCode> qrCodeDataList;
 
@@ -86,7 +84,6 @@ public class ProfileFragment extends Fragment {
         qrCodeList = view.findViewById(R.id.user_qr_code_list);
         sortButton = view.findViewById(R.id.sort_profileqr_button);
         qrCodeDataList = new ArrayList<>();
-        //qrCodeAdapter = new CustomList(getContext(), qrCodeDataList);
         qrCodeAdapter = new CustomListAdapter(getContext(), qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
         return view;
@@ -94,6 +91,7 @@ public class ProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Text QR Codes
         qrCodeDataList.add(new QRCode("BFG5DGW54"));
         qrCodeDataList.add(new QRCode("Amazing ore"));
         qrCodeDataList.add(new QRCode("Lots of points"));
@@ -101,18 +99,22 @@ public class ProfileFragment extends Fragment {
 
         updateScoreHighlights(view);
 
+        // Username is Unique Android ID (Can be used as login)
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         TextView username = (TextView) view.findViewById(R.id.username_text);
         username.setText(android_id);
 
+        // Sort using comparison getScore
         qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
         Collections.reverse(qrCodeDataList);
 
         sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
 
+        // RecyclerView adapter and linear layout
         qrCodeList.setAdapter(qrCodeAdapter);
         qrCodeList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        // Sort Button
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,7 +123,8 @@ public class ProfileFragment extends Fragment {
                 sortButton.setText(sortButton.getText() == "Ʌ" ? "V" : "Ʌ");
             }
         });
-        
+
+        // Responsible for swipe delete
         ItemTouchHelper.SimpleCallback itemTouchHelper = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -139,6 +142,7 @@ public class ProfileFragment extends Fragment {
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(qrCodeList);
     }
 
+    // Updates scores texts
     public void updateScoreHighlights(View view) {
         TextView totalScore = view.findViewById(R.id.total_score_value);
         TextView highestScore = view.findViewById(R.id.highest_score_value);

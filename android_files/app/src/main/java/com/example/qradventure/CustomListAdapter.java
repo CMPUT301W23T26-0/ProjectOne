@@ -17,12 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+// RecyclerView needs a custom adapter
 public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.ViewHolder>{
     Context context;
 
     private ArrayList<QRCode> qrCodes;
 
-    // RecyclerView recyclerView;
     public CustomListAdapter(Context context, ArrayList<QRCode> qrCodes) {
         this.context = context;
         this.qrCodes = qrCodes;
@@ -35,6 +35,7 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.Vi
         return viewHolder;
     }
 
+    // Update stuff here
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         QRCode qrCode = qrCodes.get(position);
@@ -46,7 +47,7 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.Vi
         holder.qrImage.setImageDrawable(qrController.generateImage(context, qrCode.getHashValue()));
     }
 
-
+    // Find stuff here
     @Override
     public int getItemCount() {
         return qrCodes.size();

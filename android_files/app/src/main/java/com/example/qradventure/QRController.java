@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class QRController {
 
+    // Creates image by stacking drawable layers and changing colors
     public Drawable generateImage(Context context, String hash) {
         int[] colors = {
                 Color.rgb(255,206,0), Color.RED, Color.rgb(0,171,56), Color.CYAN, Color.rgb(255,20,10),
@@ -48,6 +49,7 @@ public class QRController {
         return finalDrawable;
     }
 
+    // Generate name using preAdjective + Adjectives + Noun based on hex to integer index
     public String generateName(String hash) {
         String[] preAdjectives = {"Super", "Amazing", "Massive", "Ultra", "Deluxe", "Giga",
                                 "Little", "Tall", "Dynamic", "Nice", "Tidy", "Tough", "Cool",
@@ -87,6 +89,7 @@ public class QRController {
         return value;
     }
 
+    // Content to SHA256 hash
     public String getHash(String source) {
         byte[] hash = null;
         String hashCode = null;
