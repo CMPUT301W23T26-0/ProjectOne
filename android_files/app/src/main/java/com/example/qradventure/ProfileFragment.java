@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -103,6 +104,8 @@ public class ProfileFragment extends Fragment {
 
         sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
 
+        qrCodeList.setAdapter(qrCodeAdapter);
+        qrCodeList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,9 +114,21 @@ public class ProfileFragment extends Fragment {
                 sortButton.setText(sortButton.getText() == "Ʌ" ? "V" : "Ʌ");
             }
         });
+        
+        ItemTouchHelper.SimpleCallback itemTouchHelper = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
 
-        qrCodeList.setAdapter(qrCodeAdapter);
-        qrCodeList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                qrCodeDataList.remove(viewHolder.getAdapterPosition());
+                qrCodeAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+            }
+        };
+
+        new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(qrCodeList);
     }
 
     public void updateScoreHighlights(View view) {
