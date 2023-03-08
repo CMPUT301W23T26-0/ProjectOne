@@ -1,5 +1,6 @@
 package com.example.qradventure;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +100,11 @@ public class ProfileFragment extends Fragment {
         qrCodeDataList.add(new QRCode("Not that much points"));
 
         updateScoreHighlights(view);
+
+        @SuppressLint("HardwareIds")
+        String android_id = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        TextView username = (TextView) view.findViewById(R.id.username_text);
+        username.setText(android_id);
 
         qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
         Collections.reverse(qrCodeDataList);

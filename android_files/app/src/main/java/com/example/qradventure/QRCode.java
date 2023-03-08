@@ -1,5 +1,9 @@
 package com.example.qradventure;
 
+import android.graphics.drawable.Drawable;
+
+import androidx.core.content.res.ResourcesCompat;
+
 import org.w3c.dom.Comment;
 
 import java.security.MessageDigest;
@@ -49,6 +53,10 @@ public class QRCode {
 
     public String getComment() {
         return this.Comment;
+    }
+
+    public Drawable getImage() {
+        return null;
     }
 
     public String getHashValue() {
