@@ -148,11 +148,12 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_qr_code_list"
         android:layout_width="match_parent"
-        android:layout_height="380dp"
+        android:layout_height="300dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:background="@color/very_light_grey"
         android:paddingTop="10dp"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
