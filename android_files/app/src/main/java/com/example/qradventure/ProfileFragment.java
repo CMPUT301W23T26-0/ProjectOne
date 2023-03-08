@@ -124,6 +124,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 qrCodeDataList.remove(viewHolder.getAdapterPosition());
+                updateScoreHighlights(view);
                 qrCodeAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
             }
         };
