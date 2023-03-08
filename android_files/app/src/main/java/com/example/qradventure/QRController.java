@@ -21,9 +21,11 @@ public class QRController {
                 Color.rgb(0,149,67), Color.rgb(2,136,217), Color.rgb(0,71,189), Color.rgb(255,100,59),
                 Color.rgb(255,130,42), Color.rgb(182,16,191), Color.rgb(7, 185, 252), Color.rgb(234, 0, 52)};
 
+        // Choose background color
         Drawable backgroundDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_background_64, null);
         Drawable wrappedBGDrawable = DrawableCompat.wrap(backgroundDrawable);
 
+        // Choose shape based on modulo and change color
         Integer secondValue = Integer.parseInt(String.valueOf(hash.charAt(1)), 16);
         Drawable shapeDrawable;
         if (secondValue % 4 == 0) {
@@ -37,6 +39,7 @@ public class QRController {
         }
         Drawable wrappedSHDrawable = DrawableCompat.wrap(shapeDrawable);
 
+        // Choose outline color
         Drawable outlineDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_out_line_64, null);
         Drawable wrappedOUTDrawable = DrawableCompat.wrap(outlineDrawable);
 

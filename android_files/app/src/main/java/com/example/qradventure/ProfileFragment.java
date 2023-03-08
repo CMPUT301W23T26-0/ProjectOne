@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -94,6 +95,7 @@ public class ProfileFragment extends Fragment {
         // Text QR Codes
         qrCodeDataList.add(new QRCode("BFG5DGW54"));
         qrCodeDataList.add(new QRCode("Amazing ore"));
+        qrCodeDataList.add(new QRCode("Amazing ore")); // testing repeatability
         qrCodeDataList.add(new QRCode("Lots of points"));
         qrCodeDataList.add(new QRCode("Not that much points"));
 
@@ -104,6 +106,9 @@ public class ProfileFragment extends Fragment {
         String android_id = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         TextView username = (TextView) view.findViewById(R.id.username_text);
         username.setText(android_id);
+
+        //ImageView userImg = view.findViewById(R.id.profile_image);
+        //userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
 
         // Sort using comparison getScore
         qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
@@ -147,6 +152,7 @@ public class ProfileFragment extends Fragment {
         TextView totalScore = view.findViewById(R.id.total_score_value);
         TextView highestScore = view.findViewById(R.id.highest_score_value);
         TextView lowestScore = view.findViewById(R.id.lowest_score_value);
+        TextView qrCount = view.findViewById(R.id.profile_qr_count);
 
         if (qrCodeDataList.size() < 1) {
             totalScore.setText("0");
@@ -167,5 +173,7 @@ public class ProfileFragment extends Fragment {
             highestScore.setText(Integer.toString(highest));
             lowestScore.setText(Integer.toString(lowest));
         }
+        String count = "Count: " + Integer.toString(qrCodeDataList.size());
+        qrCount.setText(count);
     }
 }
