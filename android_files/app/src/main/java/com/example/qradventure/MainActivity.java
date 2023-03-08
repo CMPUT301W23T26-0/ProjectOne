@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.qradventure.databinding.ActivityMainBinding;
@@ -21,20 +22,20 @@ public class MainActivity extends AppCompatActivity {
         switchFragment(new ProfileFragment());
 
         binding.bottomNavi.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navi_profile:
-                    switchFragment(new ProfileFragment()); // switching fragment made into a function
-                    break;
-                case R.id.navi_scan:
-                    switchFragment(new ScanFragment());
-                    break;
-                case R.id.navi_leaderboard:
-                    switchFragment(new LeaderboardFragment());
-                    break;
-                case R.id.navi_map:
-                    switchFragment(new MapFragment());
-                    break;
-            }
+//            switch (item.getItemId()) {
+//                case R.id.navi_profile:
+//                    switchFragment(new ProfileFragment()); // switching fragment made into a function
+//                    break;
+//                case R.id.navi_scan:
+//                    switchFragment(new ScanFragment());
+//                    break;
+//                case R.id.navi_leaderboard:
+//                    switchFragment(new LeaderboardFragment());
+//                    break;
+//                case R.id.navi_map:
+//                    switchActivities();
+//                    break;
+//            }
 
             return true;
         });
@@ -49,5 +50,9 @@ public class MainActivity extends AppCompatActivity {
             .setReorderingAllowed(true)
             .addToBackStack(null)
             .commit();
+    }
+    public void switchActivities(){
+        Intent switchActivityIntent = new Intent(this, MapFragment.class);
+        startActivity(switchActivityIntent);
     }
 }
