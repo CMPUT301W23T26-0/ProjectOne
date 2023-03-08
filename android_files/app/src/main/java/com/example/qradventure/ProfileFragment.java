@@ -152,6 +152,7 @@ public class ProfileFragment extends Fragment {
         TextView totalScore = view.findViewById(R.id.total_score_value);
         TextView highestScore = view.findViewById(R.id.highest_score_value);
         TextView lowestScore = view.findViewById(R.id.lowest_score_value);
+        TextView qrCount = view.findViewById(R.id.profile_qr_count);
 
         if (qrCodeDataList.size() < 1) {
             totalScore.setText("0");
@@ -172,5 +173,7 @@ public class ProfileFragment extends Fragment {
             highestScore.setText(Integer.toString(highest));
             lowestScore.setText(Integer.toString(lowest));
         }
+        String count = "Count: " + Integer.toString(qrCodeDataList.size());
+        qrCount.setText(count);
     }
 }
