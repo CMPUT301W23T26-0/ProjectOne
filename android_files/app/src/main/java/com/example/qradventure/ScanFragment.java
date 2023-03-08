@@ -70,8 +70,6 @@ public class ScanFragment extends Fragment {
         View fragmentScan = inflater.inflate(R.layout.fragment_scan, container, false);
 
         // Find TextViews (Used for visual check on our example)
-        sha256_text = fragmentScan.findViewById(R.id.sha256_sample);
-        qr_value_text = fragmentScan.findViewById(R.id.qr_value);
 
         return fragmentScan;
     }
@@ -79,12 +77,5 @@ public class ScanFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Once view is created, we set a sample sha256 from the problem description
-        // SetText for visual, then compute the value using a function
-        sha256_test_string = "696ce4dbd7bb57cbfe58b64f530f428b74999cb37e2ee60980490cd9552de3a6  -";
-        sha256_text.setText(sha256_test_string);
-        QRController qrController = new QRController();
-        Double qr_score = qrController.calculateScore(sha256_test_string);
-        qr_value_text.setText(String.format(String.valueOf(qr_score)));
     }
 }
