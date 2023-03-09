@@ -41,8 +41,9 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    // If new user, add to database
+                    // If new user, display login page and user to database
                     if (!document.exists()) {
+                        // Display login page
                         setContentView(R.layout.activity_login);
                         signInButton = findViewById(R.id.login_button);
                         // If sign in button clicked, add user fields, currently just username
