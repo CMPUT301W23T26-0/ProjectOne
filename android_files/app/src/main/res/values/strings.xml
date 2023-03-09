@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">QrAdventure</string>
     <string name="navi_profile">Profile</string>
-    <string name="navi_scan">Scan</string>
+    <string name="navi_scan">Result...</string>
     <string name="navi_leaderboard">Leaderboard</string>
     <string name="navi_map">Map</string>
     <string name="highest_score_header">Highest</string>
