@@ -51,26 +51,14 @@ public class ScanFragment extends Fragment {
                 } else {
                     // Successful scans
 //                    resultText.setText(result.getContents()); // debug
-                    // Generate score, name, etc. for QR code
+                    // Generate for QR code characteristics
                     QRCode code = new QRCode(result.getContents());
 
-                    // Check if code is already in profile
-                    displayQRCode(code, true);
-                        // If not, display code info and add to profile
+                    // Check if user has it already
+                    boolean isSeen = true;
 
-                        // Otherwise, display code info, tell user they already have it, and don't add
-
-                    // Ask if they want to take a picture of the code's location
-
-                        // If they accept, let them take a picture and save it
-
-                        // Otherwise, don't take a picture
-
-                    // Ask if they want to record the geolocation of the code
-
-                        // If they accept, record the geolocation
-
-                        // If they decline, don't record it
+                    // Display all fragments in order (code -> pic prompt -> geo prompt)
+                    displayPromptFragments(code, isSeen);
                 }
             });
 
@@ -138,18 +126,11 @@ public class ScanFragment extends Fragment {
         fragmentLauncher.launch(options);
     }
 
-    private void displayQRCode(QRCode code, boolean isSeen) {
+    private void displayPromptFragments(QRCode code, boolean isSeen) {
         // Display QR code dialog fragment
         ScanDisplayCodeFragment frag = new ScanDisplayCodeFragment(code, isSeen);
         frag.show(getActivity().getSupportFragmentManager(), "View QR Code Result");
     }
 
-    private void promptPicture() {
-        // Open fragment
-    }
-
-    private void promptGeolocation() {
-
-    }
 
 }

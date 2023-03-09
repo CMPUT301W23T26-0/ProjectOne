@@ -6,13 +6,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/scan_display_code_top_text"
+        android:id="@+id/scan_display_code_name_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:text="Congrats! You found..."
-        android:textSize="20sp"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:text="QR Code Name"
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/scan_display_code_image"
@@ -21,19 +20,18 @@
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <TextView
-        android:id="@+id/scan_display_code_name_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="QR Code Name"
-        android:textSize="20sp"
-        android:gravity="center"/>
-
-    <TextView
         android:id="@+id/scan_display_code_score_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="QR Code Score"
         android:textSize="20sp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/scan_display_code_bottom_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bottom Text"
         android:gravity="center"/>
 
 </LinearLayout>
