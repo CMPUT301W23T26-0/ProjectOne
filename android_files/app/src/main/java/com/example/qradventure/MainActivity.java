@@ -19,17 +19,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater()); // getting the inflater to work with fragments
-        setContentView(R.layout.fragment_login);
+        setContentView(R.layout.activity_main);
 
-        Button signInButton = (Button) findViewById(R.id.login_button);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setContentView(binding.getRoot());
-                switchFragment(new ProfileFragment());
-            }
-        });
-
+        setContentView(binding.getRoot());
+        switchFragment(new ProfileFragment());
         binding.bottomNavi.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navi_profile:
