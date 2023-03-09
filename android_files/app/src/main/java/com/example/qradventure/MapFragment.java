@@ -64,7 +64,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     private GoogleMap mMap;
     TextView tvLatitude, tvLongitude;
-    private double[] currentLocationArray = new double[2];
     private Location currLocation;
     Button btLocation;
     /**
@@ -81,8 +80,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private boolean permissionDenied = false;
     FusedLocationProviderClient client;
 
-    public MapFragment() {
+    static User player;
+
+    public MapFragment(User user) {
         // Required empty public constructor
+        this.player = user;
     }
     /**
      * Use this factory method to create a new instance of
@@ -93,7 +95,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
         Fragment frag = new Fragment();
-        MapFragment fragment = new MapFragment();
+        MapFragment fragment = new MapFragment(player);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -216,6 +218,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                             Location location
                                     = task.getResult();
                             currLocation = location;
+                            player.setCurrentLocation(currLocation);
                             // Check condition
                             if (location != null) {
                                 // When location result is not
@@ -262,6 +265,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                                 = locationResult
                                                 .getLastLocation();
                                         currLocation = location1;
+                                        player.setCurrentLocation(currLocation);
                                         // Set latitude
                                         tvLatitude.setText(
                                                 String.valueOf(
@@ -311,7 +315,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
-    // @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         GoogleMapOptions options = new GoogleMapOptions();
@@ -334,16 +337,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
-//        mMap.setOnMyLocationButtonClickListener(this);
-//        mMap.setOnMyLocationClickListener(this);
-//        enableMyLocation();
-
-        //googleMap.setMyLocationEnabled(true);
     }
 
-    public Location getLocation(){
-        return currLocation;
-    }
+//    public Location getLocation(){
+//        return currLocation;
+//    }
     @Override
     public void onResume() {
         super.onResume();
