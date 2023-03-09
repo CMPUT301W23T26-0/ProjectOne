@@ -40,14 +40,11 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
 
 /**
@@ -66,25 +63,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     TextView tvLatitude, tvLongitude;
     private Location currLocation;
     Button btLocation;
-    /**
-     * Request code for location permission request.
-     *
-     */
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private FusedLocationProviderClient fusedLocationClient;
-
-
-    /**
-     * Flag indicating whether a requested permission has been denied after returning in {@link
-     */
-    private boolean permissionDenied = false;
     FusedLocationProviderClient client;
 
     static User player;
 
     public MapFragment(User user) {
         // Required empty public constructor
-        this.player = user;
+        player = user;
     }
     /**
      * Use this factory method to create a new instance of
@@ -94,7 +79,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      */
     // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
-        Fragment frag = new Fragment();
         MapFragment fragment = new MapFragment(player);
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -107,7 +91,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_map, container, false);
-        mapView = (MapView) view.findViewById(R.id.map_view);
+        mapView = view.findViewById(R.id.map_view);
         Bundle mapBundle = null;
         if (savedInstanceState != null) {
             mapBundle = savedInstanceState.getBundle(MAPS_API_KEY);
@@ -125,42 +109,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         getActivity());
 
         btLocation.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override public void onClick(View view)
-                    {
-                        // check condition
-                        if (ContextCompat.checkSelfPermission(
-                                getActivity(),
-                                android.Manifest.permission
-                                        .ACCESS_FINE_LOCATION)
-                                == PackageManager
-                                .PERMISSION_GRANTED
-                                && ContextCompat.checkSelfPermission(
-                                getActivity(),
-                                android.Manifest.permission
-                                        .ACCESS_COARSE_LOCATION)
-                                == PackageManager
-                                .PERMISSION_GRANTED) {
-                            // When permission is granted
-                            locationPermissionGranted = true;
+                view1 -> {
+                    // check condition
+                    if (ContextCompat.checkSelfPermission(
+                            getActivity(),
+                            Manifest.permission
+                                    .ACCESS_FINE_LOCATION)
+                            == PackageManager
+                            .PERMISSION_GRANTED
+                            && ContextCompat.checkSelfPermission(
+                            getActivity(),
+                            Manifest.permission
+                                    .ACCESS_COARSE_LOCATION)
+                            == PackageManager
+                            .PERMISSION_GRANTED) {
+                        // When permission is granted
+                        locationPermissionGranted = true;
 
-                            // Call method
+                        // Call method
 
-                            getCurrentLocation();
-                            updateLocationUI();
-                        }
-                        else {
-                            // When permission is not granted
-                            // Call method
-                            locationPermissionGranted = false;
-                            requestPermissions(
-                                    new String[] {
-                                            android.Manifest.permission
-                                                    .ACCESS_FINE_LOCATION,
-                                            Manifest.permission
-                                                    .ACCESS_COARSE_LOCATION },
-                                    100);
-                        }
+                        getCurrentLocation();
+                        updateLocationUI();
+                    }
+                    else {
+                        // When permission is not granted
+                        // Call method
+                        locationPermissionGranted = false;
+                        requestPermissions(
+                                new String[] {
+                                        Manifest.permission
+                                                .ACCESS_FINE_LOCATION,
+                                        Manifest.permission
+                                                .ACCESS_COARSE_LOCATION },
+                                100);
                     }
                 });
 
@@ -208,83 +189,78 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             // When location service is enabled
             // Get last location
             client.getLastLocation().addOnCompleteListener(
-                    new OnCompleteListener<Location>() {
-                        @Override
-                        public void onComplete(
-                                @NonNull Task<Location> task)
-                        {
+                    task -> {
 
-                            // Initialize location
-                            Location location
-                                    = task.getResult();
-                            currLocation = location;
-                            player.setCurrentLocation(currLocation);
-                            // Check condition
-                            if (location != null) {
-                                // When location result is not
-                                // null set latitude
-                                tvLatitude.setText(
-                                        String.valueOf(
-                                                location
-                                                        .getLatitude()));
+                        // Initialize location
+                        Location location
+                                = task.getResult();
+                        currLocation = location;
+                        player.setCurrentLocation(currLocation);
+                        // Check condition
+                        if (location != null) {
+                            // When location result is not
+                            // null set latitude
+                            tvLatitude.setText(
+                                    String.valueOf(
+                                            location
+                                                    .getLatitude()));
 
-                                //currentLocationArray[0] = location.getLatitude();
-                                // set longitude
-                                tvLongitude.setText(
-                                        String.valueOf(
-                                                location
-                                                        .getLongitude()));
-                                //currentLocationArray[1] = location.getLongitude();
-                            }
-                            else {
-                                // When location result is null
-                                // initialize location request
-                                LocationRequest locationRequest
-                                        = new LocationRequest()
-                                        .setPriority(
-                                                LocationRequest
-                                                        .PRIORITY_HIGH_ACCURACY)
-                                        .setInterval(10000)
-                                        .setFastestInterval(
-                                                1000)
-                                        .setNumUpdates(1);
+                            //currentLocationArray[0] = location.getLatitude();
+                            // set longitude
+                            tvLongitude.setText(
+                                    String.valueOf(
+                                            location
+                                                    .getLongitude()));
+                            //currentLocationArray[1] = location.getLongitude();
+                        }
+                        else {
+                            // When location result is null
+                            // initialize location request
+                            LocationRequest locationRequest
+                                    = new LocationRequest()
+                                    .setPriority(
+                                            LocationRequest
+                                                    .PRIORITY_HIGH_ACCURACY)
+                                    .setInterval(10000)
+                                    .setFastestInterval(
+                                            1000)
+                                    .setNumUpdates(1);
 
-                                // Initialize location call back
-                                LocationCallback
-                                        locationCallback
-                                        = new LocationCallback() {
-                                    @Override
-                                    public void
-                                    onLocationResult(
-                                            LocationResult
-                                                    locationResult)
-                                    {
-                                        // Initialize
-                                        // location
-                                        Location location1
-                                                = locationResult
-                                                .getLastLocation();
-                                        currLocation = location1;
-                                        player.setCurrentLocation(currLocation);
-                                        // Set latitude
-                                        tvLatitude.setText(
-                                                String.valueOf(
-                                                        location1
-                                                                .getLatitude()));
-                                        // Set longitude
-                                        tvLongitude.setText(
-                                                String.valueOf(
-                                                        location1
-                                                                .getLongitude()));
-                                    }
-                                };
+                            // Initialize location call back
+                            LocationCallback
+                                    locationCallback
+                                    = new LocationCallback() {
+                                @Override
+                                public void
+                                onLocationResult(
+                                        LocationResult
+                                                locationResult)
+                                {
+                                    // Initialize
+                                    // location
+                                    Location location1
+                                            = locationResult
+                                            .getLastLocation();
+                                    currLocation = location1;
+                                    player.setCurrentLocation(currLocation);
+                                    // Set latitude
+                                    tvLatitude.setText(
+                                            String.valueOf(
+                                                    location1
+                                                            .getLatitude()));
+                                    // Set longitude
+                                    tvLongitude.setText(
+                                            String.valueOf(
+                                                    location1
+                                                            .getLongitude()));
+                                }
+                            };
 
-                                // Request location updates
-                                client.requestLocationUpdates(
-                                        locationRequest,
-                                        locationCallback,
-                                        Looper.myLooper());
-                            }
+                            // Request location updates
+                            client.requestLocationUpdates(
+                                    locationRequest,
+                                    locationCallback,
+                                    Looper.myLooper());
                         }
                     });
         }
@@ -317,7 +293,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        GoogleMapOptions options = new GoogleMapOptions();
+        // GoogleMapOptions options = new GoogleMapOptions();
         // to edit options in code
 //        options.mapType(GoogleMap.MAP_TYPE_SATELLITE)
 //                .compassEnabled(true)
