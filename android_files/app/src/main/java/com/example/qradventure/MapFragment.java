@@ -32,7 +32,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -60,13 +59,13 @@ import com.google.android.gms.tasks.Task;
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
+    //private LatLng currentLocation;
     private boolean locationPermissionGranted;
 
     private GoogleMap mMap;
-    Context context;
-    FragmentActivity fragAct = new FragmentActivity();
     TextView tvLatitude, tvLongitude;
-
+    private double[] currentLocationArray = new double[2];
+    private Location currLocation;
     Button btLocation;
     /**
      * Request code for location permission request.
@@ -216,6 +215,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                             // Initialize location
                             Location location
                                     = task.getResult();
+                            currLocation = location;
                             // Check condition
                             if (location != null) {
                                 // When location result is not
@@ -224,11 +224,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                         String.valueOf(
                                                 location
                                                         .getLatitude()));
+
+                                //currentLocationArray[0] = location.getLatitude();
                                 // set longitude
                                 tvLongitude.setText(
                                         String.valueOf(
                                                 location
                                                         .getLongitude()));
+                                //currentLocationArray[1] = location.getLongitude();
                             }
                             else {
                                 // When location result is null
@@ -258,6 +261,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                         Location location1
                                                 = locationResult
                                                 .getLastLocation();
+                                        currLocation = location1;
                                         // Set latitude
                                         tvLatitude.setText(
                                                 String.valueOf(
@@ -317,7 +321,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 //                .rotateGesturesEnabled(true)
 //                .tiltGesturesEnabled(true);
 
-        Map mapObj = new Map();
 
         LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
@@ -338,9 +341,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         //googleMap.setMyLocationEnabled(true);
     }
 
-private void gotoLocation(){
-
-}
+    public Location getLocation(){
+        return currLocation;
+    }
     @Override
     public void onResume() {
         super.onResume();
