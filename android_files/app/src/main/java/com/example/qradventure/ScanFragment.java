@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -22,19 +23,6 @@ import com.journeyapps.barcodescanner.ScanOptions;
  * create an instance of this fragment.
  */
 public class ScanFragment extends Fragment {
-    Button scanButton;
-    TextView resultText;
-
-    private final ActivityResultLauncher<ScanOptions> fragmentLauncher = registerForActivityResult(new ScanContract(),
-            result -> {
-                if(result.getContents() == null) {
-                    Toast.makeText(getContext(), "Cancelled from fragment", Toast.LENGTH_LONG).show();
-                } else {
-                    resultText.setText(result.getContents());
-//                    Toast.makeText(getContext(), "Scanned from fragment: " + result.getContents(), Toast.LENGTH_LONG).show();
-                }
-            });
-
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -48,6 +36,21 @@ public class ScanFragment extends Fragment {
 
     private TextView sha256_text;
     private TextView qr_value_text;
+
+    Button scanButton;
+    TextView resultText;
+
+    // Used for getting scan results
+    private final ActivityResultLauncher<ScanOptions> fragmentLauncher = registerForActivityResult(new ScanContract(),
+            result -> {
+                if(result.getContents() == null) {
+                    // Unsuccessful scan or user exited scan
+                    Toast.makeText(getContext(), "Exiting scanner...", Toast.LENGTH_LONG).show(); // temp
+                } else {
+                    // Successful scans
+                    resultText.setText(result.getContents());
+                }
+            });
 
     public ScanFragment() {
         // Required empty public constructor
@@ -105,6 +108,9 @@ public class ScanFragment extends Fragment {
         ScanOptions options = new ScanOptions();
         options.setOrientationLocked(false);
         options.setBeepEnabled(false);
+        options.setPrompt("Scan a QR Code!");
+        options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
         fragmentLauncher.launch(options);
     }
+    
 }
