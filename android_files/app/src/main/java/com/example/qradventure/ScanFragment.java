@@ -1,9 +1,11 @@
 package com.example.qradventure;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -44,11 +46,31 @@ public class ScanFragment extends Fragment {
     private final ActivityResultLauncher<ScanOptions> fragmentLauncher = registerForActivityResult(new ScanContract(),
             result -> {
                 if(result.getContents() == null) {
-                    // Unsuccessful scan or user exited scan
-                    Toast.makeText(getContext(), "Exiting scanner...", Toast.LENGTH_LONG).show(); // temp
+                    // User exited scan
+                    Toast.makeText(getContext(), "Exiting scanner...", Toast.LENGTH_LONG).show();
                 } else {
                     // Successful scans
-                    resultText.setText(result.getContents());
+//                    resultText.setText(result.getContents()); // debug
+                    // Generate score, name, etc. for QR code
+                    QRCode code = new QRCode(result.getContents());
+
+                    // Check if code is already in profile
+                    displayQRCode(code, true);
+                        // If not, display code info and add to profile
+
+                        // Otherwise, display code info, tell user they already have it, and don't add
+
+                    // Ask if they want to take a picture of the code's location
+
+                        // If they accept, let them take a picture and save it
+
+                        // Otherwise, don't take a picture
+
+                    // Ask if they want to record the geolocation of the code
+
+                        // If they accept, record the geolocation
+
+                        // If they decline, don't record it
                 }
             });
 
@@ -92,9 +114,11 @@ public class ScanFragment extends Fragment {
         scanButton = view.findViewById(R.id.scanButton);
         resultText = view.findViewById(R.id.resultText);
 
-        scanButton.setOnClickListener(v -> startScan());
+        // Open up scanner from start
+        startScan();
 
-        // Find TextViews (Used for visual check on our example)
+        // Allow user to scan again if they exit
+        scanButton.setOnClickListener(v -> startScan());
 
         return view;
     }
@@ -104,7 +128,8 @@ public class ScanFragment extends Fragment {
 
     }
 
-    public void startScan() {
+    // Sets up and opens scanner
+    private void startScan() {
         ScanOptions options = new ScanOptions();
         options.setOrientationLocked(false);
         options.setBeepEnabled(false);
@@ -112,5 +137,19 @@ public class ScanFragment extends Fragment {
         options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
         fragmentLauncher.launch(options);
     }
-    
+
+    private void displayQRCode(QRCode code, boolean isSeen) {
+        // Display QR code dialog fragment
+        ScanDisplayCodeFragment frag = new ScanDisplayCodeFragment(code, isSeen);
+        frag.show(getActivity().getSupportFragmentManager(), "View QR Code Result");
+    }
+
+    private void promptPicture() {
+        // Open fragment
+    }
+
+    private void promptGeolocation() {
+
+    }
+
 }
