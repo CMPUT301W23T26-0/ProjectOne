@@ -5,19 +5,40 @@
 // https://developer.android.com/training/location/permissions
 // https://developer.android.com/training/location/permissions
 // https://developers.google.com/maps/documentation/android-sdk/location#:~:text=If%20your%20app%20needs%20to,location%20returned%20by%20the%20API.
+// https://www.geeksforgeeks.org/how-to-get-current-location-inside-android-fragment/
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 package com.example.qradventure;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -26,6 +47,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 
 /**
@@ -33,30 +56,32 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-// , GoogleMap.OnMyLocationButtonClickListener,
-//        GoogleMap.OnMyLocationClickListener, ActivityCompat.OnRequestPermissionsResultCallback
+
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
+    private boolean locationPermissionGranted;
+
     private GoogleMap mMap;
     Context context;
     FragmentActivity fragAct = new FragmentActivity();
+    TextView tvLatitude, tvLongitude;
+
+    Button btLocation;
     /**
      * Request code for location permission request.
      *
      */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private FusedLocationProviderClient fusedLocationClient;
+
 
     /**
      * Flag indicating whether a requested permission has been denied after returning in {@link
      */
     private boolean permissionDenied = false;
-    // Register the permissions callback, which handles the user's response to the
-// system permissions dialog. Save the return value, an instance of
-// ActivityResultLauncher, as an instance variable.
+    FusedLocationProviderClient client;
 
-    // The geographical location where the device is currently located. That is, the last-known
-    // location retrieved by the Fused Location Provider.
     public MapFragment() {
         // Required empty public constructor
     }
@@ -74,29 +99,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         fragment.setArguments(args);
         return fragment;
     }
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-
-        // Set the layout file as the content view.
-//        setContentView(R.layout.activity_main);
-//
-//        // Get a handle to the fragment and register the callback.
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map_view);
-//        mapFragment.getMapAsync(this);
-
-    }
-
-    // Get a handle to the GoogleMap object and display marker.
-//    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//        googleMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(0, 0))
-//                .title("Marker"));
-//    }
 
 
     @Override
@@ -111,7 +113,198 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
         mapView.onCreate(mapBundle);
         mapView.getMapAsync(this);
+        // Assign variable
+        btLocation = view.findViewById(R.id.bt_location);
+        tvLatitude = view.findViewById(R.id.tv_latitude);
+        tvLongitude = view.findViewById(R.id.tv_longitude);
+
+        // Initialize location client
+        client = LocationServices
+                .getFusedLocationProviderClient(
+                        getActivity());
+
+        btLocation.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override public void onClick(View view)
+                    {
+                        // check condition
+                        if (ContextCompat.checkSelfPermission(
+                                getActivity(),
+                                android.Manifest.permission
+                                        .ACCESS_FINE_LOCATION)
+                                == PackageManager
+                                .PERMISSION_GRANTED
+                                && ContextCompat.checkSelfPermission(
+                                getActivity(),
+                                android.Manifest.permission
+                                        .ACCESS_COARSE_LOCATION)
+                                == PackageManager
+                                .PERMISSION_GRANTED) {
+                            // When permission is granted
+                            locationPermissionGranted = true;
+
+                            // Call method
+
+                            getCurrentLocation();
+                            updateLocationUI();
+                        }
+                        else {
+                            // When permission is not granted
+                            // Call method
+                            locationPermissionGranted = false;
+                            requestPermissions(
+                                    new String[] {
+                                            android.Manifest.permission
+                                                    .ACCESS_FINE_LOCATION,
+                                            Manifest.permission
+                                                    .ACCESS_COARSE_LOCATION },
+                                    100);
+                        }
+                    }
+                });
+
         return view;
+    }
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(
+                requestCode, permissions, grantResults);
+        // Check condition
+        if (requestCode == 100 && (grantResults.length > 0)
+                && (grantResults[0] + grantResults[1]
+                == PackageManager.PERMISSION_GRANTED)) {
+            // When permission are granted
+            // Call method
+            getCurrentLocation();
+        }
+        else {
+            // When permission are denied
+            // Display toast
+            Toast
+                    .makeText(getActivity(),
+                            "Permission denied",
+                            Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getCurrentLocation()
+    {
+        // Initialize Location manager
+        LocationManager locationManager
+                = (LocationManager)getActivity()
+                .getSystemService(
+                        Context.LOCATION_SERVICE);
+        // Check condition
+        if (locationManager.isProviderEnabled(
+                LocationManager.GPS_PROVIDER)
+                || locationManager.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER)) {
+            // When location service is enabled
+            // Get last location
+            client.getLastLocation().addOnCompleteListener(
+                    new OnCompleteListener<Location>() {
+                        @Override
+                        public void onComplete(
+                                @NonNull Task<Location> task)
+                        {
+
+                            // Initialize location
+                            Location location
+                                    = task.getResult();
+                            // Check condition
+                            if (location != null) {
+                                // When location result is not
+                                // null set latitude
+                                tvLatitude.setText(
+                                        String.valueOf(
+                                                location
+                                                        .getLatitude()));
+                                // set longitude
+                                tvLongitude.setText(
+                                        String.valueOf(
+                                                location
+                                                        .getLongitude()));
+                            }
+                            else {
+                                // When location result is null
+                                // initialize location request
+                                LocationRequest locationRequest
+                                        = new LocationRequest()
+                                        .setPriority(
+                                                LocationRequest
+                                                        .PRIORITY_HIGH_ACCURACY)
+                                        .setInterval(10000)
+                                        .setFastestInterval(
+                                                1000)
+                                        .setNumUpdates(1);
+
+                                // Initialize location call back
+                                LocationCallback
+                                        locationCallback
+                                        = new LocationCallback() {
+                                    @Override
+                                    public void
+                                    onLocationResult(
+                                            LocationResult
+                                                    locationResult)
+                                    {
+                                        // Initialize
+                                        // location
+                                        Location location1
+                                                = locationResult
+                                                .getLastLocation();
+                                        // Set latitude
+                                        tvLatitude.setText(
+                                                String.valueOf(
+                                                        location1
+                                                                .getLatitude()));
+                                        // Set longitude
+                                        tvLongitude.setText(
+                                                String.valueOf(
+                                                        location1
+                                                                .getLongitude()));
+                                    }
+                                };
+
+                                // Request location updates
+                                client.requestLocationUpdates(
+                                        locationRequest,
+                                        locationCallback,
+                                        Looper.myLooper());
+                            }
+                        }
+                    });
+        }
+        else {
+            // When location service is not enabled
+            // open location setting
+            startActivity(
+                    new Intent(
+                            Settings
+                                    .ACTION_LOCATION_SOURCE_SETTINGS)
+                            .setFlags(
+                                    Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
+    }
+
+    // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            if (locationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
     }
 
     // @SuppressLint("MissingPermission")
@@ -126,7 +319,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         Map mapObj = new Map();
 
-         LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
+        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
         googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
                 .position(uofa)
@@ -143,81 +336,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 //        enableMyLocation();
 
         //googleMap.setMyLocationEnabled(true);
-//        mapObj.getLocationPermission();
-//        mapObj.updateLocationUI();
-//        mapObj.getDeviceLocation();
     }
-    /**
-     * Enables the My Location layer if the fine location permission has been granted.
-     */
-//    @SuppressLint("MissingPermission")
-//    private void enableMyLocation() {
-//        // 1. Check if permissions are granted, if so, enable the my location layer
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED
-//                || ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//            mMap.setMyLocationEnabled(true);
-//            return;
-//        }
-//
-//        // 2. Otherwise, request location permissions from the user.
-//        PermissionUtils.requestLocationPermissions(this, LOCATION_PERMISSION_REQUEST_CODE, true);
-//    }
-//    @Override
-//    public boolean onMyLocationButtonClick() {
-//        // Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
-//        // Return false so that we don't consume the event and the default behavior still occurs
-//        // (the camera animates to the user's current position).
-//        return false;
-//    }
-//
-//    @Override
-//    public void onMyLocationClick(@NonNull Location location) {
-//        // Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-//                                           @NonNull int[] grantResults) {
-//        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//            return;
-//        }
-//
-//        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
-//                Manifest.permission.ACCESS_FINE_LOCATION) || PermissionUtils
-//                .isPermissionGranted(permissions, grantResults,
-//                        Manifest.permission.ACCESS_COARSE_LOCATION)) {
-//            // Enable the my location layer if the permission has been granted.
-//            enableMyLocation();
-//        } else {
-//            // Permission was denied. Display an error message
-//            // Display the missing permission error dialog when the fragments resume.
-//            permissionDenied = true;
-//        }
-//    }
 
-//    @Override
-//    protected void onResumeFragments() {
-//        super.onResumeFragments();
-//        if (permissionDenied) {
-//            // Permission was not granted, display error dialog.
-//            showMissingPermissionError();
-//            permissionDenied = false;
-//        }
-//    }
+private void gotoLocation(){
 
-//    /**
-//     * Displays a dialog with error message explaining that the location permission is missing.
-//     */
-//    private void showMissingPermissionError() {
-//        PermissionUtils.PermissionDeniedDialog
-//                .newInstance(true).show(getSupportFragmentManager(), "dialog");
-//    }
-
-
-
+}
     @Override
     public void onResume() {
         super.onResume();
