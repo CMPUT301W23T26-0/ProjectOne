@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.qradventure.databinding.ActivityMainBinding;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
