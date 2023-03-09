@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="1,234,567"
+        android:text="@string/default_total_val"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -92,11 +92,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="80dp"
-        android:text="12,345"
+        android:text="@string/default_high_low_val"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:paddingBottom="30dp"
         app:layout_constraintEnd_toStartOf="@+id/lowest_score_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/highest_score_header" />
@@ -122,7 +123,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
-        android:text="123"
+        android:text="@string/default_high_low_val"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="24sp"
@@ -148,7 +149,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_qr_code_list"
         android:layout_width="match_parent"
-        android:layout_height="380dp"
+        android:layout_height="0dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:background="@color/very_light_grey"
@@ -156,7 +157,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/total_score_value"
+        app:layout_constraintTop_toBottomOf="@+id/highest_score_value"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
@@ -165,7 +166,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Ʌ"
+        android:text="@string/default_sort_button"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/user_qr_code_list"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -175,7 +176,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Count: 420"
+        android:text="@string/default_count_val"
         app:layout_constraintBottom_toTopOf="@+id/user_qr_code_list"
         app:layout_constraintStart_toStartOf="parent" />
 

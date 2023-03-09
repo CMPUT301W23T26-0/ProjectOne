@@ -10,16 +10,20 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.qradventure.databinding.ActivityMainBinding;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater()); // getting the inflater to work with fragments
         setContentView(R.layout.fragment_login);
+
+        db = FirebaseFirestore.getInstance();
 
         Button signInButton = (Button) findViewById(R.id.login_button);
         signInButton.setOnClickListener(new View.OnClickListener() {
