@@ -1,9 +1,10 @@
 package com.example.qradventure;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.View;
@@ -25,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
         switchFragment(new ProfileFragment());
+
+        //User user = new User();
+
         binding.bottomNavi.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navi_profile:
