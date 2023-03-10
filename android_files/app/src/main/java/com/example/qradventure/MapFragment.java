@@ -28,9 +28,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -44,7 +44,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -62,24 +61,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     //private LatLng currentLocation;
     private boolean locationPermissionGranted;
 
-    // The geographical location where the device is currently located. That is, the last-known
-    // location retrieved by the Fused Location Provider.
-    private Location lastKnownLocation;
-
-    // Keys for storing activity state.
-    // [START maps_current_place_state_keys]
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
-
     private GoogleMap mMap;
     TextView tvLatitude, tvLongitude;
     private Location currLocation;
     Button btLocation;
-    private CameraPosition cameraPosition;
-
     FusedLocationProviderClient client;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-
 
     // static User player;
     UserDataClass user = UserDataClass.getInstance();
@@ -102,10 +88,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         return fragment;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -116,10 +98,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         Bundle mapBundle = null;
         if (savedInstanceState != null) {
             mapBundle = savedInstanceState.getBundle(MAPS_API_KEY);
-            mapView.onCreate(mapBundle);
-            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
+        mapView.onCreate(mapBundle);
         mapView.getMapAsync(this);
         // Assign variable
         btLocation = view.findViewById(R.id.bt_location);
@@ -131,7 +111,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 
-//        updateLocation();
+        // updateLocation();
         new View.OnClickListener() {
             @Override public void onClick(View view) {
                 updateLocation();
@@ -143,14 +123,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         return view;
     }
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        if (mMap  != null) {
-            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
-            outState.putParcelable(KEY_LOCATION, lastKnownLocation);
-        }
-        super.onSaveInstanceState(outState);
-    }
+
     private void updateLocation(){
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -174,41 +147,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        locationPermissionGranted = false;
-        if (requestCode
-                == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationPermissionGranted = true;
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-        updateLocationUI();
-        getCurrentLocation();
-    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-//            @NonNull int[] grantResults) {
-//
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        // Check condition
-//        if (requestCode == 100 && (grantResults.length > 0) && (grantResults[0] + grantResults[1]
-//                                                        == PackageManager.PERMISSION_GRANTED)) {
-//            // When permission are granted
-//            // Call method
-//            getCurrentLocation();
-//        }
-//        else {
-//            // When permission are denied
-//            // Display toast
-//            Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Check condition
+        if (requestCode == 100 && (grantResults.length > 0) && (grantResults[0] + grantResults[1]
+                                                        == PackageManager.PERMISSION_GRANTED)) {
+            // When permission are granted
+            // Call method
+            getCurrentLocation();
+        }
+        else {
+            // When permission are denied
+            // Display toast
+            Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
@@ -330,22 +285,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        // updateLocation();
-//        new View.OnClickListener() {
-//            @Override public void onClick(View view) {
-//                updateLocation();
-//            }};
+        updateLocation();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mapView.onStart();
-        // updateLocation();
-//        new View.OnClickListener() {
-//            @Override public void onClick(View view) {
-//                updateLocation();
-//            }};
+        updateLocation();
     }
 
     @Override
