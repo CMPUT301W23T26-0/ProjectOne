@@ -111,34 +111,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 
+        // updateLocation();
+        new View.OnClickListener() {
+            @Override public void onClick(View view) {
+                updateLocation();
+            }};
         btLocation.setOnClickListener(
                 view1 -> {
-                    // check condition
-                    if (ContextCompat.checkSelfPermission(
-                            getActivity(),
-                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(getActivity(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        // When permission is granted
-                        locationPermissionGranted = true;
-
-                        // Call method
-
-                        getCurrentLocation();
-                        updateLocationUI();
-                    }
-                    else {
-                        // When permission is not granted
-                        // Call method
-                        locationPermissionGranted = false;
-                        requestPermissions(new String[] {
-                                        Manifest.permission.ACCESS_FINE_LOCATION,
-                                        Manifest.permission.ACCESS_COARSE_LOCATION },
-                                100);
-                    }
+                    updateLocation();
                 });
 
         return view;
+    }
+
+    private void updateLocation(){
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // When permission is granted
+            locationPermissionGranted = true;
+
+            // Call method
+            getCurrentLocation();
+            updateLocationUI();
+        }
+        else {
+            // When permission is not granted
+            // Call method
+            locationPermissionGranted = false;
+            requestPermissions(new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION },
+                    100);
+        }
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -279,12 +285,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        updateLocation();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mapView.onStart();
+        updateLocation();
     }
 
     @Override
