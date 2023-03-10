@@ -62,7 +62,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private boolean locationPermissionGranted;
 
     private GoogleMap mMap;
-    TextView tvLatitude, tvLongitude;
     private Location currLocation;
     Button btLocation;
     FusedLocationProviderClient client;
@@ -103,8 +102,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         mapView.getMapAsync(this);
         // Assign variable
         btLocation = view.findViewById(R.id.bt_location);
-        tvLatitude = view.findViewById(R.id.tv_latitude);
-        tvLongitude = view.findViewById(R.id.tv_longitude);
         edit = view.findViewById(R.id.editText);
 
 
@@ -183,10 +180,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         if (location != null) {
                             // When location result is not
                             // null set latitude
-                            tvLatitude.setText(String.valueOf(location.getLatitude()));
+                            //tvLatitude.setText(String.valueOf(location.getLatitude()));
 
                             // set longitude
-                            tvLongitude.setText(String.valueOf(location.getLongitude()));
+                            //tvLongitude.setText(String.valueOf(location.getLongitude()));
                         }
                         else {
                             // When location result is null
@@ -210,10 +207,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     user.setCurrentLocation(currLocation);
                                     Location tempLocation = user.getCurrentLocation();
                                     edit.setText(String.valueOf(tempLocation.getLatitude()));
-                                    // Set latitude
-                                    tvLatitude.setText(String.valueOf(location1.getLatitude()));
-                                    // Set longitude
-                                    tvLongitude.setText(String.valueOf(location1.getLongitude()));
                                 }
                             };
 
