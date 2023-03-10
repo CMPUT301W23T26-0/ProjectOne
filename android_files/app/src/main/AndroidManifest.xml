@@ -39,6 +39,13 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-    </application>
 
+        <!--https://stackoverflow.com/questions/34983201/change-qr-scanner-orientation-with-zxing-in-android-studio-->
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="portrait"
+            tools:replace="android:screenOrientation"
+            android:stateNotNeeded="true"
+            />
+    </application>
 </manifest>

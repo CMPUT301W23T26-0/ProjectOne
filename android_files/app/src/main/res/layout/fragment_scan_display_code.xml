@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/scan_display_code_name_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="QR Code Name"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/scan_display_code_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:id="@+id/scan_display_code_score_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QR Code Score"
+        android:textSize="20sp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/scan_display_code_bottom_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bottom Text"
+        android:gravity="center"/>
+
+</LinearLayout>
