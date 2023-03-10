@@ -294,6 +294,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        updateLocation();
     }
 
     @Override
