@@ -1,6 +1,7 @@
 package com.example.qradventure;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -104,7 +105,11 @@ public class ScanFragment extends Fragment {
         resultText = view.findViewById(R.id.resultText);
 
         // Open up scanner from start
-        startScan();
+//        startScan();
+
+        // camera debug
+        PromptPictureFragment frag = new PromptPictureFragment();
+        frag.show(getActivity().getSupportFragmentManager(), "Prompt Picture");
 
         // Allow user to scan again if they exit
         scanButton.setOnClickListener(v -> startScan());
