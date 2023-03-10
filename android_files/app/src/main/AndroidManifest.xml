@@ -41,6 +41,5 @@
                 android:value="" />
         </activity>
 
-        </activity>
     </application>
 </manifest>
