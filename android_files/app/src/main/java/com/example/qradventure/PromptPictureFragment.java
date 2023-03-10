@@ -3,12 +3,17 @@ package com.example.qradventure;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
 public class PromptPictureFragment extends DialogFragment {
+    String toastMessage = "Skipping picture...";
+
     public PromptPictureFragment() {
         // empty
     }
@@ -25,22 +30,26 @@ public class PromptPictureFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Allow user to take picture
-                                // Prompt geolocation after
-                                PromptGeolocationFragment frag = new PromptGeolocationFragment();
-                                frag.show(getActivity().getSupportFragmentManager(), "Prompt Geolocation");
+                                toastMessage = "Saving picture...";
                             }
                         })
                 .setNegativeButton("No",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // Don't let user take picture
-                                // Prompt geolocation after
-                                PromptGeolocationFragment frag = new PromptGeolocationFragment();
-                                frag.show(getActivity().getSupportFragmentManager(), "Prompt Geolocation");
+                                // Skip picture taking
                             }
                         });
 
         return builder.create();
+    }
+
+    // In case user doesn't pick Yes or No, assume No for safety
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
+        PromptGeolocationFragment frag = new PromptGeolocationFragment();
+        frag.show(getActivity().getSupportFragmentManager(), "Prompt Geolocation");
     }
 }

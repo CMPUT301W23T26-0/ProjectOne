@@ -63,12 +63,18 @@ public class ScanDisplayCodeFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // Allow user to take picture
-                                // Prompt geolocation after
-                                PromptPictureFragment frag = new PromptPictureFragment();
-                                frag.show(getActivity().getSupportFragmentManager(), "Prompt Picture");
+                                // onDestroyView does handling of picture and geolocation prompts
+                                // Ok button purely for UI
                             }
                         });
         return builder.create();
+    }
+
+    // In case user doesn't click Ok
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        PromptPictureFragment frag = new PromptPictureFragment();
+        frag.show(getActivity().getSupportFragmentManager(), "Prompt Picture");
     }
 }
