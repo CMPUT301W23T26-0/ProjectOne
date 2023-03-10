@@ -43,6 +43,7 @@ public class ScanFragment extends Fragment {
     TextView resultText;
 
     // Used for getting scan results
+    // https://github.com/journeyapps/zxing-android-embedded
     private final ActivityResultLauncher<ScanOptions> fragmentLauncher = registerForActivityResult(new ScanContract(),
             result -> {
                 if(result.getContents() == null) {
