@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         switchFragment(new ProfileFragment());
 
-        User user = new User();
+        //User user = new User();
 
         binding.bottomNavi.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                     switchFragment(new LeaderboardFragment());
                     break;
                 case R.id.navi_map:
-                    switchFragment(new MapFragment(user));
+                    switchFragment(new MapFragment());
                     break;
             }
 

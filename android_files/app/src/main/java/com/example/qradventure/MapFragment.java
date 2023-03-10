@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
+    EditText edit;
     //private LatLng currentLocation;
     private boolean locationPermissionGranted;
 
@@ -65,11 +67,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     Button btLocation;
     FusedLocationProviderClient client;
 
-    static User player;
+    // static User player;
+    UserDataClass user = UserDataClass.getInstance();
 
-    public MapFragment(User user) {
+    public MapFragment() {
         // Required empty public constructor
-        player = user;
+        // player = user;
     }
     /**
      * Use this factory method to create a new instance of
@@ -79,7 +82,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      */
     // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
-        MapFragment fragment = new MapFragment(player);
+        MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -102,6 +105,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         btLocation = view.findViewById(R.id.bt_location);
         tvLatitude = view.findViewById(R.id.tv_latitude);
         tvLongitude = view.findViewById(R.id.tv_longitude);
+        edit = view.findViewById(R.id.editText);
+
 
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -169,7 +174,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         // Initialize location
                         Location location = task.getResult();
                         currLocation = location;
-                        player.setCurrentLocation(currLocation);
+                        //player.setCurrentLocation(currLocation);
+                        user.setCurrentLocation(currLocation);
+
+                        Location tempLocation = user.getCurrentLocation();
+                        edit.setText(String.valueOf(tempLocation.getLatitude()));
                         // Check condition
                         if (location != null) {
                             // When location result is not
@@ -197,7 +206,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     // location
                                     Location location1 = locationResult.getLastLocation();
                                     currLocation = location1;
-                                    player.setCurrentLocation(currLocation);
+                                    // player.setCurrentLocation(currLocation);
+                                    user.setCurrentLocation(currLocation);
+                                    Location tempLocation = user.getCurrentLocation();
+                                    edit.setText(String.valueOf(tempLocation.getLatitude()));
                                     // Set latitude
                                     tvLatitude.setText(String.valueOf(location1.getLatitude()));
                                     // Set longitude
