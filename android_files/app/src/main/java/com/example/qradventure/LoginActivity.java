@@ -71,8 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                         signInButton = findViewById(R.id.login_button);
                         emailInfo = findViewById(R.id.emailContact);
                         phoneInfo = findViewById(R.id.phoneContact);
-                        // If sign in button clicked, add user fields, currently just username
-                        // TO ADD: optional contact information field(s)
+                        // If sign in button clicked, add user, email, phone fields
                         signInButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
