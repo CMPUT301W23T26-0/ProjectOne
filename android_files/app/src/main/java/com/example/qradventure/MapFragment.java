@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -59,7 +60,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private MapView mapView;
     EditText edit;
     //private LatLng currentLocation;
-    private boolean locationPermissionGranted;
+    private boolean locationPermissionGranted = true;
 
     private GoogleMap mMap;
     private Location currLocation;
@@ -87,6 +88,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,34 +113,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 
-        btLocation.setOnClickListener(
-                view1 -> {
-                    // check condition
-                    if (ContextCompat.checkSelfPermission(
-                            getActivity(),
-                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                            && ContextCompat.checkSelfPermission(getActivity(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        // When permission is granted
-                        locationPermissionGranted = true;
-
-                        // Call method
-
-                        getCurrentLocation();
-                        updateLocationUI();
-                    }
-                    else {
-                        // When permission is not granted
-                        // Call method
-                        locationPermissionGranted = false;
-                        requestPermissions(new String[] {
-                                        Manifest.permission.ACCESS_FINE_LOCATION,
-                                        Manifest.permission.ACCESS_COARSE_LOCATION },
-                                100);
-                    }
-                });
+//        updateLocation();
+//
+//        btLocation.setOnClickListener(
+//                view1 -> {
+//                    updateLocation();
+//                });
 
         return view;
+    }
+    private void updateLocation(){
+        // check condition
+        if (ContextCompat.checkSelfPermission(
+                getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // When permission is granted
+            locationPermissionGranted = true;
+
+            // Call method
+
+            getCurrentLocation();
+
+            updateLocationUI();
+        }
+        else {
+            // When permission is not granted
+            // Call method
+            locationPermissionGranted = false;
+            requestPermissions(new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION },
+                    100);
+        }
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -232,15 +243,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             return;
         }
         try {
-            if (locationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            }
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // GoogleMapOptions options = new GoogleMapOptions();
@@ -263,6 +271,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
+        updateLocation();
+
+        btLocation.setOnClickListener(
+                view1 -> {
+                    updateLocation();
+                });
+
     }
 
 //    public Location getLocation(){
@@ -272,6 +287,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        updateLocation();
     }
 
     @Override
