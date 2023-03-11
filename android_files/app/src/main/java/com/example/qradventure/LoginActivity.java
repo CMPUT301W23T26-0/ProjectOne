@@ -38,6 +38,9 @@ public class LoginActivity extends AppCompatActivity {
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        // deletes your device from the database,
+        // uncomment if you want to see the sign in page when running
+        /*
         db.collection("Users").document(android_id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -52,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.w(TAG, "Error deleting document", e);
                     }
                 });
+         */
 
         DocumentReference userRef = db.collection("Users").document(android_id);
         // Check database for user
