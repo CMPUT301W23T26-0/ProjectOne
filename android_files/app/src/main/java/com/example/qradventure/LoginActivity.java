@@ -10,6 +10,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
     private Button signInButton;
+    private EditText emailInfo;
+    private EditText phoneInfo;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "LoginActivity";
 
@@ -33,12 +37,27 @@ public class LoginActivity extends AppCompatActivity {
         // Get device ID for database checking
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        db.collection("Users").document(android_id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+
         DocumentReference userRef = db.collection("Users").document(android_id);
         // Check database for user
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     // If new user, display login page and user to database
@@ -46,6 +65,8 @@ public class LoginActivity extends AppCompatActivity {
                         // Display login page
                         setContentView(R.layout.activity_login);
                         signInButton = findViewById(R.id.login_button);
+                        emailInfo = findViewById(R.id.emailContact);
+                        phoneInfo = findViewById(R.id.phoneContact);
                         // If sign in button clicked, add user fields, currently just username
                         // TO ADD: optional contact information field(s)
                         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +74,8 @@ public class LoginActivity extends AppCompatActivity {
                             public void onClick(View view) {
                                 Map<String, Object> newUser = new HashMap<>();
                                 newUser.put("username", android_id);
+                                newUser.put("email", emailInfo.getText().toString());
+                                newUser.put("phone", phoneInfo.getText().toString());
                                 db.collection("Users").document(android_id)
                                         .set(newUser)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
