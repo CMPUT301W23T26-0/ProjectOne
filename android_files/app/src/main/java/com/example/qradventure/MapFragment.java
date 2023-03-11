@@ -59,9 +59,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
     EditText edit;
-    //private LatLng currentLocation;
-    private boolean locationPermissionGranted = true;
-
     private GoogleMap mMap;
     private Location currLocation;
     Button btLocation;
@@ -74,6 +71,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // Required empty public constructor
         // player = user;
     }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -113,15 +111,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 
-//        updateLocation();
-//
-//        btLocation.setOnClickListener(
-//                view1 -> {
-//                    updateLocation();
-//                });
-
         return view;
     }
+
     private void updateLocation(){
         // check condition
         if (ContextCompat.checkSelfPermission(
@@ -130,24 +122,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 && ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // When permission is granted
-            locationPermissionGranted = true;
-
             // Call method
-
             getCurrentLocation();
-
             updateLocationUI();
         }
         else {
             // When permission is not granted
             // Call method
-            locationPermissionGranted = false;
             requestPermissions(new String[] {
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION },
                     100);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
@@ -188,15 +176,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         Location tempLocation = user.getCurrentLocation();
                         edit.setText(String.valueOf(tempLocation.getLatitude()));
                         // Check condition
-                        if (location != null) {
-                            // When location result is not
-                            // null set latitude
-                            //tvLatitude.setText(String.valueOf(location.getLatitude()));
-
-                            // set longitude
-                            //tvLongitude.setText(String.valueOf(location.getLongitude()));
-                        }
-                        else {
+                        if (location == null) {
                             // When location result is null
                             // initialize location request
                             LocationRequest locationRequest = new LocationRequest().setPriority(
@@ -249,16 +229,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // GoogleMapOptions options = new GoogleMapOptions();
-        // to edit options in code
-//        options.mapType(GoogleMap.MAP_TYPE_SATELLITE)
-//                .compassEnabled(true)
-//                .rotateGesturesEnabled(true)
-//                .tiltGesturesEnabled(true);
-
-
+        //test marker
         LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
         googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
@@ -280,9 +254,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     }
 
-//    public Location getLocation(){
-//        return currLocation;
-//    }
     @Override
     public void onResume() {
         super.onResume();
