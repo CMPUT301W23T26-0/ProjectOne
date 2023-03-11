@@ -8,7 +8,7 @@
     tools:context=".LoginActivity">
 
     <TextView
-        android:id="@+id/temp_scan_text"
+        android:id="@+id/resultText"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="125dp"
@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/temp_scan_text"
+        app:layout_constraintTop_toBottomOf="@+id/resultText"
         app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
