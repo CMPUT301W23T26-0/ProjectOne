@@ -26,18 +26,21 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
     private Button signInButton;
-    private EditText emailInfo;
-    private EditText phoneInfo;
+    private EditText emailInput;
+    private EditText phoneInput;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "LoginActivity";
+    private UserDataClass user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // initialize singleton userdata
+        user = user.getInstance();
         // Get device ID for database checking
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
+        user.setUsername(android_id);
         // deletes your device from the database,
         // uncomment if you want to see the sign in page when running
         /*
@@ -69,16 +72,22 @@ public class LoginActivity extends AppCompatActivity {
                         // Display login page
                         setContentView(R.layout.activity_login);
                         signInButton = findViewById(R.id.login_button);
-                        emailInfo = findViewById(R.id.emailContact);
-                        phoneInfo = findViewById(R.id.phoneContact);
+                        emailInput = findViewById(R.id.emailContact);
+                        phoneInput = findViewById(R.id.phoneContact);
                         // If sign in button clicked, add user, email, phone fields
                         signInButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                // fill user data in singleton
+                                String email = emailInput.getText().toString();
+                                String phone = phoneInput.getText().toString();
+                                user.setEmailInfo(email);
+                                user.setPhoneInfo(phone);
+                                // create hashmap for database entry
                                 Map<String, Object> newUser = new HashMap<>();
                                 newUser.put("username", android_id);
-                                newUser.put("email", emailInfo.getText().toString());
-                                newUser.put("phone", phoneInfo.getText().toString());
+                                newUser.put("email", email);
+                                newUser.put("phone", phone);
                                 db.collection("Users").document(android_id)
                                         .set(newUser)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
