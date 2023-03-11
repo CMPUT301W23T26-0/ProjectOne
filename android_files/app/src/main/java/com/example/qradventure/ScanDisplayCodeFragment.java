@@ -1,20 +1,39 @@
 package com.example.qradventure;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.fragment.app.DialogFragment;
 
 public class ScanDisplayCodeFragment extends DialogFragment {
+
+    String toastMessage = "Skipping camera...";
+
     private boolean isSeen;
     private QRCode code;
+
+    private Boolean state = false;
+
+    // https://stackoverflow.com/questions/26734432/send-data-from-dialogfragment-to-fragment
+    public interface CameraInScanFrag {
+        void openCameraInScanFrag(Boolean state);
+    }
+
+    CameraInScanFrag scanFrag;
+
+    public void setScanFragment(CameraInScanFrag scanFrag) {
+        this.scanFrag = scanFrag;
+    }
 
     public ScanDisplayCodeFragment(QRCode code, boolean isSeen) {
         this.code = code;
@@ -48,7 +67,6 @@ public class ScanDisplayCodeFragment extends DialogFragment {
             // Also add it to their profile
         }
 
-
         String fragmentTitle = "Congratulations! You found...";
         TextView title = new TextView(getActivity());
         title.setText(fragmentTitle);
@@ -59,22 +77,30 @@ public class ScanDisplayCodeFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setCustomTitle(title)
                 .setView(view)
-                .setPositiveButton("Ok",
+                .setPositiveButton("Yes",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // onDestroyView does handling of picture and geolocation prompts
-                                // Ok button purely for UI
+                                // Allow user to take picture
+                                state = true;
+                                toastMessage = "Opening camera...";
+                            }
+                        })
+                .setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // Skip picture taking, prompt geolocation
                             }
                         });
         return builder.create();
     }
 
-    // In case user doesn't click Ok
+    // In case user closes, don't take picture and don't save geolocation
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        PromptPictureFragment frag = new PromptPictureFragment();
-        frag.show(getActivity().getSupportFragmentManager(), "Prompt Picture");
+        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
+        scanFrag.openCameraInScanFrag(state);
     }
 }

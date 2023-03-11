@@ -2,13 +2,17 @@ package com.example.qradventure;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +29,32 @@ import com.journeyapps.barcodescanner.ScanOptions;
  * Use the {@link ScanFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ScanFragment extends Fragment {
+public class ScanFragment extends Fragment implements ScanDisplayCodeFragment.CameraInScanFrag,
+        SavePictureFragment.PictureInScanFrag{
+
+    // So fragment appears in order
+    @Override
+    public void openCameraInScanFrag(Boolean state) {
+        if (state) {
+            // Open camera and resulting picture afterwards
+            openCamera();
+        } else {
+            // Otherwise, just prompt geolocation
+            promptGeolocation();
+        }
+    }
+
+    // So fragment appears in order
+    public void savePictureInScanFrag(Bitmap picture, Boolean state) {
+        if (state) {
+            // Save picture somehow
+        }
+        // Prompt geolocation if user saves or discards picture
+        promptGeolocation();
+    }
+
     // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -52,17 +80,28 @@ public class ScanFragment extends Fragment {
                     Toast.makeText(getContext(), "Exiting scanner...", Toast.LENGTH_LONG).show();
                 } else {
                     // Successful scans
-//                    resultText.setText(result.getContents()); // debug
                     // Generate for QR code characteristics
                     QRCode code = new QRCode(result.getContents());
 
                     // Check if user has it already
                     boolean isSeen = true;
 
-                    // Display all fragments in order (code -> pic prompt -> geo prompt)
-                    displayPromptFragments(code, isSeen);
+                    // Display code info and prompt picture
+                    displayCodeAndPromptPicture(code, isSeen);
                 }
             });
+
+    public ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                // Get bitmap
+                Intent data = result.getData();
+                Bitmap picture = (Bitmap) data.getExtras().get("data");
+
+                // Open bitmap with save picture frag
+                displayPicture(picture);
+            }
+    );
 
     public ScanFragment() {
         // Required empty public constructor
@@ -105,11 +144,7 @@ public class ScanFragment extends Fragment {
         resultText = view.findViewById(R.id.resultText);
 
         // Open up scanner from start
-//        startScan();
-
-        // camera debug
-        PromptPictureFragment frag = new PromptPictureFragment();
-        frag.show(getActivity().getSupportFragmentManager(), "Prompt Picture");
+        startScan();
 
         // Allow user to scan again if they exit
         scanButton.setOnClickListener(v -> startScan());
@@ -132,11 +167,26 @@ public class ScanFragment extends Fragment {
         fragmentLauncher.launch(options);
     }
 
-    private void displayPromptFragments(QRCode code, boolean isSeen) {
+    private void displayCodeAndPromptPicture(QRCode code, boolean isSeen) {
         // Display QR code dialog fragment
         ScanDisplayCodeFragment frag = new ScanDisplayCodeFragment(code, isSeen);
-        frag.show(getActivity().getSupportFragmentManager(), "View QR Code Result");
+        frag.setScanFragment(ScanFragment.this);
+        frag.show(getActivity().getSupportFragmentManager(), "Display Code and Prompt Picture");
     }
 
+    private void displayPicture(Bitmap picture) {
+        SavePictureFragment frag = new SavePictureFragment(picture);
+        frag.setScanFragment(ScanFragment.this);
+        frag.show(getActivity().getSupportFragmentManager(),"Save picture");
+    }
 
+    private void promptGeolocation() {
+        PromptGeolocationFragment frag = new PromptGeolocationFragment();
+        frag.show(getActivity().getSupportFragmentManager(), "Prompt geolocation");
+    }
+
+    public void openCamera() {
+        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        launcher.launch(camera);
+    }
 }

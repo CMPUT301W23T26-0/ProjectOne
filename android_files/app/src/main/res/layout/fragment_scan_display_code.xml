@@ -34,4 +34,12 @@
         android:text="Bottom Text"
         android:gravity="center"/>
 
+    <TextView
+        android:id="@+id/picture_prompt_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Would you like to take a picture of the code's location?"
+        android:textSize="20sp"
+        android:gravity="center"/>
+
 </LinearLayout>

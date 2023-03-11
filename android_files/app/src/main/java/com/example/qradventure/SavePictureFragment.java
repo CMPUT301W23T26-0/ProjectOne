@@ -14,12 +14,22 @@ import android.widget.Toast;
 import androidx.fragment.app.DialogFragment;
 
 public class SavePictureFragment extends DialogFragment {
-//    Bitmap picture;
-    String toastMessage;
-    Uri cam_uri;
+    Bitmap picture;
+    String toastMessage = "Discarding picture...";
+    Boolean state = false;
 
-    SavePictureFragment(Uri picture) {
-        this.cam_uri = picture;
+    public interface PictureInScanFrag {
+        void savePictureInScanFrag (Bitmap picture, Boolean state);
+    }
+
+    PictureInScanFrag scanFrag;
+
+    public void setScanFragment(PictureInScanFrag scanFrag) {
+        this.scanFrag = scanFrag;
+    }
+
+    SavePictureFragment(Bitmap picture) {
+        this.picture = picture;
     }
 
     @Override
@@ -32,10 +42,8 @@ public class SavePictureFragment extends DialogFragment {
         ImageView savePictureView = (ImageView) view.findViewById(R.id.save_picture_view);
 
         saveText.setText("Would you like to save the picture?");
-//        savePictureView.setImageBitmap(picture);
-//        Uri cam = null;
-        savePictureView.setImageURI(cam_uri);
-//        savePictureView.setImageURI(cam);
+        savePictureView.setImageBitmap(picture);
+//        savePictureView.setImageURI(picture);
 
         // Return dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
@@ -46,6 +54,7 @@ public class SavePictureFragment extends DialogFragment {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Save picture
                                 toastMessage = "Saving picture...";
+                                state = true;
                             }
                         })
                 .setNegativeButton("Discard",
@@ -53,19 +62,22 @@ public class SavePictureFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Discard picture
-                                toastMessage = "Discarding picture...";
                             }
                         });
 
         return builder.create();
     }
 
+    public void promptGeolocation() {
+        PromptGeolocationFragment frag = new PromptGeolocationFragment();
+        frag.show(getActivity().getSupportFragmentManager(), "Prompt Geolocation");
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
-        PromptGeolocationFragment frag = new PromptGeolocationFragment();
-        frag.show(getActivity().getSupportFragmentManager(), "Prompt Geolocation");
+        scanFrag.savePictureInScanFrag(picture, state);
     }
 
 }
