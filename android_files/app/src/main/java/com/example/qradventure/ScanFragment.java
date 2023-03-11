@@ -103,7 +103,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                     code = new QRCode(result.getContents());
 
                     // Save code if user doesn't have, otherwise don't save
-                    handleCode(); // updates userHasCode
+                    handleCodeSaving(); // updates userHasCode
                 }
             });
 
@@ -179,7 +179,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
 
     }
 
-    private void handleCode() {
+    private void handleCodeSaving() {
         // https://firebase.google.com/docs/firestore/query-data/get-data#java_2
         DocumentReference docRef = userCodes.document(code.getHashValue());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
