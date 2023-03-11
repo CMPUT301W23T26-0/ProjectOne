@@ -48,7 +48,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MapFragment#newInstance} factory method to
@@ -63,13 +62,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private Location currLocation;
     Button btLocation;
     FusedLocationProviderClient client;
-
-    // static User player;
     UserDataClass user = UserDataClass.getInstance();
 
     public MapFragment() {
         // Required empty public constructor
-        // player = user;
     }
 
     /**
@@ -106,7 +102,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // Assign variable
         btLocation = view.findViewById(R.id.bt_location);
         edit = view.findViewById(R.id.editText);
-
 
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -146,7 +141,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                                         == PackageManager.PERMISSION_GRANTED)) {
             // When permission are granted
             // Call method
-            getCurrentLocation();
+            updateLocation();
         }
         else {
             // When permission are denied
@@ -166,17 +161,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             // Get last location
             client.getLastLocation().addOnCompleteListener(
                     task -> {
-
                         // Initialize location
-                        Location location = task.getResult();
-                        currLocation = location;
-                        //player.setCurrentLocation(currLocation);
-                        user.setCurrentLocation(currLocation);
+                        currLocation = task.getResult();
+                        user.setCurrentLocation(task.getResult());
 
-                        Location tempLocation = user.getCurrentLocation();
-                        edit.setText(String.valueOf(tempLocation.getLatitude()));
+                        //Debugging
+                        //Location tempLocation = user.getCurrentLocation();
+                        //edit.setText(String.valueOf(tempLocation.getLatitude()));
+
                         // Check condition
-                        if (location == null) {
+                        if (currLocation == null) {
                             // When location result is null
                             // initialize location request
                             LocationRequest locationRequest = new LocationRequest().setPriority(
@@ -190,14 +184,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                 @Override
                                 public void
                                 onLocationResult(LocationResult locationResult) {
-                                    // Initialize
-                                    // location
-                                    Location location1 = locationResult.getLastLocation();
-                                    currLocation = location1;
-                                    // player.setCurrentLocation(currLocation);
+                                    // Initialize location
+                                    currLocation = locationResult.getLastLocation();
                                     user.setCurrentLocation(currLocation);
-                                    Location tempLocation = user.getCurrentLocation();
-                                    edit.setText(String.valueOf(tempLocation.getLatitude()));
+
+                                    //Debugging
+                                    //Location tempLocation = user.getCurrentLocation();
+                                    //edit.setText(String.valueOf(tempLocation.getLatitude()));
                                 }
                             };
 
@@ -213,7 +206,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             // When location service is not enabled
             // open location setting
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).setFlags(
-                                    Intent.FLAG_ACTIVITY_NEW_TASK));
+                    Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
 
@@ -247,17 +240,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         mMap = googleMap;
         updateLocation();
 
+        //Placeholder for updating location in map fragment
         btLocation.setOnClickListener(
                 view1 -> {
                     updateLocation();
                 });
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
+
+        //update location when switching to map fragment
         updateLocation();
     }
 
@@ -272,7 +267,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         super.onStop();
         mapView.onStop();
     }
-
 
     @Override
     public void onPause() {
@@ -291,5 +285,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         super.onLowMemory();
         mapView.onLowMemory();
     }
-
 }

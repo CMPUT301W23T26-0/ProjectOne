@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
 
@@ -8,7 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MapFragment">
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="10sp"
             android:text="@string/searchPrompt"
-            android:textSize="20sp"></TextView>
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/editText"
@@ -30,21 +28,14 @@
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"
-            android:textSize="20sp"></EditText>
+            android:textSize="20sp" />
     </LinearLayout>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/bt_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/bt_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Update location" />
-
-    </LinearLayout>
+        android:text="Update current location" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map_view"
@@ -54,6 +45,5 @@
         map:uiScrollGestures="true"
         map:uiTiltGestures="true"
         map:uiZoomControls="true"
-        map:uiZoomGestures="true"></com.google.android.gms.maps.MapView>
-
+        map:uiZoomGestures="true" />
 </LinearLayout>
