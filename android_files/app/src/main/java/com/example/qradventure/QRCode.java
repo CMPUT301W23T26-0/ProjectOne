@@ -10,9 +10,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class QRCode {
-    private String Name;
-    private int Score;
-    private String Comment;
+    private String name;
+    private int score;
+    private String comment;
     private String hashValue;
     private String qrContent;
 
@@ -20,21 +20,21 @@ public class QRCode {
     // Future: Add comments parameter, as well as longitude / latitude and scanner id (repeats?)
     QRCode(String qrContent) {
         this.hashValue = qrController.getHash(qrContent);
-        this.Name = qrController.generateName(this.hashValue);
-        this.Comment = qrController.getHash(qrContent);
-        this.Score = (int) Math.round(qrController.calculateScore(this.hashValue));
+        this.name = qrController.generateName(this.hashValue);
+        this.comment = "A comment."; // Previously hashValue for debug
+        this.score = (int) Math.round(qrController.calculateScore(this.hashValue));
         this.qrContent = qrContent;
     }
 
-    public void setName(String Name) {
-        this.Name = Name;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setScore(int Score) {
-        this.Score = Score;
+    public void setScore(int score) {
+        this.score = score;
     }
 
-    public void setComment(String Comment) { this.Comment = Comment; }
+    public void setComment(String comment) { this.comment = comment; }
 
     public void setHashValue(String hashValue) {
         this.hashValue = hashValue;
@@ -45,15 +45,15 @@ public class QRCode {
     }
 
     public String getName() {
-        return this.Name;
+        return this.name;
     }
 
     public int getScore() {
-        return this.Score;
+        return this.score;
     }
 
     public String getComment() {
-        return this.Comment;
+        return this.comment;
     }
 
     public Drawable getImage() {
