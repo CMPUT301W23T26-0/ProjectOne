@@ -1,15 +1,12 @@
 package com.example.qradventure;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
@@ -20,7 +17,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -29,7 +25,7 @@ import com.journeyapps.barcodescanner.ScanOptions;
  * Use the {@link ScanFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ScanFragment extends Fragment implements ScanDisplayCodeFragment.CameraInScanFrag,
+public class ScanFragment extends Fragment implements DisplayCodePromptPictureFragment.CameraInScanFrag,
         SavePictureFragment.PictureInScanFrag{
 
     // So fragment appears in order
@@ -169,7 +165,7 @@ public class ScanFragment extends Fragment implements ScanDisplayCodeFragment.Ca
 
     private void displayCodeAndPromptPicture(QRCode code, boolean isSeen) {
         // Display QR code dialog fragment
-        ScanDisplayCodeFragment frag = new ScanDisplayCodeFragment(code, isSeen);
+        DisplayCodePromptPictureFragment frag = new DisplayCodePromptPictureFragment(code, isSeen);
         frag.setScanFragment(ScanFragment.this);
         frag.show(getActivity().getSupportFragmentManager(), "Display Code and Prompt Picture");
     }

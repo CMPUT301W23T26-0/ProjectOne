@@ -1,21 +1,18 @@
 package com.example.qradventure;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import androidx.fragment.app.DialogFragment;
 
-public class ScanDisplayCodeFragment extends DialogFragment {
+public class DisplayCodePromptPictureFragment extends DialogFragment {
 
     String toastMessage = "Skipping camera...";
 
@@ -35,7 +32,7 @@ public class ScanDisplayCodeFragment extends DialogFragment {
         this.scanFrag = scanFrag;
     }
 
-    public ScanDisplayCodeFragment(QRCode code, boolean isSeen) {
+    public DisplayCodePromptPictureFragment(QRCode code, boolean isSeen) {
         this.code = code;
         this.isSeen = isSeen;
     }
