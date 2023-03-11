@@ -10,8 +10,10 @@ public class UserDataClass {
     private String phoneInfo;
     private String emailInfo;
     private String username;
-    // private constructor to prevent instantiation of the class
 
+    private String userPhoneID;
+
+    // private constructor to prevent instantiation of the class
     private UserDataClass() {}
 
     // public static method to retrieve the singleton instance
@@ -61,6 +63,14 @@ public class UserDataClass {
 
     public void setUsername(String u) {
         this.username = u;
+    }
+
+    public String getUserPhoneID() {
+        return userPhoneID;
+    }
+
+    public void setUserPhoneID(String userPhoneID) {
+        this.userPhoneID = userPhoneID;
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.qradventure;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -10,15 +11,24 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class PromptGeolocationFragment extends DialogFragment {
     String toastMessage = "Skipping geolocation...";
+    private UserDataClass user;
 
-    public PromptGeolocationFragment() {
-        // empty
+    private QRCode code;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public PromptGeolocationFragment(QRCode code) {
+        this.code = code;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        user = user.getInstance();
+
         String promptTitle = "Would you like to record the QR code's geolocation?";
 
         // Return dialog
@@ -28,8 +38,8 @@ public class PromptGeolocationFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // Record geolocation
-
+                                // Record geolocation to QRCode
+                                Location currLocation = user.getCurrentLocation();
                                 toastMessage = "Saving geolocation...";
                             }
                         })

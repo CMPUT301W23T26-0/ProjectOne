@@ -68,11 +68,6 @@ public class SavePictureFragment extends DialogFragment {
         return builder.create();
     }
 
-    public void promptGeolocation() {
-        PromptGeolocationFragment frag = new PromptGeolocationFragment();
-        frag.show(getActivity().getSupportFragmentManager(), "Prompt Geolocation");
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

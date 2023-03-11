@@ -61,7 +61,6 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
         } else {
             // Otherwise, set bottom text to "Added to collection."
             bottomText.setText("Added to collection!");
-            // Also add it to their profile
         }
 
         String fragmentTitle = "Congratulations! You found...";

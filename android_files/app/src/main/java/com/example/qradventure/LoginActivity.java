@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         user.setUsername(android_id);
+        user.setUserPhoneID(android_id);
         // deletes your device from the database,
         // uncomment if you want to see the sign in page when running
         /*
