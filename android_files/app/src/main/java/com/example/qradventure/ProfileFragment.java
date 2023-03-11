@@ -31,6 +31,7 @@ import java.util.Comparator;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
+    private UserDataClass user;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -79,6 +80,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        user = user.getInstance();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -101,12 +104,12 @@ public class ProfileFragment extends Fragment {
 
         updateScoreHighlights(view);
 
-        // Username is Unique Android ID (Can be used as login)
-        @SuppressLint("HardwareIds")
-        String android_id = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        TextView username = (TextView) view.findViewById(R.id.username_text);
-        username.setText(android_id);
+        // Set username using user data
+        String username = user.getUsername();
+        TextView usernameText = (TextView) view.findViewById(R.id.username_text);
+        usernameText.setText(username);
 
+        // Set profile image using user data (not required yet)
         //ImageView userImg = view.findViewById(R.id.profile_image);
         //userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
 

@@ -17,9 +17,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Document;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -107,8 +110,12 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(registered);
                             }
                         });
-                    // User already has account, go to main
+                    // User already has account, update user singleton and go to main
                     } else {
+                        Map<String, Object> userInfo = document.getData();
+                        String username = (String) userInfo.get("username");
+
+                        user.setUsername(username);
                         Intent login = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(login);
                     }
