@@ -14,7 +14,6 @@ public class QRCode {
     private int score;
     private String comment;
     private String hashValue;
-    private String qrContent;
 
     QRController qrController = new QRController();
 
@@ -28,7 +27,6 @@ public class QRCode {
         this.name = qrController.generateName(this.hashValue);
         this.comment = "A comment."; // Previously hashValue for debug
         this.score = (int) Math.round(qrController.calculateScore(this.hashValue));
-        this.qrContent = qrContent;
     }
 
     public void setName(String name) {
@@ -43,10 +41,6 @@ public class QRCode {
 
     public void setHashValue(String hashValue) {
         this.hashValue = hashValue;
-    }
-
-    public void setQrContent(String qrContent) {
-        this.qrContent = qrContent;
     }
 
     public String getName() {
@@ -67,9 +61,5 @@ public class QRCode {
 
     public String getHashValue() {
         return this.hashValue;
-    }
-
-    public String getQrContent() {
-        return this.qrContent;
     }
 }
