@@ -1,5 +1,7 @@
 package com.example.qradventure;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +23,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +45,10 @@ import java.util.Comparator;
  */
 public class ProfileFragment extends Fragment {
     private UserDataClass user;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    CollectionReference userCodes;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -82,6 +99,9 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         user = user.getInstance();
 
+        userCodes = db.collection("Users").document(user.getUserPhoneID())
+                .collection("Codes");
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -95,14 +115,46 @@ public class ProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Text QR Codes
-        qrCodeDataList.add(new QRCode("BFG5DGW54"));
-        qrCodeDataList.add(new QRCode("Amazing ore"));
-        qrCodeDataList.add(new QRCode("Amazing ore")); // testing repeatability
-        qrCodeDataList.add(new QRCode("Lots of points"));
-        qrCodeDataList.add(new QRCode("Not that much points"));
 
-        updateScoreHighlights(view);
+        // https://firebase.google.com/docs/firestore/query-data/queries
+        // Populate profile using database
+        userCodes.get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        // Iterate through user codes
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Populate user profile using db
+                            Map<String, Object> map = document.getData();
+                            QRCode codeToAdd = new QRCode();
+                            codeToAdd.setName((String) map.get("name"));
+                            // https://stackoverflow.com/questions/17164014/java-lang-classcastexception-java-lang-long-cannot-be-cast-to-java-lang-integer
+                            codeToAdd.setScore(((Long) map.get("score")).intValue());
+                            codeToAdd.setHashValue((String) map.get("hash"));
+                            qrCodeDataList.add(codeToAdd);
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                        }
+
+                        qrCodeAdapter.notifyDataSetChanged();
+                        updateScoreHighlights(view);
+                        qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
+                        Collections.reverse(qrCodeDataList);
+
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+
+        // Text QR Codes // debug
+//        qrCodeDataList.add(new QRCode("BFG5DGW54"));
+//        qrCodeDataList.add(new QRCode("Amazing ore"));
+//        qrCodeDataList.add(new QRCode("Amazing ore")); // testing repeatability
+//        qrCodeDataList.add(new QRCode("Lots of points"));
+//        qrCodeDataList.add(new QRCode("Not that much points"));
+
+//        updateScoreHighlights(view);
 
         // Set username using user data
         String username = user.getUsername();
@@ -114,8 +166,7 @@ public class ProfileFragment extends Fragment {
         //userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
 
         // Sort using comparison getScore
-        qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
-        Collections.reverse(qrCodeDataList);
+
 
         sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
 
@@ -141,9 +192,12 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                // Remove QR code from profile
                 qrCodeDataList.remove(viewHolder.getAdapterPosition());
                 updateScoreHighlights(view);
                 qrCodeAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+
+                // Remove QR code from database
             }
         };
 

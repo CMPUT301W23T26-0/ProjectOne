@@ -202,7 +202,9 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                     } else {
                         // If user doesn't have it, save it (associate code with user)
                         Map<String, Object> newCode = new HashMap<>();
-                        newCode.put(code.getHashValue(), 1); // Object value doesn't matter
+                        newCode.put("name", code.getName());
+                        newCode.put("score", code.getScore());
+                        newCode.put("hash", code.getHashValue());
                         docRef.set(newCode)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -249,7 +251,9 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                     } else {
                         // If code doesn't exist, save it to db
                         Map<String, Object> newCode = new HashMap<>();
-                        newCode.put(code.getHashValue(), 1); // Object value doesn't matter
+                        newCode.put("name", code.getName());
+                        newCode.put("score", code.getScore());
+                        newCode.put("hash", code.getHashValue());
                         docRef.set(newCode)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -285,7 +289,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
 
         // Associate user to code
         Map<String, Object> newUser = new HashMap<>();
-        newUser.put(user.getUserPhoneID(), 1); // Object value doesn't matter
+        newUser.put("username", user.getUsername()); // Object value doesn't matter
         docRef.set(newUser)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

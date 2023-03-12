@@ -17,6 +17,11 @@ public class QRCode {
     private String qrContent;
 
     QRController qrController = new QRController();
+
+    QRCode() {
+        // Empty
+    }
+
     // Future: Add comments parameter, as well as longitude / latitude and scanner id (repeats?)
     QRCode(String qrContent) {
         this.hashValue = qrController.getHash(qrContent);
