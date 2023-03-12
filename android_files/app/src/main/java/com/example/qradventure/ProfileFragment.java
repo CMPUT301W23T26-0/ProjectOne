@@ -92,12 +92,6 @@ public class ProfileFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Text QR Codes
-        qrCodeDataList.add(new QRCode("BFG5DGW54"));
-        qrCodeDataList.add(new QRCode("Amazing ore"));
-        qrCodeDataList.add(new QRCode("Amazing ore")); // testing repeatability
-        qrCodeDataList.add(new QRCode("Lots of points"));
-        qrCodeDataList.add(new QRCode("Not that much points"));
 
         updateScoreHighlights(view);
 
