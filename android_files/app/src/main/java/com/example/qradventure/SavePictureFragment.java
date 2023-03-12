@@ -108,14 +108,7 @@ public class SavePictureFragment extends DialogFragment {
 
     private void savePicture() {
         DocumentReference docRef;
-
-        // Update code fields
-        Map<String, Object> newCode = new HashMap<>();
-//        newCode.put("location", "code's geolocation");
-//        newCode.put("name", code.getName());
-//        newCode.put("score", code.getScore());
-//        newCode.put("hash", code.getHashValue());
-
+        
         // Update code in QRCode Collection
         docRef = dbCodes.document(code.getHashValue())
                 .collection("Pictures").document(String.valueOf(picture));
@@ -126,6 +119,7 @@ public class SavePictureFragment extends DialogFragment {
         picture.recycle();
         byte[] byteArray = bao.toByteArray();
         String imageB64 = Base64.encodeToString(byteArray, Base64.URL_SAFE); // Converts byte array to string
+        Map<String, Object> newCode = new HashMap<>();
         newCode.put("picture", imageB64);
 
         docRef.set(newCode)
