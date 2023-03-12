@@ -24,6 +24,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,6 +51,8 @@ public class ProfileFragment extends Fragment {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     CollectionReference userCodes;
+
+    CollectionReference dbCodes;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -102,6 +106,8 @@ public class ProfileFragment extends Fragment {
         userCodes = db.collection("Users").document(user.getUserPhoneID())
                 .collection("Codes");
 
+        dbCodes = db.collection("QRCodes");
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -136,25 +142,18 @@ public class ProfileFragment extends Fragment {
                             Log.d(TAG, document.getId() + " => " + document.getData());
                         }
 
+                        // Updates need to be done in this scope
                         qrCodeAdapter.notifyDataSetChanged();
                         updateScoreHighlights(view);
+
+                        // Sort using comparison getScore
                         qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
                         Collections.reverse(qrCodeDataList);
-
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
                     }
                 }
             });
-
-        // Text QR Codes // debug
-//        qrCodeDataList.add(new QRCode("BFG5DGW54"));
-//        qrCodeDataList.add(new QRCode("Amazing ore"));
-//        qrCodeDataList.add(new QRCode("Amazing ore")); // testing repeatability
-//        qrCodeDataList.add(new QRCode("Lots of points"));
-//        qrCodeDataList.add(new QRCode("Not that much points"));
-
-//        updateScoreHighlights(view);
 
         // Set username using user data
         String username = user.getUsername();
@@ -164,9 +163,6 @@ public class ProfileFragment extends Fragment {
         // Set profile image using user data (not required yet)
         //ImageView userImg = view.findViewById(R.id.profile_image);
         //userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
-
-        // Sort using comparison getScore
-
 
         sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
 
@@ -193,11 +189,45 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 // Remove QR code from profile
-                qrCodeDataList.remove(viewHolder.getAdapterPosition());
+                int index = viewHolder.getAdapterPosition();
+                QRCode codeToRemove = qrCodeDataList.get(index);
+                qrCodeDataList.remove(index);
                 updateScoreHighlights(view);
                 qrCodeAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
 
-                // Remove QR code from database
+                // https://firebase.google.com/docs/firestore/manage-data/delete-data
+                // Remove QR code from user in db
+                userCodes.document(codeToRemove.getHashValue())
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error deleting document", e);
+                            }
+                        });
+
+                // Remove user from qr code in db
+                dbCodes.document(codeToRemove.getHashValue())
+                        .collection("Users").document(user.getUserPhoneID())
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error deleting document", e);
+                            }
+                        });
             }
         };
 
