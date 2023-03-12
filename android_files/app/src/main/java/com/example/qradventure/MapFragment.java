@@ -118,7 +118,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // When permission is granted
             // Call method
-            getCurrentLocation();
+            locationSetter();
             updateLocationUI();
         }
         else {
@@ -151,7 +151,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     }
 
     @SuppressLint("MissingPermission")
-    private void getCurrentLocation() {
+    private void locationSetter() {
         // Initialize Location manager
         LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         // Check condition
