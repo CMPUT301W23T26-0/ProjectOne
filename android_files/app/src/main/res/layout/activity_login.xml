@@ -52,10 +52,11 @@
 
     <TextView
         android:id="@+id/resultText"
-        android:layout_width="185dp"
+        android:layout_width="185sp"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:text="Act Now Think Later"
+        android:layout_marginBottom="252dp"
+        android:text="@string/title"
         android:textColor="@color/white"
         android:textSize="70sp"
         android:textStyle="bold"
@@ -114,7 +115,7 @@
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
+        android:text="@string/sign_in_text"
         app:backgroundTint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
