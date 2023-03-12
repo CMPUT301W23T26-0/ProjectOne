@@ -6,10 +6,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
 public class PromptGeolocationFragment extends DialogFragment {
+    String toastMessage = "Skipping geolocation...";
+
     public PromptGeolocationFragment() {
         // empty
     }
@@ -25,17 +28,26 @@ public class PromptGeolocationFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //something
+                                // Record geolocation
+
+                                toastMessage = "Saving geolocation...";
                             }
                         })
                 .setNegativeButton("No",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //nothing
+                                // Don't record geolocation
                             }
                         });
 
         return builder.create();
+    }
+
+    // In case user doesn't pick Yes or No, assume No for safety
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
     }
 }

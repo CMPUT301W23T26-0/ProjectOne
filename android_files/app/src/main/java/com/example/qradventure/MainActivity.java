@@ -1,5 +1,6 @@
 package com.example.qradventure;
 
+import android.Manifest;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.qradventure.databinding.ActivityMainBinding;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +30,12 @@ public class MainActivity extends AppCompatActivity {
         switchFragment(new ProfileFragment());
 
         //User user = new User();
+
+        //request location permission
+        requestPermissions(new String[] {
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION },
+                100);
 
         binding.bottomNavi.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {

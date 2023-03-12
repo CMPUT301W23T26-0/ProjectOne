@@ -7,6 +7,9 @@ public class UserDataClass {
     // private static instance variable to hold the singleton instance
     private static volatile UserDataClass INSTANCE = null;
     private Location currentLocation;
+    private String phoneInfo;
+    private String emailInfo;
+    private String username;
     // private constructor to prevent instantiation of the class
 
     private UserDataClass() {}
@@ -36,5 +39,28 @@ public class UserDataClass {
         this.currentLocation = currentLocation;
     }
 
+    public String getPhoneInfo() {
+        return this.phoneInfo;
+    }
+
+    public String getEmailInfo() {
+        return this.emailInfo;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setPhoneInfo(String p) {
+        this.phoneInfo = p;
+    }
+
+    public void setEmailInfo(String e) {
+        this.emailInfo = e;
+    }
+
+    public void setUsername(String u) {
+        this.username = u;
+    }
 
 }

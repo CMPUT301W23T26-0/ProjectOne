@@ -48,7 +48,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MapFragment#newInstance} factory method to
@@ -59,22 +58,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
     EditText edit;
-    //private LatLng currentLocation;
-    private boolean locationPermissionGranted = true;
-
     private GoogleMap mMap;
-    TextView tvLatitude, tvLongitude;
     private Location currLocation;
     Button btLocation;
     FusedLocationProviderClient client;
-
-    // static User player;
     UserDataClass user = UserDataClass.getInstance();
 
     public MapFragment() {
         // Required empty public constructor
-        // player = user;
     }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -108,23 +101,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         mapView.getMapAsync(this);
         // Assign variable
         btLocation = view.findViewById(R.id.bt_location);
-        tvLatitude = view.findViewById(R.id.tv_latitude);
-        tvLongitude = view.findViewById(R.id.tv_longitude);
         edit = view.findViewById(R.id.editText);
-
 
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 
-//        updateLocation();
-//
-//        btLocation.setOnClickListener(
-//                view1 -> {
-//                    updateLocation();
-//                });
-
         return view;
     }
+
     private void updateLocation(){
         // check condition
         if (ContextCompat.checkSelfPermission(
@@ -133,24 +117,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 && ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // When permission is granted
-            locationPermissionGranted = true;
-
             // Call method
-
-            getCurrentLocation();
-
+            locationSetter();
             updateLocationUI();
         }
         else {
             // When permission is not granted
             // Call method
-            locationPermissionGranted = false;
             requestPermissions(new String[] {
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION },
                     100);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
@@ -161,7 +141,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                                         == PackageManager.PERMISSION_GRANTED)) {
             // When permission are granted
             // Call method
-            getCurrentLocation();
+            updateLocation();
         }
         else {
             // When permission are denied
@@ -171,7 +151,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     }
 
     @SuppressLint("MissingPermission")
-    private void getCurrentLocation() {
+    private void locationSetter() {
         // Initialize Location manager
         LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         // Check condition
@@ -181,25 +161,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             // Get last location
             client.getLastLocation().addOnCompleteListener(
                     task -> {
-
                         // Initialize location
-                        Location location = task.getResult();
-                        currLocation = location;
-                        //player.setCurrentLocation(currLocation);
-                        user.setCurrentLocation(currLocation);
+                        currLocation = task.getResult();
+                        user.setCurrentLocation(task.getResult());
 
-                        Location tempLocation = user.getCurrentLocation();
-                        edit.setText(String.valueOf(tempLocation.getLatitude()));
+                        //Debugging
+                        //Location tempLocation = user.getCurrentLocation();
+                        //edit.setText(String.valueOf(tempLocation.getLatitude()));
+
                         // Check condition
-                        if (location != null) {
-                            // When location result is not
-                            // null set latitude
-                            tvLatitude.setText(String.valueOf(location.getLatitude()));
-
-                            // set longitude
-                            tvLongitude.setText(String.valueOf(location.getLongitude()));
-                        }
-                        else {
+                        if (currLocation == null) {
                             // When location result is null
                             // initialize location request
                             LocationRequest locationRequest = new LocationRequest().setPriority(
@@ -213,18 +184,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                 @Override
                                 public void
                                 onLocationResult(LocationResult locationResult) {
-                                    // Initialize
-                                    // location
-                                    Location location1 = locationResult.getLastLocation();
-                                    currLocation = location1;
-                                    // player.setCurrentLocation(currLocation);
+                                    // Initialize location
+                                    currLocation = locationResult.getLastLocation();
                                     user.setCurrentLocation(currLocation);
-                                    Location tempLocation = user.getCurrentLocation();
-                                    edit.setText(String.valueOf(tempLocation.getLatitude()));
-                                    // Set latitude
-                                    tvLatitude.setText(String.valueOf(location1.getLatitude()));
-                                    // Set longitude
-                                    tvLongitude.setText(String.valueOf(location1.getLongitude()));
+
+                                    //Debugging
+                                    //Location tempLocation = user.getCurrentLocation();
+                                    //edit.setText(String.valueOf(tempLocation.getLatitude()));
                                 }
                             };
 
@@ -240,7 +206,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             // When location service is not enabled
             // open location setting
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).setFlags(
-                                    Intent.FLAG_ACTIVITY_NEW_TASK));
+                    Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
 
@@ -256,16 +222,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // GoogleMapOptions options = new GoogleMapOptions();
-        // to edit options in code
-//        options.mapType(GoogleMap.MAP_TYPE_SATELLITE)
-//                .compassEnabled(true)
-//                .rotateGesturesEnabled(true)
-//                .tiltGesturesEnabled(true);
-
-
+        //test marker
         LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
         googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
@@ -280,20 +240,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         mMap = googleMap;
         updateLocation();
 
+        //Placeholder for updating location in map fragment
         btLocation.setOnClickListener(
                 view1 -> {
                     updateLocation();
                 });
-
     }
 
-//    public Location getLocation(){
-//        return currLocation;
-//    }
     @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
+
+        //update location when switching to map fragment
+        updateLocation();
     }
 
     @Override
@@ -307,7 +267,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         super.onStop();
         mapView.onStop();
     }
-
 
     @Override
     public void onPause() {
@@ -326,5 +285,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         super.onLowMemory();
         mapView.onLowMemory();
     }
-
 }
