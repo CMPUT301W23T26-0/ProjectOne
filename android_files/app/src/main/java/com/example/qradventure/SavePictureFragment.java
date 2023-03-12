@@ -1,22 +1,47 @@
 package com.example.qradventure;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SavePictureFragment extends DialogFragment {
     Bitmap picture;
     String toastMessage = "Discarding picture...";
     Boolean success = false;
+
+    private UserDataClass user;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    CollectionReference dbCodes;
+
+    private QRCode code;
+
 
     public interface PictureInScanFrag {
         void savePictureInScanFrag (Bitmap picture, Boolean success);
@@ -28,12 +53,18 @@ public class SavePictureFragment extends DialogFragment {
         this.scanFrag = scanFrag;
     }
 
-    SavePictureFragment(Bitmap picture) {
+    SavePictureFragment(Bitmap picture, QRCode code) {
         this.picture = picture;
+        this.code = code;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        dbCodes = db.collection("QRCodes");
+
+        user = user.getInstance();
+
         View view = getActivity().getLayoutInflater()
                 .inflate(R.layout.fragment_save_picture, null);
 
@@ -43,7 +74,6 @@ public class SavePictureFragment extends DialogFragment {
 
         saveText.setText("Would you like to save the picture?");
         savePictureView.setImageBitmap(picture);
-//        savePictureView.setImageURI(picture);
 
         // Return dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
@@ -53,8 +83,7 @@ public class SavePictureFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Save picture
-
-
+                                savePicture();
                                 toastMessage = "Saving picture...";
                                 success = true;
                             }
@@ -77,4 +106,40 @@ public class SavePictureFragment extends DialogFragment {
         scanFrag.savePictureInScanFrag(picture, success);
     }
 
+    private void savePicture() {
+        DocumentReference docRef;
+
+        // Update code fields
+        Map<String, Object> newCode = new HashMap<>();
+//        newCode.put("location", "code's geolocation");
+//        newCode.put("name", code.getName());
+//        newCode.put("score", code.getScore());
+//        newCode.put("hash", code.getHashValue());
+
+        // Update code in QRCode Collection
+        docRef = dbCodes.document(code.getHashValue())
+                .collection("Pictures").document(String.valueOf(picture));
+
+        // https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase#:~:text=To%20upload%20a%20file%20to,file%2C%20including%20the%20file%20name.&text=Once%20you've%20created%20an,the%20file%20to%20Firebase%20Storage.
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        picture.compress(Bitmap.CompressFormat.PNG, 100, bao); // bmp is bitmap from user image file
+        picture.recycle();
+        byte[] byteArray = bao.toByteArray();
+        String imageB64 = Base64.encodeToString(byteArray, Base64.URL_SAFE); // Converts byte array to string
+        newCode.put("picture", imageB64);
+
+        docRef.set(newCode)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
+    }
 }

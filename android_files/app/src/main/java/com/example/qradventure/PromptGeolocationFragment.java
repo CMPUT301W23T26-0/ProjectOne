@@ -65,6 +65,7 @@ public class PromptGeolocationFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Don't record geolocation
+//                                saveGeolocation(null);
                             }
                         });
 
@@ -72,36 +73,18 @@ public class PromptGeolocationFragment extends DialogFragment {
     }
 
     private void saveGeolocation(Location geolocation) {
-        // ScanFragment ensures the code exists, don't have to do a check
+        // ScanFragment already ensures the code exists, don't have to do a check
         DocumentReference docRef;
 
         // Update code fields
         Map<String, Object> newCode = new HashMap<>();
-        newCode.put("location", "code's geolocation");
+        newCode.put("location", geolocation);
         newCode.put("name", code.getName());
         newCode.put("score", code.getScore());
         newCode.put("hash", code.getHashValue());
 
         // Update code in QRCode Collection
         docRef = dbCodes.document(code.getHashValue());
-
-        docRef.set(newCode)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
-
-        // Update code in Users Collection
-        docRef = db.collection("Users").document(user.getUserPhoneID())
-                        .collection("Codes").document(code.getHashValue());
 
         docRef.set(newCode)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

@@ -207,7 +207,6 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                     } else {
                         // If user doesn't have it, save it (associate code with user)
                         Map<String, Object> newCode = new HashMap<>();
-                        newCode.put("location", null);
                         newCode.put("name", code.getName());
                         newCode.put("score", code.getScore());
                         newCode.put("hash", code.getHashValue());
@@ -336,7 +335,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
 
     private void displayPicture(Bitmap picture, Boolean success) {
         if (success) {
-            SavePictureFragment frag = new SavePictureFragment(picture);
+            SavePictureFragment frag = new SavePictureFragment(picture, code);
             frag.setScanFragment(ScanFragment.this);
             frag.show(getActivity().getSupportFragmentManager(),"Save picture");
         } else {
