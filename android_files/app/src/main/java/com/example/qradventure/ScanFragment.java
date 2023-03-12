@@ -207,6 +207,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                     } else {
                         // If user doesn't have it, save it (associate code with user)
                         Map<String, Object> newCode = new HashMap<>();
+                        newCode.put("location", null);
                         newCode.put("name", code.getName());
                         newCode.put("score", code.getScore());
                         newCode.put("hash", code.getHashValue());
@@ -294,7 +295,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
 
         // Associate user to code
         Map<String, Object> newUser = new HashMap<>();
-        newUser.put("username", user.getUsername()); // Object value doesn't matter
+        newUser.put("username", user.getUsername());
         docRef.set(newUser)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
