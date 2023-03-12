@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,28 +35,48 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class extends DialogFragment, and it serves to prompt
+ * the user to record their geolocation for the recently
+ * scanned QR code.
+ */
 public class PromptGeolocationFragment extends DialogFragment {
     String toastMessage = "Skipping geolocation...";
+
+    // Data
     private UserDataClass user;
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     CollectionReference dbCodes;
-
     private QRCode code;
 
+    // Location
     FusedLocationProviderClient client;
 
+    /**
+     * Constructor for the PromptGeolocationFragment
+     * @param code The newly scanned QR code associated with the geolocation
+     */
     public PromptGeolocationFragment(QRCode code) {
         this.code = code;
     }
 
+    /**
+     * This function runs a set of instructions upon creating
+     * the view for PromptGeolocationFragment, which includes data
+     * instantiation and text set up for the view.
+     *
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // Instantiate data
         user = user.getInstance();
-
         dbCodes = db.collection("QRCodes");
 
+        // Set view title
         String promptTitle = "Would you like to record the QR code's geolocation?";
 
         // Return dialog
@@ -72,7 +90,6 @@ public class PromptGeolocationFragment extends DialogFragment {
                                 client = LocationServices
                                         .getFusedLocationProviderClient(
                                                 getActivity());
-
                                 getCurrentLocation();
                                 toastMessage = "Saving geolocation...";
                             }
@@ -81,7 +98,7 @@ public class PromptGeolocationFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // Don't record geolocation
+                                // Don't record geolocation (done automatically)
                             }
                         });
 
@@ -89,6 +106,9 @@ public class PromptGeolocationFragment extends DialogFragment {
     }
 
     // https://www.geeksforgeeks.org/how-to-get-current-location-inside-android-fragment/
+    /**
+     * A function that gets the current geolocation of the user.
+     */
     @SuppressLint("MissingPermission")
     private void getCurrentLocation()
     {
@@ -117,7 +137,7 @@ public class PromptGeolocationFragment extends DialogFragment {
                             // Check condition
                             if (location != null) {
                                 // When location result is not
-                                // null set latitude
+                                // null save geolocation
                                 saveGeolocation(location);
                             }
                             else {
@@ -149,6 +169,7 @@ public class PromptGeolocationFragment extends DialogFragment {
                                                 = locationResult
                                                 .getLastLocation();
 
+                                        // save geolocation
                                         saveGeolocation(currLocation);
                                     }
                                 };
@@ -174,20 +195,24 @@ public class PromptGeolocationFragment extends DialogFragment {
         }
     }
 
+    /**
+     * A function that saves a geolocation to a QR code. This is
+     * recorded in the database.
+     * @param geolocation
+     */
     private void saveGeolocation(Location geolocation) {
         // ScanFragment already ensures the code exists, don't have to do a check
         DocumentReference docRef;
 
-        // Update code fields
+        // Update code fields to have geolocation
         Map<String, Object> newCode = new HashMap<>();
         newCode.put("location", geolocation);
         newCode.put("name", code.getName());
         newCode.put("score", code.getScore());
         newCode.put("hash", code.getHashValue());
 
-        // Update code in QRCode Collection
+        // Update code in QRCode Collection with geolocation
         docRef = dbCodes.document(code.getHashValue());
-
         docRef.set(newCode)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -203,7 +228,10 @@ public class PromptGeolocationFragment extends DialogFragment {
                 });
     }
 
-    // In case user doesn't pick Yes or No, assume No for safety
+    /**
+     * This function runs a set of instructions when the view is destroyed,
+     * which includes displaying a toast message.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

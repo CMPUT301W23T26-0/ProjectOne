@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,18 +40,22 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class ScanFragment extends Fragment implements DisplayCodePromptPictureFragment.CameraInScanFrag,
-        SavePictureFragment.PictureInScanFrag{
-
+        SavePictureFragment.GeolocationInScanFrag{
+    // For data
     private UserDataClass user;
     private QRCode code;
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     CollectionReference userCodes;
-
     CollectionReference dbCodes;
 
-    // So fragment appears in order
+    /**
+     * An implemented function from the CameraInScanFrag
+     * interface. It lets the DisplayCodePromptPictureFragment
+     * to open the camera in ScanFragment for picture
+     * taking. Note that the camera can only be opened in a
+     * Fragment, not a DialogFragment.
+     * @param success Whether or not the user wants to take a picture.
+     */
     @Override
     public void openCameraInScanFrag(Boolean success) {
         if (success) {
@@ -64,42 +67,37 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         }
     }
 
-    // So fragment appears in order
-    public void savePictureInScanFrag(Bitmap picture, Boolean success) {
-        if (success) {
-            // Save picture to QRCode
-        }
+    /**
+     * An implemented function from the GeolocationInScanFrag
+     * interface. It lets the SavePictureFragment prompt for
+     * geolocation from ScanFrag. This is done so that the all
+     * of the DialogFragment's appear in order.
+     */
+    public void promptGeolocationInScanFrag() {
         // Prompt geolocation if user saves or discards picture
         promptGeolocation();
     }
 
-    // TODO: Rename parameter arguments, choose names that match
-
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    private String sha256_test_string;
-
-    private TextView sha256_text;
-    private TextView qr_value_text;
-
+    // For view
     Button scanButton;
     TextView resultText;
 
-    // Used for getting scan results
+    // An ActivityResultLauncher used for getting scan results
     // https://github.com/journeyapps/zxing-android-embedded
+    // ZXing Android Embedded has Apache 2.0 License
     private final ActivityResultLauncher<ScanOptions> fragmentLauncher = registerForActivityResult(new ScanContract(),
             result -> {
                 if(result.getContents() == null) {
-                    // User exited scan
+                    // User exited scanner
                     Toast.makeText(getContext(), "Exiting scanner...", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Successful scans
+                    // User scanned something
 
                     // Generate for QR code characteristics
                     code = new QRCode(result.getContents());
@@ -109,23 +107,32 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                 }
             });
 
+    // An ActivityResultLauncher used for getting camera results
     public ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                Bitmap picture = null;
-                Boolean success = false;
+                // Initial conditions are for user closing the camera
+                Bitmap picture = null; // No picture
+                Boolean success = false; // Picture should not be displayed
+
+                // User took a picture
                 if (result.getData() != null) {
                     // Get bitmap
                     Intent data = result.getData();
                     picture = (Bitmap) data.getExtras().get("data");
 
+                    // Picture should be displayed
                     success = true;
                 }
-                // Open bitmap with save picture frag
-                displayPicture(picture, success);
+
+                // Attempt to display picture
+                tryDisplayingPicture(picture, success);
             }
     );
 
+    /**
+     * Constructor for the ScanFragment
+     */
     public ScanFragment() {
         // Required empty public constructor
     }
@@ -148,6 +155,11 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         return fragment;
     }
 
+    /**
+     * Runs a set of instructions on creation.
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,6 +169,19 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         }
     }
 
+    /**
+     * Runs a set of instructions on view creation, including data
+     * instantiation and opening up the scanner.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -166,12 +191,12 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         // Instantiate data from database
         userCodes = db.collection("Users").document(user.getUserPhoneID())
                 .collection("Codes");
-
         dbCodes = db.collection("QRCodes");
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_scan, container, false);
 
+        // Get IDs for elements in View
         scanButton = view.findViewById(R.id.scanButton);
         resultText = view.findViewById(R.id.resultText);
 
@@ -184,11 +209,23 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         return view;
     }
 
+    /**
+     * A set of instructions run on view creation.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
     }
 
+    /**
+     * A function that tries to save QR codes to a user's profile. If a user
+     * has a code already, the code is not saved. If a user doesn't have the
+     * code already, the code is saved. Users' QR codes are tracked in a
+     * database.
+     */
     private void trySaveCodeToUser() {
         // https://firebase.google.com/docs/firestore/query-data/get-data#java_2
         DocumentReference docRef = userCodes.document(code.getHashValue());
@@ -200,7 +237,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        // If user has it, don't save it and show code anyways
+                        // If user has it, don't save it, but show code characteristics
                         displayCodeAndPromptPicture(true);
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
@@ -224,7 +261,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                                     }
                                 });
 
-                        // Save it again (associate user with code)
+                        // Save it again (but associate user with code this time)
                         saveCodeToDb();
 
                         // Show code
@@ -239,6 +276,11 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         });
     }
 
+    /**
+     * A function that saves QR codes to the database. This is done to keep
+     * track of QR code-specific information, like which QR codes are owned by
+     * which users, geolocations, and pictures.
+     */
     private void saveCodeToDb() {
         // Almost same code as saveCodeToUser()
         DocumentReference docRef = dbCodes.document(code.getHashValue());
@@ -285,9 +327,14 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         });
     }
 
+    /**
+     * A function that saves/associates users to QR codes in the database.
+     * This is done to keep track of which QR codes belong to who. In other
+     * words, it allows for QR codes to be owned by multiple users.
+     */
     private void saveUserToCode() {
-        // This function is only accessed if user doesn't have code in trySaveCodeToUser()
-        // Don't need to check if code has user again
+        // Function only accessed if user isn't associated with code
+        // Check already done in trySaveCodeToUser(), no need to do check again
 
         DocumentReference docRef = dbCodes.document(code.getHashValue())
                 .collection("Users").document(user.getUserPhoneID());
@@ -312,6 +359,10 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
     }
 
     // Sets up and opens scanner
+
+    /**
+     *  This function sets up and opens the scanner.
+     */
     private void startScan() {
         ScanOptions options = new ScanOptions();
         options.setOrientationLocked(false);
@@ -321,29 +372,48 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         fragmentLauncher.launch(options);
     }
 
+    /**
+     *  This function opens the camera.
+     */
     public void openCamera() {
         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         launcher.launch(camera);
     }
 
+    /**
+     * This function displays the code characteristics and prompts
+     * the user if they want to take a picture.
+     * @param isSeen Whether or not the user owns the code already.
+     */
     private void displayCodeAndPromptPicture(boolean isSeen) {
-        // Display QR code dialog fragment
+        // Display dialog fragment for QR code characteristics and picture prompt
         DisplayCodePromptPictureFragment frag = new DisplayCodePromptPictureFragment(code, isSeen);
         frag.setScanFragment(ScanFragment.this);
         frag.show(getActivity().getSupportFragmentManager(), "Display Code and Prompt Picture");
     }
 
-    private void displayPicture(Bitmap picture, Boolean success) {
+    /**
+     * A function that attempts to display the newly taken picture.
+     * @param picture The newly taken picture from the camera.
+     * @param success Whether or not a picture was taken.
+     */
+    private void tryDisplayingPicture(Bitmap picture, Boolean success) {
+        // If user took a picture, display it
         if (success) {
             SavePictureFragment frag = new SavePictureFragment(picture, code);
             frag.setScanFragment(ScanFragment.this);
             frag.show(getActivity().getSupportFragmentManager(),"Save picture");
         } else {
+            // If user didn't take a picture, don't display it
             Toast.makeText(getContext(), "Exiting camera...", Toast.LENGTH_SHORT).show();
             promptGeolocation();
         }
     }
 
+    /**
+     * A function that opens PromptGeolocationFragment, which
+     * is a DialogFragment.
+     */
     private void promptGeolocation() {
         PromptGeolocationFragment frag = new PromptGeolocationFragment(code);
         frag.show(getActivity().getSupportFragmentManager(), "Prompt geolocation");
