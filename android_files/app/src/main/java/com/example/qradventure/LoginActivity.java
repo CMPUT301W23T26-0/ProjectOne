@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.w3c.dom.Document;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button signInButton;
     private EditText emailInput;
     private EditText phoneInput;
+
+    private EditText usernameInput;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "LoginActivity";
     private UserDataClass user;
@@ -43,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
         // Get device ID for database checking
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        user.setUsername(android_id);
         user.setUserPhoneID(android_id);
         // deletes your device from the database,
         // uncomment if you want to see the sign in page when running
@@ -78,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                         signInButton = findViewById(R.id.login_button);
                         emailInput = findViewById(R.id.emailContact);
                         phoneInput = findViewById(R.id.phoneContact);
+                        usernameInput = findViewById(R.id.username);
                         // If sign in button clicked, add user, email, phone fields
                         signInButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -85,11 +88,17 @@ public class LoginActivity extends AppCompatActivity {
                                 // fill user data in singleton
                                 String email = emailInput.getText().toString();
                                 String phone = phoneInput.getText().toString();
+                                String username = usernameInput.getText().toString();
                                 user.setEmailInfo(email);
                                 user.setPhoneInfo(phone);
+                                // If user didn't give a username, default user is their device name
+                                if (username.isEmpty()) {
+                                    username = user.getUserPhoneID();
+                                }
+                                user.setUsername(username);
                                 // create hashmap for database entry
                                 Map<String, Object> newUser = new HashMap<>();
-                                newUser.put("username", android_id);
+                                newUser.put("username", username);
                                 newUser.put("email", email);
                                 newUser.put("phone", phone);
                                 db.collection("Users").document(android_id)
