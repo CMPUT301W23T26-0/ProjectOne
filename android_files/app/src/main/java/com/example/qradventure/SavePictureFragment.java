@@ -71,7 +71,7 @@ public class SavePictureFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
         scanFrag.savePictureInScanFrag(picture, state);
     }
 

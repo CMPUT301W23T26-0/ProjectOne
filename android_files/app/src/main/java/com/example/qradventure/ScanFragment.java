@@ -97,7 +97,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
             result -> {
                 if(result.getContents() == null) {
                     // User exited scan
-                    Toast.makeText(getContext(), "Exiting scanner...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Exiting scanner...", Toast.LENGTH_SHORT).show();
                 } else {
                     // Successful scans
 
@@ -112,12 +112,17 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
     public ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                // Get bitmap
-                Intent data = result.getData();
-                Bitmap picture = (Bitmap) data.getExtras().get("data");
+                Bitmap picture = null;
+                Boolean success = false;
+                if (result.getData() != null) {
+                    // Get bitmap
+                    Intent data = result.getData();
+                    picture = (Bitmap) data.getExtras().get("data");
 
+                    success = true;
+                }
                 // Open bitmap with save picture frag
-                displayPicture(picture);
+                displayPicture(picture, success);
             }
     );
 
@@ -328,10 +333,15 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         frag.show(getActivity().getSupportFragmentManager(), "Display Code and Prompt Picture");
     }
 
-    private void displayPicture(Bitmap picture) {
-        SavePictureFragment frag = new SavePictureFragment(picture);
-        frag.setScanFragment(ScanFragment.this);
-        frag.show(getActivity().getSupportFragmentManager(),"Save picture");
+    private void displayPicture(Bitmap picture, Boolean success) {
+        if (success) {
+            SavePictureFragment frag = new SavePictureFragment(picture);
+            frag.setScanFragment(ScanFragment.this);
+            frag.show(getActivity().getSupportFragmentManager(),"Save picture");
+        } else {
+            Toast.makeText(getContext(), "Exiting camera...", Toast.LENGTH_SHORT).show();
+            promptGeolocation();
+        }
     }
 
     private void promptGeolocation() {

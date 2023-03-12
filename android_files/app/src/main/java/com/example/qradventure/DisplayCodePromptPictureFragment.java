@@ -79,7 +79,6 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Allow user to take picture
                                 state = true;
-                                toastMessage = "Opening camera...";
                             }
                         })
                 .setNegativeButton("No",
@@ -96,7 +95,6 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_LONG).show();
         scanFrag.openCameraInScanFrag(state);
     }
 }
