@@ -64,8 +64,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     FusedLocationProviderClient client;
     UserDataClass user = UserDataClass.getInstance();
 
+    /**
+     * Constructor for MapFragment
+     */
     public MapFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -82,11 +84,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         return fragment;
     }
 
+    /**
+     * Initialize fragment
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Inflate layout of fragment and assign variables to views
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,6 +128,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         return view;
     }
 
+    /**
+     * Update the current user location
+     */
     private void updateLocation(){
         // check condition
         if (ContextCompat.checkSelfPermission(
@@ -131,6 +153,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
+    /**
+     * Check if the user allowed their location to be tracked. If granted, update the user location.
+     * If denied, display "Permission denied."
+     * @param requestCode The request code passed in {@link #requestPermissions(String[], int)}.
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
@@ -150,6 +182,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
+    /**
+     * Set the user's last location
+     */
     @SuppressLint("MissingPermission")
     private void locationSetter() {
         // Initialize Location manager
@@ -164,10 +199,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         // Initialize location
                         currLocation = task.getResult();
                         user.setCurrentLocation(task.getResult());
-
-                        //Debugging
-                        //Location tempLocation = user.getCurrentLocation();
-                        //edit.setText(String.valueOf(tempLocation.getLatitude()));
 
                         // Check condition
                         if (currLocation == null) {
@@ -187,10 +218,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     // Initialize location
                                     currLocation = locationResult.getLastLocation();
                                     user.setCurrentLocation(currLocation);
-
-                                    //Debugging
-                                    //Location tempLocation = user.getCurrentLocation();
-                                    //edit.setText(String.valueOf(tempLocation.getLatitude()));
                                 }
                             };
 
@@ -200,6 +227,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     locationCallback,
                                     Looper.myLooper());
                         }
+                        //Debugging
+                        //edit.setText(String.valueOf(user.getCurrentLocation().getLatitude()));
                     });
         }
         else {
@@ -211,6 +240,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     }
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
+    /**
+     * Set Google Maps to display MyLocationButton if a location is available
+     */
     private void updateLocationUI() {
         if (mMap == null) {
             return;
@@ -223,6 +255,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
+    /**
+     * Initialize Google Maps MapView
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //test marker
@@ -247,6 +283,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 });
     }
 
+    /**
+     * Get user location when switching back to MapFragment
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -254,35 +293,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         //update location when switching to map fragment
         updateLocation();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mapView.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mapView.onStop();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
     }
 }
