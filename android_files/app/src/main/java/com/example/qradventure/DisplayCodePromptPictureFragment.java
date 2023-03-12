@@ -14,16 +14,14 @@ import androidx.fragment.app.DialogFragment;
 
 public class DisplayCodePromptPictureFragment extends DialogFragment {
 
-    String toastMessage = "Skipping camera...";
-
     private boolean isSeen;
     private QRCode code;
 
-    private Boolean state = false;
+    private Boolean success = false;
 
     // https://stackoverflow.com/questions/26734432/send-data-from-dialogfragment-to-fragment
     public interface CameraInScanFrag {
-        void openCameraInScanFrag(Boolean state);
+        void openCameraInScanFrag(Boolean success);
     }
 
     CameraInScanFrag scanFrag;
@@ -78,7 +76,7 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Allow user to take picture
-                                state = true;
+                                success = true;
                             }
                         })
                 .setNegativeButton("No",
@@ -95,6 +93,6 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        scanFrag.openCameraInScanFrag(state);
+        scanFrag.openCameraInScanFrag(success);
     }
 }

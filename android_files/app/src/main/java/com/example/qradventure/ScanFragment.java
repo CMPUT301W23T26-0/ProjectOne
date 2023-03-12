@@ -54,8 +54,8 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
 
     // So fragment appears in order
     @Override
-    public void openCameraInScanFrag(Boolean state) {
-        if (state) {
+    public void openCameraInScanFrag(Boolean success) {
+        if (success) {
             // Open camera and resulting picture afterwards
             openCamera();
         } else {
@@ -65,8 +65,8 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
     }
 
     // So fragment appears in order
-    public void savePictureInScanFrag(Bitmap picture, Boolean state) {
-        if (state) {
+    public void savePictureInScanFrag(Bitmap picture, Boolean success) {
+        if (success) {
             // Save picture to QRCode
         }
         // Prompt geolocation if user saves or discards picture

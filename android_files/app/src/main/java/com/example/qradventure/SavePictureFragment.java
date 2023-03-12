@@ -16,10 +16,10 @@ import androidx.fragment.app.DialogFragment;
 public class SavePictureFragment extends DialogFragment {
     Bitmap picture;
     String toastMessage = "Discarding picture...";
-    Boolean state = false;
+    Boolean success = false;
 
     public interface PictureInScanFrag {
-        void savePictureInScanFrag (Bitmap picture, Boolean state);
+        void savePictureInScanFrag (Bitmap picture, Boolean success);
     }
 
     PictureInScanFrag scanFrag;
@@ -53,8 +53,10 @@ public class SavePictureFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Save picture
+
+
                                 toastMessage = "Saving picture...";
-                                state = true;
+                                success = true;
                             }
                         })
                 .setNegativeButton("Discard",
@@ -72,7 +74,7 @@ public class SavePictureFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
-        scanFrag.savePictureInScanFrag(picture, state);
+        scanFrag.savePictureInScanFrag(picture, success);
     }
 
 }
