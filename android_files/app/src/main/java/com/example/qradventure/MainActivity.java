@@ -15,10 +15,19 @@ import com.example.qradventure.databinding.ActivityMainBinding;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * This activity allows the user to access all of the main
+ * fragments, which include ProfileFragment, ScanFragment,
+ * LeaderboardFragment, and MapFragment
+ */
 public class MainActivity extends AppCompatActivity {
-
     ActivityMainBinding binding;
 
+    /**
+     * This function runs a set of instructions upon activity
+     * creation, which includes permission and view set up.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This function allows the main fragments to be navigated
+     * through by the user via the app's bottom navigation bar.
+     * @param fragment
+     */
     private void switchFragment(Fragment fragment) {
         // Fragment manager example from the developers guide
         // https://developer.android.com/guide/fragments/fragmentmanager#java
