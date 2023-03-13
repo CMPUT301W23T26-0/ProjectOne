@@ -227,8 +227,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     locationCallback,
                                     Looper.myLooper());
                         }
-                        //Debugging
-                        //edit.setText(String.valueOf(user.getCurrentLocation().getLatitude()));
                     });
         }
         else {

@@ -358,8 +358,6 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
 
     }
 
-    // Sets up and opens scanner
-
     /**
      *  This function sets up and opens the scanner.
      */
