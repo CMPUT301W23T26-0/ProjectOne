@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -21,6 +22,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Document;
 
@@ -61,9 +65,106 @@ public class LoginActivity extends AppCompatActivity {
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         user.setUserPhoneID(android_id);
+        // Handle user registry or login
+        handleUser(android_id);
+    }
 
+    private void registerUser(String id) {
+        // Display login page
+        setContentView(R.layout.activity_login);
+        signInButton = findViewById(R.id.login_button);
+        emailInput = findViewById(R.id.emailContact);
+        phoneInput = findViewById(R.id.phoneContact);
+        usernameInput = findViewById(R.id.username);
+        Toast nameAlert = Toast.makeText(getApplicationContext(), "Username taken, please try again.", Toast.LENGTH_SHORT);
+        // If sign in button clicked, handle user registration
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String username = usernameInput.getText().toString();
+                // Use phoneID if username not given
+                if (username.isEmpty()) {
+                    username = user.getUserPhoneID();
+                }
+
+                // Check if given username is available
+                checkUsernameAvailable(username, new checkUsernameCallback() {
+                    @Override
+                    public void onCallback(boolean nameAvailable, String username) {
+                        // If available, register user into database
+                        if (nameAvailable) {
+                            String email = emailInput.getText().toString();
+                            String phone = phoneInput.getText().toString();
+                            // Create hashmap for database entry
+                            Map<String, Object> newUser = new HashMap<>();
+                            newUser.put("username", username);
+                            newUser.put("email", email);
+                            newUser.put("phone", phone);
+
+                            // Add user to database
+                            db.collection("Users").document(id)
+                                    .set(newUser)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot successfully written!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error writing document", e);
+                                        }
+                                    });
+                            // Set user singleton data
+                            user.setUsername(username);
+                            user.setEmailInfo(email);
+                            user.setPhoneInfo(phone);
+                            // Go to main activity
+                            Intent registered = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(registered);
+                        // If username not available, create alert
+                        } else {
+                            nameAlert.show();
+                        }
+                    }
+                });
+                }
+            });
+    }
+
+    private interface checkUsernameCallback {
+        // Callback interface when username query is finished
+        void onCallback(boolean nameAvailable, String username);
+    }
+
+    private void checkUsernameAvailable(String username, checkUsernameCallback callback) {
+        db.collection("Users")
+            .whereEqualTo("username", username)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    boolean isAvailable = false;
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                        }
+                        // If no results, isAvailable == true
+                        isAvailable = task.getResult().isEmpty();
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                    // Call interface when query finished
+                    callback.onCallback(isAvailable, username);
+                }
+            });
+    }
+
+
+    private void handleUser(String id) {
         // Check database for user
-        DocumentReference userRef = db.collection("Users").document(android_id);
+        DocumentReference userRef = db.collection("Users").document(id);
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -71,60 +172,14 @@ public class LoginActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     // If new user, display login page and add user to database
                     if (!document.exists()) {
-                        // Display login page
-                        setContentView(R.layout.activity_login);
-                        signInButton = findViewById(R.id.login_button);
-                        emailInput = findViewById(R.id.emailContact);
-                        phoneInput = findViewById(R.id.phoneContact);
-                        usernameInput = findViewById(R.id.username);
-                        // If sign in button clicked, add user, username, email, phone fields
-                        signInButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // fill user data in singleton
-                                String email = emailInput.getText().toString();
-                                String phone = phoneInput.getText().toString();
-                                String username = usernameInput.getText().toString();
-                                user.setEmailInfo(email);
-                                user.setPhoneInfo(phone);
-                                // If user didn't give a username, default name is their device ID
-                                if (username.isEmpty()) {
-                                    username = user.getUserPhoneID();
-                                }
-                                user.setUsername(username);
-
-                                // create hashmap for database entry
-                                Map<String, Object> newUser = new HashMap<>();
-                                newUser.put("username", username);
-                                newUser.put("email", email);
-                                newUser.put("phone", phone);
-
-                                // add user to database
-                                db.collection("Users").document(android_id)
-                                        .set(newUser)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d(TAG, "DocumentSnapshot successfully written!");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w(TAG, "Error writing document", e);
-                                            }
-                                        });
-                                // User now registered, go to main
-                                Intent registered = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(registered);
-                            }
-                        });
-                    // User already has account, update user singleton and go to main
+                       registerUser(id);
+                    // User already has account, update user singleton and go to main activity
                     } else {
                         Map<String, Object> userInfo = document.getData();
-                        String username = (String) userInfo.get("username");
+                        user.setUsername(userInfo.get("username").toString());
+                        user.setEmailInfo(userInfo.get("email").toString());
+                        user.setPhoneInfo(userInfo.get("phone").toString());
 
-                        user.setUsername(username);
                         Intent login = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(login);
                     }
@@ -135,4 +190,5 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
 }
