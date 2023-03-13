@@ -1,38 +1,47 @@
 package com.example.qradventure;
 
+import android.Manifest;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.qradventure.databinding.ActivityMainBinding;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * This activity allows the user to access all of the main
+ * fragments, which include ProfileFragment, ScanFragment,
+ * LeaderboardFragment, and MapFragment
+ */
 public class MainActivity extends AppCompatActivity {
-
     ActivityMainBinding binding;
-    FirebaseFirestore db;
 
+    /**
+     * This function runs a set of instructions upon activity
+     * creation, which includes permission and view set up.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater()); // getting the inflater to work with fragments
-        setContentView(R.layout.fragment_login);
+        setContentView(R.layout.activity_main);
 
-        db = FirebaseFirestore.getInstance();
+        setContentView(binding.getRoot());
+        switchFragment(new ProfileFragment());
 
-        Button signInButton = (Button) findViewById(R.id.login_button);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setContentView(binding.getRoot());
-                switchFragment(new ProfileFragment());
-            }
-        });
+        //request location permission
+        requestPermissions(new String[] {
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION },
+                100);
 
         binding.bottomNavi.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -54,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This function allows the main fragments to be navigated
+     * through by the user via the app's bottom navigation bar.
+     * @param fragment
+     */
     private void switchFragment(Fragment fragment) {
         // Fragment manager example from the developers guide
         // https://developer.android.com/guide/fragments/fragmentmanager#java

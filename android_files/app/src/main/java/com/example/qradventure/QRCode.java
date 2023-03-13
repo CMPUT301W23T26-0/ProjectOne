@@ -10,61 +10,99 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class QRCode {
-    private String Name;
-    private int Score;
-    private String Comment;
+    private String name;
+    private int score;
+    private String comment;
     private String hashValue;
-    private String qrContent;
 
-    QRController qrController = new QRController();
+    private QRController qrController = new QRController();
+
+    /**
+     * Empty constructor for the QRCode class
+     */
+    QRCode() {
+        // Empty
+    }
+
+    /**
+     * Creates a qrcode class with the source content
+     * @param qrContent A string containing the qrcode content after scanning
+     */
     // Future: Add comments parameter, as well as longitude / latitude and scanner id (repeats?)
     QRCode(String qrContent) {
         this.hashValue = qrController.getHash(qrContent);
-        this.Name = qrController.generateName(this.hashValue);
-        this.Comment = qrController.getHash(qrContent);
-        this.Score = (int) Math.round(qrController.calculateScore(this.hashValue));
-        this.qrContent = qrContent;
+        this.name = qrController.generateName(this.hashValue);
+        this.comment = "A comment."; // Previously hashValue for debug
+        this.score = (int) Math.round(qrController.calculateScore(this.hashValue));
     }
 
-    public void setName(String Name) {
-        this.Name = Name;
+    /**
+     * Sets the qrcode's name
+     * @param name A string containing the qrcode's name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setScore(int Score) {
-        this.Score = Score;
+    /**
+     * Sets the score of the qrcode class
+     * @param score An integer containing the qrcode's score value
+     */
+    public void setScore(int score) {
+        this.score = score;
     }
 
-    public void setComment(String Comment) { this.Comment = Comment; }
+    /**
+     * Sets the comment for this qrcode Class
+     * @param comment A string containing a user's comment about this qrcode
+     */
+    public void setComment(String comment) { this.comment = comment; }
 
+    /**
+     * Sets the hash of this qrcode class
+     * @param hashValue A string containing the hash value of this qrcode's content
+     */
     public void setHashValue(String hashValue) {
         this.hashValue = hashValue;
     }
 
-    public void setQrContent(String qrContent) {
-        this.qrContent = qrContent;
-    }
-
+    /**
+     * Gets the qrcode's name
+     * @return A string representing this qrcode's name
+     */
     public String getName() {
-        return this.Name;
+        return this.name;
     }
 
+    /**
+     * Gets the qrcode's score value
+     * @return An integer representing this qrcode's score value
+     */
     public int getScore() {
-        return this.Score;
+        return this.score;
     }
 
+    /**
+     * Gets the qrcode's comment
+     * @return A string representing this qrcode's comments
+     */
     public String getComment() {
-        return this.Comment;
+        return this.comment;
     }
 
+    /**
+     * Gets the qrcode's drawable class image
+     * @return A drawable class image representing this qrcode
+     */
     public Drawable getImage() {
         return null;
     }
 
+    /**
+     * Gets the qrcode's hash value
+     * @return A string representing this qrcode's hash value
+     */
     public String getHashValue() {
         return this.hashValue;
-    }
-
-    public String getQrContent() {
-        return this.qrContent;
     }
 }

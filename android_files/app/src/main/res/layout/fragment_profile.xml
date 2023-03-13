@@ -97,7 +97,6 @@
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:paddingBottom="30dp"
         app:layout_constraintEnd_toStartOf="@+id/lowest_score_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/highest_score_header" />
@@ -131,21 +130,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/highest_score_header"
         app:layout_constraintTop_toBottomOf="@id/lowest_score_header" />
-    <!--
-    <ListView
-        android:id="@+id/user_qr_code_list"
-        android:layout_width="match_parent"
-        android:layout_height="375dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:background="@color/very_light_grey"
-        android:paddingTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/total_score_value"
-        app:layout_constraintVertical_bias="1.0" />
-    -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_qr_code_list"
         android:layout_width="match_parent"
@@ -157,7 +142,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/highest_score_value"
+        app:layout_constraintTop_toBottomOf="@+id/sort_profileqr_button"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
@@ -168,8 +153,8 @@
         android:layout_marginEnd="8dp"
         android:text="@string/default_sort_button"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/user_qr_code_list"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lowest_score_value" />
 
     <TextView
         android:id="@+id/profile_qr_count"
@@ -178,6 +163,7 @@
         android:layout_marginStart="8dp"
         android:text="@string/default_count_val"
         app:layout_constraintBottom_toTopOf="@+id/user_qr_code_list"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/highest_score_value" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
