@@ -61,8 +61,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private GoogleMap mMap;
     private Location currLocation;
     Button btLocation;
-    FusedLocationProviderClient client;
-    UserDataClass user = UserDataClass.getInstance();
+    private FusedLocationProviderClient client;
+    private UserDataClass user = UserDataClass.getInstance();
 
     /**
      * Constructor for MapFragment
@@ -140,7 +140,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // When permission is granted
             // Call method
-            locationSetter();
+            retrieveLocation();
             updateLocationUI();
         }
         else {
@@ -186,7 +186,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      * Set the user's last location
      */
     @SuppressLint("MissingPermission")
-    private void locationSetter() {
+    private void retrieveLocation() {
         // Initialize Location manager
         LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         // Check condition

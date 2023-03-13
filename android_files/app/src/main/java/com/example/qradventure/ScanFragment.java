@@ -44,9 +44,9 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
     // For data
     private UserDataClass user;
     private QRCode code;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference userCodes;
-    CollectionReference dbCodes;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference userCodes;
+    private CollectionReference dbCodes;
 
     /**
      * An implemented function from the CameraInScanFrag
@@ -375,7 +375,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
     /**
      *  This function opens the camera.
      */
-    public void openCamera() {
+    private void openCamera() {
         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         launcher.launch(camera);
     }

@@ -15,7 +15,7 @@ public class QRCode {
     private String comment;
     private String hashValue;
 
-    QRController qrController = new QRController();
+    private QRController qrController = new QRController();
 
     QRCode() {
         // Empty

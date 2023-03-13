@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText phoneInput;
 
     private EditText usernameInput;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "LoginActivity";
     private UserDataClass user;
 
@@ -43,31 +43,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // initialize singleton userdata
         user = user.getInstance();
+
         // Get device ID for database checking
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         user.setUserPhoneID(android_id);
-        // deletes your device from the database,
-        // uncomment if you want to see the sign in page when running
-        /*
-        db.collection("Users").document(android_id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error deleting document", e);
-                    }
-                });
-         */
 
-        DocumentReference userRef = db.collection("Users").document(android_id);
         // Check database for user
+        DocumentReference userRef = db.collection("Users").document(android_id);
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

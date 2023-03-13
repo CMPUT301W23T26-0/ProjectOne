@@ -18,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
         switchFragment(new ProfileFragment());
-
-        //User user = new User();
 
         //request location permission
         requestPermissions(new String[] {

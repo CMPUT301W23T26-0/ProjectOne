@@ -46,13 +46,16 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
+    // Data
     private UserDataClass user;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference userCodes;
+    private CollectionReference dbCodes;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    CollectionReference userCodes;
-
-    CollectionReference dbCodes;
+    private RecyclerView qrCodeList;
+    private Button sortButton;
+    private CustomListAdapter qrCodeAdapter;
+    private ArrayList<QRCode> qrCodeDataList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -93,10 +96,6 @@ public class ProfileFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    RecyclerView qrCodeList;
-    Button sortButton;
-    CustomListAdapter qrCodeAdapter;
-    ArrayList<QRCode> qrCodeDataList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -235,7 +234,7 @@ public class ProfileFragment extends Fragment {
     }
 
     // Updates scores texts
-    public void updateScoreHighlights(View view) {
+    private void updateScoreHighlights(View view) {
         TextView totalScore = view.findViewById(R.id.total_score_value);
         TextView highestScore = view.findViewById(R.id.highest_score_value);
         TextView lowestScore = view.findViewById(R.id.lowest_score_value);

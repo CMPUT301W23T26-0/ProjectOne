@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 // RecyclerView needs a custom adapter
 public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.ViewHolder>{
-    Context context;
+    private Context context;
 
     private ArrayList<QRCode> qrCodes;
 

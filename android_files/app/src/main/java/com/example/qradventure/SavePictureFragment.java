@@ -33,13 +33,13 @@ import java.util.Map;
  * want to save or discard the picture.
  */
 public class SavePictureFragment extends DialogFragment {
-    Bitmap picture;
+    private Bitmap picture;
     String toastMessage = "Discarding picture...";
 
     // Data
     private UserDataClass user;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference dbCodes;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference dbCodes;
     private QRCode code;
 
     // https://stackoverflow.com/questions/26734432/send-data-from-dialogfragment-to-fragment

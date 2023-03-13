@@ -20,6 +20,7 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
     private boolean isSeen;
     private QRCode code;
     private Boolean success = false; // Whether or not the user wants to take a picture
+    private CameraInScanFrag scanFrag;
 
     // https://stackoverflow.com/questions/26734432/send-data-from-dialogfragment-to-fragment
     /**
@@ -30,8 +31,6 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
     public interface CameraInScanFrag {
         void openCameraInScanFrag(Boolean success);
     }
-
-    CameraInScanFrag scanFrag;
 
     /**
      * This function allows an instance of the

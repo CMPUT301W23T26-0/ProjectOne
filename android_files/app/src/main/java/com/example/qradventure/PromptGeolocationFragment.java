@@ -45,12 +45,12 @@ public class PromptGeolocationFragment extends DialogFragment {
 
     // Data
     private UserDataClass user;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference dbCodes;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference dbCodes;
     private QRCode code;
 
     // Location
-    FusedLocationProviderClient client;
+    private FusedLocationProviderClient client;
 
     /**
      * Constructor for the PromptGeolocationFragment
@@ -110,8 +110,7 @@ public class PromptGeolocationFragment extends DialogFragment {
      * A function that gets the current geolocation of the user.
      */
     @SuppressLint("MissingPermission")
-    private void getCurrentLocation()
-    {
+    private void getCurrentLocation() {
         // Initialize Location manager
         LocationManager locationManager
                 = (LocationManager)getActivity()
