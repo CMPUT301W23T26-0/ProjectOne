@@ -28,16 +28,29 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This activity checks if a user is new or not. If they are
+ * new, they are prompted to make an account. Otherwise, they
+ * are logged into their existing account using their android
+ * device ID.
+ */
 public class LoginActivity extends AppCompatActivity {
     private Button signInButton;
     private EditText emailInput;
     private EditText phoneInput;
 
+    // Data
     private EditText usernameInput;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "LoginActivity";
     private UserDataClass user;
 
+    /**
+     * This function runs a set of instructions upon activity
+     * creation, which includes data instantiation and activity
+     * set up.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    // If new user, display login page and user to database
+                    // If new user, display login page and add user to database
                     if (!document.exists()) {
                         // Display login page
                         setContentView(R.layout.activity_login);
@@ -64,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                         emailInput = findViewById(R.id.emailContact);
                         phoneInput = findViewById(R.id.phoneContact);
                         usernameInput = findViewById(R.id.username);
-                        // If sign in button clicked, add user, email, phone fields
+                        // If sign in button clicked, add user, username, email, phone fields
                         signInButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -74,16 +87,19 @@ public class LoginActivity extends AppCompatActivity {
                                 String username = usernameInput.getText().toString();
                                 user.setEmailInfo(email);
                                 user.setPhoneInfo(phone);
-                                // If user didn't give a username, default user is their device name
+                                // If user didn't give a username, default name is their device ID
                                 if (username.isEmpty()) {
                                     username = user.getUserPhoneID();
                                 }
                                 user.setUsername(username);
+
                                 // create hashmap for database entry
                                 Map<String, Object> newUser = new HashMap<>();
                                 newUser.put("username", username);
                                 newUser.put("email", email);
                                 newUser.put("phone", phone);
+
+                                // add user to database
                                 db.collection("Users").document(android_id)
                                         .set(newUser)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {

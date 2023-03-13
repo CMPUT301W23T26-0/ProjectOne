@@ -66,6 +66,9 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    /**
+     * Constructor for the ProfileFragment
+     */
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -88,6 +91,12 @@ public class ProfileFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * This function runs a set of instructions upon fragment
+     * creation.
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,14 +106,27 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * This function runs a set of instructions upon
+     * view creation, which includes data instantiation
+     * and list adapter set up.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // data instantiation
         user = user.getInstance();
-
         userCodes = db.collection("Users").document(user.getUserPhoneID())
                 .collection("Codes");
-
         dbCodes = db.collection("QRCodes");
 
         // Inflate the layout for this fragment
@@ -118,6 +140,13 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
+    /**
+     * This function runs a set of instructions after the view
+     * has been created, which includes populating the QR code datalist.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -233,7 +262,10 @@ public class ProfileFragment extends Fragment {
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(qrCodeList);
     }
 
-    // Updates scores texts
+    /**
+     * This function updates the score highlights.
+     * @param view
+     */
     private void updateScoreHighlights(View view) {
         TextView totalScore = view.findViewById(R.id.total_score_value);
         TextView highestScore = view.findViewById(R.id.highest_score_value);
