@@ -134,12 +134,11 @@
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_qr_code_list"
         android:layout_width="match_parent"
-        android:layout_height="525dp"
+        android:layout_height="0dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginRight="8dp"
         android:background="@color/very_light_grey"
         android:paddingTop="10dp"
@@ -147,6 +146,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

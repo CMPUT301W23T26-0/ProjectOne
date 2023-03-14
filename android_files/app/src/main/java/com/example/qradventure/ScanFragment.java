@@ -276,6 +276,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         });
     }
 
+
     /**
      * A function that saves QR codes to the database. This is done to keep
      * track of QR code-specific information, like which QR codes are owned by
