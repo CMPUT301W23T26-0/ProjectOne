@@ -51,8 +51,8 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * This function runs a set of instructions upon activity
-     * creation, which includes data instantiation and activity
-     * set up.
+     * creation, which includes data instantiation and handling
+     * user login/registration
      * @param savedInstanceState
      */
     @Override
@@ -69,6 +69,12 @@ public class LoginActivity extends AppCompatActivity {
         handleUser(android_id);
     }
 
+    /**
+     * This function registers users based on username
+     * and contact information as well as updating
+     * singleton data
+     * @param id User android_id
+     */
     private void registerUser(String id) {
         // Display login page
         setContentView(R.layout.activity_login);
@@ -138,6 +144,14 @@ public class LoginActivity extends AppCompatActivity {
         void onCallback(boolean nameAvailable, String username);
     }
 
+    /**
+     * This function checks if a username is available in the database
+     * for registration
+     * @param username User inputted username (android_id if left
+     *                 blank)
+     * @param callback Callback interface used when username query
+     *                 is finished
+     */
     private void checkUsernameAvailable(String username, checkUsernameCallback callback) {
         db.collection("Users")
             .whereEqualTo("username", username)
@@ -161,7 +175,11 @@ public class LoginActivity extends AppCompatActivity {
             });
     }
 
-
+    /**
+     * This function either registers new users or skips registration, logs
+     * in existing users, and updates singleton data
+     * @param id User android_id
+     */
     private void handleUser(String id) {
         // Check database for user
         DocumentReference userRef = db.collection("Users").document(id);
