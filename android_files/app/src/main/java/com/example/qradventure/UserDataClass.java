@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -141,6 +143,7 @@ public class UserDataClass {
     public int getTotalScore() {
         return this.totalScore;
     }
+
     /**
      * This function sets the user's phone info
      * @param phone
@@ -184,6 +187,25 @@ public class UserDataClass {
 
     public void setTotalScore(int s) {
         this.totalScore = s;
+
     }
 
+    public void addTotalScore(int s) {
+        this.totalScore += s;
+    }
+
+    public void updateData(String field, String value) {
+        this.userData.update(field, value).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "DocumentSnapshot successfully updated!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+    }
 }
