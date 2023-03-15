@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameInput;
     private static final String TAG = "LoginActivity";
     private UserDataClass user;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
      * This function runs a set of instructions upon activity
