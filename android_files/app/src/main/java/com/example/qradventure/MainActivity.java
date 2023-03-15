@@ -7,13 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-
 import com.example.qradventure.databinding.ActivityMainBinding;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.qradventure.ui.leaderboard.LeaderboardFragment;
+import com.example.qradventure.ui.map.MapFragment;
+import com.example.qradventure.ui.profiles.ProfileFragment;
+import com.example.qradventure.ui.scan.ScanFragment;
 
 /**
  * This activity allows the user to access all of the main

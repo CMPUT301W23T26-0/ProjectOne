@@ -1,26 +1,24 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.profiles;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.qrcode.QRController;
+import com.example.qradventure.R;
 
 import java.util.ArrayList;
 
 /**
  * This class allows data lists to be displayed in a list view
  */
-public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.ViewHolder>{
+public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListArrayAdapter.ViewHolder>{
     // RecyclerView needs a custom adapter
 
     private Context context;
@@ -31,7 +29,7 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.Vi
      * @param context The context of the data list
      * @param qrCodes The data list of QR codes to be adapted
      */
-    public CustomListAdapter(Context context, ArrayList<QRCode> qrCodes) {
+    public ProfilesListArrayAdapter(Context context, ArrayList<QRCode> qrCodes) {
         this.context = context;
         this.qrCodes = qrCodes;
     }

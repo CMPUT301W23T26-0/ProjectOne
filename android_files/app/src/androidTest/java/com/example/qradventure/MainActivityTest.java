@@ -2,12 +2,13 @@ package com.example.qradventure;
 
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import android.util.Log;
 
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;

@@ -1,9 +1,7 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.profiles;
 
 import static android.content.ContentValues.TAG;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,32 +10,28 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,7 +48,7 @@ public class ProfileFragment extends Fragment {
 
     private RecyclerView qrCodeList;
     private Button sortButton;
-    private CustomListAdapter qrCodeAdapter;
+    private ProfilesListArrayAdapter qrCodeAdapter;
     private ArrayList<QRCode> qrCodeDataList;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -135,7 +129,7 @@ public class ProfileFragment extends Fragment {
         qrCodeList = view.findViewById(R.id.user_qr_code_list);
         sortButton = view.findViewById(R.id.sort_profileqr_button);
         qrCodeDataList = new ArrayList<>();
-        qrCodeAdapter = new CustomListAdapter(getContext(), qrCodeDataList);
+        qrCodeAdapter = new ProfilesListArrayAdapter(getContext(), qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
         return view;
     }

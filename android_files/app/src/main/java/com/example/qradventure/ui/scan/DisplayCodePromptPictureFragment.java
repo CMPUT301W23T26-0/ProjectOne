@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.scan;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 
 import androidx.fragment.app.DialogFragment;
+
+import com.example.qradventure.R;
+import com.example.qradventure.qrcode.QRCode;
 
 /**
  * This class extends DialogFragment, and it serves to display a

@@ -1,5 +1,5 @@
 // https://www.tutorialspoint.com/java/java_using_singleton.htm
-package com.example.qradventure;
+package com.example.qradventure.users;
 
 import android.location.Location;
 

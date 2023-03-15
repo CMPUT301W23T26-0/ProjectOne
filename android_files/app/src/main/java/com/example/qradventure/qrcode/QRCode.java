@@ -1,13 +1,6 @@
-package com.example.qradventure;
+package com.example.qradventure.qrcode;
 
 import android.graphics.drawable.Drawable;
-
-import androidx.core.content.res.ResourcesCompat;
-
-import org.w3c.dom.Comment;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class QRCode {
     private String name;
@@ -20,7 +13,7 @@ public class QRCode {
     /**
      * Empty constructor for the QRCode class
      */
-    QRCode() {
+    public QRCode() {
         // Empty
     }
 
@@ -29,7 +22,7 @@ public class QRCode {
      * @param qrContent A string containing the qrcode content after scanning
      */
     // Future: Add comments parameter, as well as longitude / latitude and scanner id (repeats?)
-    QRCode(String qrContent) {
+    public QRCode(String qrContent) {
         this.hashValue = qrController.getHash(qrContent);
         this.name = qrController.generateName(this.hashValue);
         this.comment = "A comment."; // Previously hashValue for debug
