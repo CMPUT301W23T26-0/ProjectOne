@@ -45,9 +45,9 @@ public class LoginActivity extends AppCompatActivity {
 
     // Data
     private EditText usernameInput;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "LoginActivity";
     private UserDataClass user;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
      * This function runs a set of instructions upon activity
@@ -58,24 +58,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // initialize singleton userdata
         user = user.getInstance();
-
-        // Get device ID for database checking
-        @SuppressLint("HardwareIds")
-        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        user.setUserPhoneID(android_id);
         // Handle user registry or login
-        handleUser(android_id);
+        handleUser();
     }
 
     /**
      * This function registers users based on username
      * and contact information as well as updating
      * singleton data
-     * @param id User android_id
      */
-    private void registerUser(String id) {
+    private void registerUser() {
         // Display login page
         setContentView(R.layout.activity_login);
         signInButton = findViewById(R.id.login_button);
@@ -87,45 +80,30 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = usernameInput.getText().toString();
-                // Use phoneID if username not given
-                if (username.isEmpty()) {
+                String username;
+                if (!usernameInput.getText().toString().isEmpty()) {
+                    username = usernameInput.getText().toString();
+                } else {
+                    // Use phoneID if username not given
                     username = user.getUserPhoneID();
                 }
 
                 // Check if given username is available
                 checkUsernameAvailable(username, new checkUsernameCallback() {
                     @Override
-                    public void onCallback(boolean nameAvailable, String username) {
+                    public void onCallback(boolean nameAvailable) {
                         // If available, register user into database
                         if (nameAvailable) {
                             String email = emailInput.getText().toString();
                             String phone = phoneInput.getText().toString();
-                            // Create hashmap for database entry
+
                             Map<String, Object> newUser = new HashMap<>();
                             newUser.put("username", username);
                             newUser.put("email", email);
                             newUser.put("phone", phone);
-
-                            // Add user to database
-                            db.collection("Users").document(id)
-                                    .set(newUser)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d(TAG, "DocumentSnapshot successfully written!");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "Error writing document", e);
-                                        }
-                                    });
+                            newUser.put("totalScore", 0);
                             // Set user singleton data
-                            user.setUsername(username);
-                            user.setEmailInfo(email);
-                            user.setPhoneInfo(phone);
+                            user.setData(newUser);
                             // Go to main activity
                             Intent registered = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(registered);
@@ -141,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private interface checkUsernameCallback {
         // Callback interface when username query is finished
-        void onCallback(boolean nameAvailable, String username);
+        void onCallback(boolean nameAvailable);
     }
 
     /**
@@ -170,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "Error getting documents: ", task.getException());
                     }
                     // Call interface when query finished
-                    callback.onCallback(isAvailable, username);
+                    callback.onCallback(isAvailable);
                 }
             });
     }
@@ -178,35 +156,37 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * This function either registers new users or skips registration, logs
      * in existing users, and updates singleton data
-     * @param id User android_id
      */
-    private void handleUser(String id) {
-        // Check database for user
-        DocumentReference userRef = db.collection("Users").document(id);
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // If new user, display login page and add user to database
-                    if (!document.exists()) {
-                       registerUser(id);
-                    // User already has account, update user singleton and go to main activity
-                    } else {
-                        Map<String, Object> userInfo = document.getData();
-                        user.setUsername(userInfo.get("username").toString());
-                        user.setEmailInfo(userInfo.get("email").toString());
-                        user.setPhoneInfo(userInfo.get("phone").toString());
+    private void handleUser() {
+        // Get device ID for database checking
+        @SuppressLint("HardwareIds")
+        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-                        Intent login = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(login);
+        db.collection("Users").document(android_id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
 
+        user.tryRegister(android_id, new UserDataClass.tryRegisterCallback() {
+            @Override
+            public void onCallback(boolean isRegistered) {
+                if (isRegistered) {
+                    Intent login = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(login);
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    registerUser();
                 }
             }
         });
     }
-
 }

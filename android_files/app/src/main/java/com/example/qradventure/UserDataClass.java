@@ -43,7 +43,7 @@ public class UserDataClass {
      * Constructor for the UserDataClass. It is set to
      * private to prevent instantiation of the class.
      */
-    private UserDataClass() { }
+    private UserDataClass() {}
 
     /**
      * This function retrieves and returns the user data instance,
@@ -85,7 +85,7 @@ public class UserDataClass {
                         username = userInfo.get("username").toString();
                         emailInfo = userInfo.get("email").toString();
                         phoneInfo = userInfo.get("phone").toString();
-                        totalScore = (Integer) userInfo.get("totalScore");
+                        totalScore = Integer.parseInt(userInfo.get("totalScore").toString());
                     } else {
                         isRegistered = false;
                     }
