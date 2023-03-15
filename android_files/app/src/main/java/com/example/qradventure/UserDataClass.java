@@ -16,6 +16,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This class is used to store user data. It follows
  * a singleton design pattern.
@@ -31,8 +34,7 @@ public class UserDataClass {
     private String username;
     private int totalScore;
     private String userPhoneID;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private DocumentReference userData;
+    private final UserDataManager dataManager;
     private static final String TAG = "UserDataClass";
 
     /**
@@ -40,28 +42,30 @@ public class UserDataClass {
      * private to prevent instantiation of the class.
      */
     private UserDataClass(String android_id) {
-        this.userData = db.collection("Users").document(android_id);
-        this.userData.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, document.getId() + " => " + document.getData());
-                        setUsername(document.get("username").toString());
-                        setEmailInfo(document.get("email").toString());
-                        setPhoneInfo(document.get("phone").toString());
-                        setTotalScore((Integer) document.get("totalscore"));
+        this.userPhoneID = android_id;
+        this.dataManager = new UserDataManager(android_id);
+        if (!this.dataManager.isNewUser()) {
+            DocumentReference userRef = this.dataManager.getDocument();
+            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                            Map<String, Object> userInfo = document.getData();
+                            username = userInfo.get("username").toString();
+                            emailInfo = userInfo.get("email").toString();
+                            phoneInfo = userInfo.get("phone").toString();
+                            totalScore = (Integer) userInfo.get("totalScore");
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
                     }
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
                 }
-                // Call interface when query finished
-            }
-        });
+            });
+        }
     }
-
-    private UserDataClass() { }
 
     /**
      * This function retrieves and returns the user data instance,
@@ -77,22 +81,6 @@ public class UserDataClass {
                 if (INSTANCE == null) {
                     // create the singleton instance
                     INSTANCE = new UserDataClass(android_id);
-                }
-            }
-        }
-        // return the singleton instance
-        return INSTANCE;
-    }
-
-    public static UserDataClass getInstance() {
-        // Check if the instance is already created
-        if(INSTANCE == null) {
-            // synchronize the block to ensure only one thread can execute at a time
-            synchronized (UserDataClass.class) {
-                // check again if the instance is already created
-                if (INSTANCE == null) {
-                    // create the singleton instance
-                    INSTANCE = new UserDataClass();
                 }
             }
         }
@@ -150,7 +138,7 @@ public class UserDataClass {
      */
     public void setPhoneInfo(String phone) {
         this.phoneInfo = phone;
-
+        dataManager.updateField("phone", phone);
     }
 
     /**
@@ -159,6 +147,7 @@ public class UserDataClass {
      */
     public void setEmailInfo(String email) {
         this.emailInfo = email;
+        dataManager.updateField("email", email);
     }
 
     /**
@@ -166,7 +155,11 @@ public class UserDataClass {
      * @param username
      */
     public void setUsername(String username) {
+        if (username.isEmpty()) {
+            username = this.userPhoneID;
+        }
         this.username = username;
+        dataManager.updateField("username", username);
     }
 
     /**
@@ -183,29 +176,12 @@ public class UserDataClass {
      */
     public void setUserPhoneID(String userPhoneID) {
         this.userPhoneID = userPhoneID;
+        dataManager.updateField("id", userPhoneID);
     }
 
     public void setTotalScore(int s) {
         this.totalScore = s;
-
+        dataManager.updateScore(this.totalScore);
     }
 
-    public void addTotalScore(int s) {
-        this.totalScore += s;
-    }
-
-    public void updateData(String field, String value) {
-        this.userData.update(field, value).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "DocumentSnapshot successfully updated!");
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
-                    }
-                });
-    }
 }
