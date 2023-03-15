@@ -187,9 +187,18 @@ public class UserDataClass {
         return this.totalScore;
     }
 
+    /**
+     * This function gets the user's document reference
+     * @return
+     */
     public DocumentReference getUserRef() {
         return this.userRef;
     }
+
+    /**
+     * This function gets the user's QR code collection reference
+     * @return
+     */
     public CollectionReference getUserCodesRef() {
         return this.userCodesRef;
     }
