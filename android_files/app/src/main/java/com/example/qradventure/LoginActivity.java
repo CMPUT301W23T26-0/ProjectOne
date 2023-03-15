@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        db.collection("Users").document(android_id)
+        /*db.collection("Users").document(android_id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -175,7 +175,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error deleting document", e);
                     }
-                });
+                });*/
 
         user.tryRegister(android_id, new UserDataClass.tryRegisterCallback() {
             @Override

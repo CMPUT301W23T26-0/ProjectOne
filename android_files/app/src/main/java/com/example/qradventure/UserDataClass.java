@@ -10,12 +10,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,7 @@ public class UserDataClass {
     private String userPhoneID;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef;
+    private CollectionReference userCodesRef;
 
     private static final String TAG = "UserDataClass";
 
@@ -82,6 +85,7 @@ public class UserDataClass {
         // initialize data
         this.userPhoneID = android_id;
         this.userRef = db.collection("Users").document(android_id);
+        this.userCodesRef = this.userRef.collection("Codes");
         // try registering user
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -181,6 +185,13 @@ public class UserDataClass {
      */
     public int getTotalScore() {
         return this.totalScore;
+    }
+
+    public DocumentReference getUserRef() {
+        return this.userRef;
+    }
+    public CollectionReference getUserCodesRef() {
+        return this.userCodesRef;
     }
 
     /**
