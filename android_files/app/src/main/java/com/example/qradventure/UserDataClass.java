@@ -70,9 +70,19 @@ public class UserDataClass {
         void onCallback(boolean isRegistered);
     }
 
+    /**
+     * This method tries to register a user given their android_id,
+     * and uses a callback interface that takes a boolean saying whether
+     * the user is already registered or not
+     * @param android_id User's device id
+     * @param callback tryRegisterCallback interface called when document
+     *                 is retrieved
+     */
     public void tryRegister(String android_id, tryRegisterCallback callback) {
+        // initialize data
         this.userPhoneID = android_id;
         this.userRef = db.collection("Users").document(android_id);
+        // try registering user
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -80,6 +90,7 @@ public class UserDataClass {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+                        // User is already registered, retrieve information from database
                         isRegistered = true;
                         Map<String, Object> userInfo = document.getData();
                         username = userInfo.get("username").toString();
@@ -87,6 +98,7 @@ public class UserDataClass {
                         phoneInfo = userInfo.get("phone").toString();
                         totalScore = Integer.parseInt(userInfo.get("totalScore").toString());
                     } else {
+                        // User is not registered yet, do registry in callback
                         isRegistered = false;
                     }
                     callback.onCallback(isRegistered);
@@ -97,6 +109,11 @@ public class UserDataClass {
         });
     }
 
+    /**
+     * This method creates a new document in the database for the user
+     * and saves the data locally
+     * @param data Map containing user data
+     */
     public void setData(Map<String, Object> data) {
         userRef
                 .set(data)
@@ -158,6 +175,10 @@ public class UserDataClass {
         return this.username;
     }
 
+    /**
+     * This function gets the user's total score
+     * @return
+     */
     public int getTotalScore() {
         return this.totalScore;
     }
@@ -205,11 +226,22 @@ public class UserDataClass {
         this.userPhoneID = userPhoneID;
     }
 
+    /**
+     * This function sets the user's total score
+     * @param score
+     */
     public void setTotalScore(int score) {
         this.totalScore = score;
         updateField("totalScore", score);
     }
 
+    /**
+     * This function is a helper function that is called
+     * whenever a user data changes locally, and automatically
+     * updates the database with the changes
+     * @param field
+     * @param value
+     */
     public void updateField(String field, Object value) {
         this.userRef.update(field, value)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
