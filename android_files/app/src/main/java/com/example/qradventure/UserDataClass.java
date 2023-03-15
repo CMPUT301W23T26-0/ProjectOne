@@ -34,45 +34,23 @@ public class UserDataClass {
     private String username;
     private int totalScore;
     private String userPhoneID;
-    private final UserDataManager dataManager;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference userRef;
+
     private static final String TAG = "UserDataClass";
 
     /**
      * Constructor for the UserDataClass. It is set to
      * private to prevent instantiation of the class.
      */
-    private UserDataClass(String android_id) {
-        this.userPhoneID = android_id;
-        this.dataManager = new UserDataManager(android_id);
-        if (!this.dataManager.isNewUser()) {
-            DocumentReference userRef = this.dataManager.getDocument();
-            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                            Map<String, Object> userInfo = document.getData();
-                            username = userInfo.get("username").toString();
-                            emailInfo = userInfo.get("email").toString();
-                            phoneInfo = userInfo.get("phone").toString();
-                            totalScore = (Integer) userInfo.get("totalScore");
-                        }
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                    }
-                }
-            });
-        }
-    }
+    private UserDataClass() { }
 
     /**
      * This function retrieves and returns the user data instance,
      * which is a singleton instance
      * @return
      */
-    public static UserDataClass getInstance(String android_id) {
+    public static UserDataClass getInstance() {
         // Check if the instance is already created
         if(INSTANCE == null) {
             // synchronize the block to ensure only one thread can execute at a time
@@ -80,12 +58,60 @@ public class UserDataClass {
                 // check again if the instance is already created
                 if (INSTANCE == null) {
                     // create the singleton instance
-                    INSTANCE = new UserDataClass(android_id);
+                    INSTANCE = new UserDataClass();
                 }
             }
         }
         // return the singleton instance
         return INSTANCE;
+    }
+
+    public interface tryRegisterCallback {
+        void onCallback(boolean isRegistered);
+    }
+
+    public void tryRegister(String android_id, tryRegisterCallback callback) {
+        this.userPhoneID = android_id;
+        this.userRef = db.collection("Users").document(android_id);
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                boolean isRegistered;
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        isRegistered = true;
+                        Map<String, Object> userInfo = document.getData();
+                        username = userInfo.get("username").toString();
+                        emailInfo = userInfo.get("email").toString();
+                        phoneInfo = userInfo.get("phone").toString();
+                        totalScore = (Integer) userInfo.get("totalScore");
+                    } else {
+                        isRegistered = false;
+                    }
+                    callback.onCallback(isRegistered);
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void setData(Map<String, Object> data) {
+        userRef
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
     }
 
     /**
@@ -138,7 +164,7 @@ public class UserDataClass {
      */
     public void setPhoneInfo(String phone) {
         this.phoneInfo = phone;
-        dataManager.updateField("phone", phone);
+        updateField("phone", phone);
     }
 
     /**
@@ -147,7 +173,7 @@ public class UserDataClass {
      */
     public void setEmailInfo(String email) {
         this.emailInfo = email;
-        dataManager.updateField("email", email);
+        updateField("email", email);
     }
 
     /**
@@ -155,11 +181,8 @@ public class UserDataClass {
      * @param username
      */
     public void setUsername(String username) {
-        if (username.isEmpty()) {
-            username = this.userPhoneID;
-        }
         this.username = username;
-        dataManager.updateField("username", username);
+        updateField("username", username);
     }
 
     /**
@@ -176,12 +199,26 @@ public class UserDataClass {
      */
     public void setUserPhoneID(String userPhoneID) {
         this.userPhoneID = userPhoneID;
-        dataManager.updateField("id", userPhoneID);
     }
 
-    public void setTotalScore(int s) {
-        this.totalScore = s;
-        dataManager.updateScore(this.totalScore);
+    public void setTotalScore(int score) {
+        this.totalScore = score;
+        updateField("totalScore", score);
     }
 
+    public void updateField(String field, Object value) {
+        this.userRef.update(field, value)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+    }
 }
