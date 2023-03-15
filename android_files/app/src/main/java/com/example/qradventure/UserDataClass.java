@@ -112,6 +112,10 @@ public class UserDataClass {
                         Log.w(TAG, "Error writing document", e);
                     }
                 });
+        this.username = data.get("username").toString();
+        this.emailInfo = data.get("email").toString();
+        this.phoneInfo = data.get("phone").toString();
+        this.totalScore = Integer.parseInt(data.get("totalScore").toString());
     }
 
     /**
