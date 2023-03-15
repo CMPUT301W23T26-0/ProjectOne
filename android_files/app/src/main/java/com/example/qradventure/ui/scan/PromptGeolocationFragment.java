@@ -1,4 +1,4 @@
-package com.example.qradventure.ui.map;
+package com.example.qradventure.ui.scan;
 
 import static android.content.ContentValues.TAG;
 

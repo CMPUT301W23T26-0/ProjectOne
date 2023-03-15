@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.qradventure.ui.map.PromptGeolocationFragment;
 import com.example.qradventure.qrcode.QRCode;
 import com.example.qradventure.R;
 import com.example.qradventure.users.UserDataClass;
