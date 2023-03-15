@@ -205,6 +205,7 @@ public class UserDataClass {
 
     /**
      * This function sets the user's phone info
+     * and updates the database
      * @param phone
      */
     public void setPhoneInfo(String phone) {
@@ -214,6 +215,7 @@ public class UserDataClass {
 
     /**
      * This function sets the user's email info
+     * and updates the database
      * @param email
      */
     public void setEmailInfo(String email) {
@@ -223,6 +225,7 @@ public class UserDataClass {
 
     /**
      * This function sets the user's username
+     * and updates the database
      * @param username
      */
     public void setUsername(String username) {
@@ -248,11 +251,22 @@ public class UserDataClass {
 
     /**
      * This function sets the user's total score
+     * and updates the database
      * @param score
      */
     public void setTotalScore(int score) {
         this.totalScore = score;
         updateField("totalScore", score);
+    }
+
+    /**
+     * This function increments the user's total score
+     * and updates the database
+     * @param score
+     */
+    public void addTotalScore(int score) {
+        this.totalScore += score;
+        updateField("totalScore", this.totalScore);
     }
 
     /**

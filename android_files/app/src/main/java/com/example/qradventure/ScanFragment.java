@@ -189,8 +189,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         user = user.getInstance();
 
         // Instantiate data from database
-        userCodes = db.collection("Users").document(user.getUserPhoneID())
-                .collection("Codes");
+        userCodes = user.getUserCodesRef();
         dbCodes = db.collection("QRCodes");
 
         // Inflate the layout for this fragment
@@ -260,6 +259,8 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                                         Log.w(TAG, "Error writing document", e);
                                     }
                                 });
+
+                        user.addTotalScore(code.getScore());
 
                         // Save it again (but associate user with code this time)
                         saveCodeToDb();
