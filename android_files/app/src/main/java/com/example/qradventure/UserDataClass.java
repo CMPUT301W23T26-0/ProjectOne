@@ -36,7 +36,7 @@ public class UserDataClass {
     private String username;
     private int totalScore;
     private String userPhoneID;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef;
     private CollectionReference userCodesRef;
 
