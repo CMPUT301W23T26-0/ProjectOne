@@ -104,6 +104,8 @@ public class UserDataClass {
                         emailInfo = document.get("email").toString();
                         phoneInfo = document.get("phone").toString();
                         totalScore = Integer.parseInt(document.get("totalScore").toString());
+                        highestQrScore = Integer.parseInt(document.get("highestQrScore").toString());
+                        highestQrHash = document.get("highestQrHash").toString();
                     } else {
                         isRegistered = false;
                     }
@@ -139,6 +141,9 @@ public class UserDataClass {
         this.emailInfo = data.get("email").toString();
         this.phoneInfo = data.get("phone").toString();
         this.totalScore = Integer.parseInt(data.get("totalScore").toString());
+        this.highestQrScore = Integer.parseInt(data.get("highestQrScore").toString());
+        this.highestQrHash = data.get("highestQrHash").toString();
+
     }
 
     /**
@@ -203,6 +208,22 @@ public class UserDataClass {
      */
     public CollectionReference getUserCodesRef() {
         return this.userCodesRef;
+    }
+
+    /**
+     * This function gets the user's highest scoring QR code
+     * @return
+     */
+    public int getHighestQrScore() {
+        return this.highestQrScore;
+    }
+
+    /**
+     * This function gets the hash of the user's highest scoring QR code
+     * @return
+     */
+    public String getHighestQrHash() {
+        return this.highestQrHash;
     }
 
     /**
