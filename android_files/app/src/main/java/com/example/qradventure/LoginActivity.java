@@ -53,15 +53,46 @@ public class LoginActivity extends AppCompatActivity {
      * This function runs a set of instructions upon activity
      * creation, which includes data instantiation and handling
      * user login/registration
+     *
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = user.getInstance();
         // Handle user registry or login
-        handleUser();
+        // Get device ID for database checking
+        @SuppressLint("HardwareIds")
+        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        user = user.getInstance(android_id);
+
+        /*db.collection("Users").document(android_id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });*/
+
+        user.checkRegistered(new UserDataClass.checkRegisteredCallback() {
+            @Override
+            public void onCallback(boolean isRegistered) {
+                if (isRegistered) {
+                    Intent login = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(login);
+                } else {
+                    registerUser();
+                }
+            }
+        });
     }
+
 
     /**
      * This function registers users based on username
@@ -107,14 +138,14 @@ public class LoginActivity extends AppCompatActivity {
                             // Go to main activity
                             Intent registered = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(registered);
-                        // If username not available, create alert
+                            // If username not available, create alert
                         } else {
                             nameAlert.show();
                         }
                     }
                 });
-                }
-            });
+            }
+        });
     }
 
     private interface checkUsernameCallback {
@@ -125,6 +156,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * This function checks if a username is available in the database
      * for registration
+     *
      * @param username User inputted username (android_id if left
      *                 blank)
      * @param callback Callback interface used when username query
@@ -132,61 +164,24 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void checkUsernameAvailable(String username, checkUsernameCallback callback) {
         db.collection("Users")
-            .whereEqualTo("username", username)
-            .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    boolean isAvailable = false;
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.d(TAG, document.getId() + " => " + document.getData());
+                .whereEqualTo("username", username)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        boolean isAvailable = false;
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                            }
+                            // If no results, isAvailable == true
+                            isAvailable = task.getResult().isEmpty();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-                        // If no results, isAvailable == true
-                        isAvailable = task.getResult().isEmpty();
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        // Call interface when query finished
+                        callback.onCallback(isAvailable);
                     }
-                    // Call interface when query finished
-                    callback.onCallback(isAvailable);
-                }
-            });
+                });
+        }
     }
-
-    /**
-     * This function either registers new users or skips registration, logs
-     * in existing users, and updates singleton data
-     */
-    private void handleUser() {
-        // Get device ID for database checking
-        @SuppressLint("HardwareIds")
-        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
-        /*db.collection("Users").document(android_id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error deleting document", e);
-                    }
-                });*/
-
-        user.checkRegistered(android_id, new UserDataClass.checkRegisteredCallback() {
-            @Override
-            public void onCallback(boolean isRegistered) {
-                if (isRegistered) {
-                    Intent login = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(login);
-                } else {
-                    registerUser();
-                }
-            }
-        });
-    }
-}
