@@ -118,6 +118,8 @@ public class LoginActivity extends AppCompatActivity {
                             newUser.put("email", email);
                             newUser.put("phone", phone);
                             newUser.put("totalScore", 0);
+                            newUser.put("highestQrScore", 0);
+                            newUser.put("highestQrHash", "");
                             // Set user singleton data
                             user.setData(newUser);
                             // Go to main activity
