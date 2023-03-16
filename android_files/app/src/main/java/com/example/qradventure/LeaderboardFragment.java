@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,6 +49,7 @@ public class LeaderboardFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private UserDataClass user;
+    private String field;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView playerList;
     private PlayerListAdapter playerAdapter;
@@ -109,6 +112,8 @@ public class LeaderboardFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
 
+        RadioButton toggleTotalScore = view.findViewById(R.id.Total_toggle);
+        RadioButton toggleQrScore = view.findViewById(R.id.QRCode_toggle);
         playerList = view.findViewById(R.id.player_list);
         playerDataList = new ArrayList<>();
         playerAdapter = new PlayerListAdapter(getContext(), playerDataList);
@@ -127,8 +132,8 @@ public class LeaderboardFragment extends Fragment {
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Query topScorers = db.collection("Users").orderBy("totalScore", Query.Direction.DESCENDING);
 
+        Query topScorers = db.collection("Users").orderBy(this.field, Query.Direction.DESCENDING);
         topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -140,7 +145,7 @@ public class LeaderboardFragment extends Fragment {
                         Map<String, Object> playerInfo = document.getData();
                         Player player = new Player();
                         player.setName(playerInfo.get("username").toString());
-                        player.setScore(Integer.parseInt(playerInfo.get("totalScore").toString()));
+                        player.setScore(Integer.parseInt(playerInfo.get(field).toString()));
                         playerDataList.add(player);
                         playerAdapter.notifyItemInserted(-1);
                     }
@@ -153,7 +158,20 @@ public class LeaderboardFragment extends Fragment {
                 }
             }
         });
+    }
 
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+        switch (view.getId()) {
+            case R.id.Total_toggle:
+                if (checked)
+                    this.field = "totalScore";
+                break;
+            case R.id.QRCode_toggle:
+                if (checked)
+                    this.field = "highestQrScore";
+        }
     }
 
     /**

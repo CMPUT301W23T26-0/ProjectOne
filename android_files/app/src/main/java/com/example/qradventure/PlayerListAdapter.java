@@ -55,7 +55,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         Player player = players.get(position);
 
         holder.playerName.setText(player.getName());
-        holder.playerTotalScore.setText(String.valueOf(player.getScore()));
+        holder.playerScore.setText(String.valueOf(player.getScore()));
     }
 
     /**
@@ -72,7 +72,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView playerName;
-        public TextView playerTotalScore;
+        public TextView playerScore;
         public ImageView playerImage;
 
         /**
@@ -82,7 +82,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         public ViewHolder(View view) {
             super(view);
             this.playerName = view.findViewById(R.id.player_name);
-            this.playerTotalScore = view.findViewById(R.id.player_score);
+            this.playerScore = view.findViewById(R.id.player_score);
             this.playerImage = view.findViewById(R.id.player_image);
         }
     }
