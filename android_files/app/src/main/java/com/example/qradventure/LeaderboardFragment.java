@@ -1,12 +1,33 @@
 package com.example.qradventure;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.core.OrderBy;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +44,11 @@ public class LeaderboardFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private UserDataClass user;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private RecyclerView playerList;
+    private PlayerListAdapter playerAdapter;
+    private ArrayList<Player> playerDataList;
 
     public LeaderboardFragment() {
         // Required empty public constructor
@@ -76,6 +102,59 @@ public class LeaderboardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_leaderboard, container, false);
+        user = user.getInstance();
+
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
+
+        playerList = view.findViewById(R.id.player_list);
+        playerDataList = new ArrayList<>();
+        playerAdapter = new PlayerListAdapter(getContext(), playerDataList);
+        playerList.setAdapter(playerAdapter);
+        return view;
     }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        Query topScorers = db.collection("Users").orderBy("totalScore", Query.Direction.DESCENDING);
+
+        topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    // Iterate through user codes
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                        // Populate user profile using db
+                        Map<String, Object> playerInfo = document.getData();
+                        Player player = new Player();
+                        player.setName(playerInfo.get("username").toString());
+                        player.setScore(Integer.parseInt(playerInfo.get("totalScore").toString()));
+                        playerDataList.add(player);
+                    }
+
+                    // Updates need to be done in this scope
+                    playerAdapter.notifyDataSetChanged();
+                    updateTopPlayers(view);
+
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+
+    public void updateTopPlayers(View view) {
+        TextView first = view.findViewById(R.id.first_place);
+        TextView second = view.findViewById(R.id.second_place);
+        TextView third = view.findViewById(R.id.third_place);
+
+        TextView[] topThree = new TextView[]{first, second, third};
+
+        for (int i = 0; i < playerAdapter.getItemCount(); i++) {
+            topThree[i].setText(playerDataList.get(i).getName());
+        }
+
+    }
+
 }
