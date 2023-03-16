@@ -117,6 +117,14 @@ public class LeaderboardFragment extends Fragment {
         return view;
     }
 
+    /**
+     * This function runs a set of instructions after the view
+     * has been created, which includes querying the top total scorers
+     * TO DO: query top unique QR code scorers
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Query topScorers = db.collection("Users").orderBy("totalScore", Query.Direction.DESCENDING);
@@ -125,7 +133,7 @@ public class LeaderboardFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    // Iterate through user codes
+                    // Iterate through user codess
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Log.d(TAG, document.getId() + " => " + document.getData());
                         // Populate user profile using db
@@ -148,6 +156,10 @@ public class LeaderboardFragment extends Fragment {
 
     }
 
+    /**
+     * This function updates the top three user highlights
+     * @param view
+     */
     public void updateTopPlayers(View view) {
         TextView first = view.findViewById(R.id.first_place);
         TextView second = view.findViewById(R.id.second_place);

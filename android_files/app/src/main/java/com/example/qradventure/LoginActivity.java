@@ -51,9 +51,8 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * This function runs a set of instructions upon activity
-     * creation, which includes data instantiation and handling
-     * user login/registration
-     *
+     * creation, which includes data instantiation and logging in
+     * existing users or registering new users
      * @param savedInstanceState
      */
     @Override

@@ -79,7 +79,7 @@ public class UserDataClass {
      * the user is already registered or not
      * If the user is registered, then it retrieves user data
      * @param callback tryRegisterCallback interface called when document
-     *                 is retrievedS
+     *                 is retrieved
      */
     public void checkRegistered(checkRegisteredCallback callback) {
         this.userRef = db.collection("Users").document(this.userPhoneID);
