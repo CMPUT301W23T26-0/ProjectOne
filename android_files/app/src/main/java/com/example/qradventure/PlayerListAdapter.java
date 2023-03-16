@@ -19,7 +19,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
     private ArrayList<Player> players;
 
     /**
-     * A constructor for CustomListAdapter.
+     * A constructor for PlayerListAdapter.
      * @param context The context of the data list
      * @param players The data list of players to be adapted
      */
