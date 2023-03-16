@@ -69,7 +69,7 @@ public class UserDataClass {
         return INSTANCE;
     }
 
-    public interface tryRegisterCallback {
+    public interface checkRegisteredCallback {
         void onCallback(boolean isRegistered);
     }
 
@@ -81,7 +81,7 @@ public class UserDataClass {
      * @param callback tryRegisterCallback interface called when document
      *                 is retrieved
      */
-    public void tryRegister(String android_id, tryRegisterCallback callback) {
+    public void checkRegistered(String android_id, checkRegisteredCallback callback) {
         // initialize data
         this.userPhoneID = android_id;
         this.userRef = db.collection("Users").document(android_id);
@@ -96,11 +96,6 @@ public class UserDataClass {
                     if (document.exists()) {
                         // User is already registered, retrieve information from database
                         isRegistered = true;
-                        Map<String, Object> userInfo = document.getData();
-                        username = userInfo.get("username").toString();
-                        emailInfo = userInfo.get("email").toString();
-                        phoneInfo = userInfo.get("phone").toString();
-                        totalScore = Integer.parseInt(userInfo.get("totalScore").toString());
                     } else {
                         // User is not registered yet, do registry in callback
                         isRegistered = false;

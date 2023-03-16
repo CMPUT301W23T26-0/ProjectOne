@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });*/
 
-        user.tryRegister(android_id, new UserDataClass.tryRegisterCallback() {
+        user.checkRegistered(android_id, new UserDataClass.checkRegisteredCallback() {
             @Override
             public void onCallback(boolean isRegistered) {
                 if (isRegistered) {
