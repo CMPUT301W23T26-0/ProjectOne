@@ -1,6 +1,8 @@
 // https://www.tutorialspoint.com/java/java_using_singleton.htm
 package com.example.qradventure;
 
+import static android.content.ContentValues.TAG;
+
 import android.location.Location;
 import android.util.Log;
 
@@ -36,6 +38,8 @@ public class UserDataClass {
     private String username;
     private int totalScore;
     private String userPhoneID;
+    private int highestQrScore;
+    private String highestQrHash;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef;
     private CollectionReference userCodesRef;
@@ -265,6 +269,35 @@ public class UserDataClass {
     public void addTotalScore(int score) {
         this.totalScore += score;
         updateField("totalScore", this.totalScore);
+    }
+
+    /**
+     * This function adds a code to the user's Code collection,
+     * and updates the user's total score and highest scoring QR code as needed
+     * @param codeID The code's hash value that acts as the documentID
+     * @param code A map containing the code data to be inputted to the database
+     */
+    public void addUserCode(String codeID, Map<String, Object> code) {
+        userCodesRef.document(codeID)
+                .set(code)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                        int newScore = (int) code.get("score");
+                        if (newScore > highestQrScore) {
+                            highestQrScore = newScore;
+                            highestQrHash = code.get("hash").toString();
+                        }
+                        addTotalScore(newScore);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
     }
 
     /**
