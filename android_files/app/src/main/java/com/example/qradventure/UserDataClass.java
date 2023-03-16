@@ -49,6 +49,17 @@ public class UserDataClass {
     private UserDataClass() {}
 
     /**
+     * Constructor for the UserDataClass. It is set to
+     * private to prevent instantiation of the class.
+     * @param android_id User's device ID
+     */
+    private UserDataClass(String android_id) {
+        this.userPhoneID = android_id;
+        this.userRef = db.collection("Users").document(android_id);
+        this.userCodesRef = this.userRef.collection("Codes");
+    }
+
+    /**
      * This function retrieves and returns the user data instance,
      * which is a singleton instance
      * @return
@@ -69,6 +80,28 @@ public class UserDataClass {
         return INSTANCE;
     }
 
+    /**
+     * This function retrieves and returns the user data instance,
+     * which is a singleton instance
+     * @return
+     */
+    public static UserDataClass getInstance(String android_id) {
+        // Check if the instance is already created
+        if(INSTANCE == null) {
+            // synchronize the block to ensure only one thread can execute at a time
+            synchronized (UserDataClass.class) {
+                // check again if the instance is already created
+                if (INSTANCE == null) {
+                    // create the singleton instance
+                    INSTANCE = new UserDataClass(android_id);
+                }
+            }
+        }
+        // return the singleton instance
+        return INSTANCE;
+    }
+
+
     public interface checkRegisteredCallback {
         void onCallback(boolean isRegistered);
     }
@@ -77,15 +110,10 @@ public class UserDataClass {
      * This method tries to register a user given their android_id,
      * and uses a callback interface that takes a boolean saying whether
      * the user is already registered or not
-     * @param android_id User's device id
      * @param callback tryRegisterCallback interface called when document
      *                 is retrieved
      */
-    public void checkRegistered(String android_id, checkRegisteredCallback callback) {
-        // initialize data
-        this.userPhoneID = android_id;
-        this.userRef = db.collection("Users").document(android_id);
-        this.userCodesRef = this.userRef.collection("Codes");
+    public void checkRegistered(checkRegisteredCallback callback) {
         // try registering user
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
