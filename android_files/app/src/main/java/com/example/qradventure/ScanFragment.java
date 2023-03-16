@@ -246,21 +246,8 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                         newCode.put("name", code.getName());
                         newCode.put("score", code.getScore());
                         newCode.put("hash", code.getHashValue());
-                        docRef.set(newCode)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error writing document", e);
-                                    }
-                                });
 
-                        user.addTotalScore(code.getScore());
+                        user.addUserCode(code.getHashValue(), newCode);
 
                         // Save it again (but associate user with code this time)
                         saveCodeToDb();
