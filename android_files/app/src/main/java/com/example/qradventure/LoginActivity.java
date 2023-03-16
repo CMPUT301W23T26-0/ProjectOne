@@ -63,22 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         // Get device ID for database checking
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        user = user.getInstance(android_id);
-
-        /*db.collection("Users").document(android_id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error deleting document", e);
-                    }
-                });*/
+        user = user.getInstance();
+        user.setUserPhoneID(android_id);
 
         user.checkRegistered(new UserDataClass.checkRegisteredCallback() {
             @Override

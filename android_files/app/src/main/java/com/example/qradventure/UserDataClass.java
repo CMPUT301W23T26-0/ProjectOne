@@ -49,17 +49,6 @@ public class UserDataClass {
     private UserDataClass() {}
 
     /**
-     * Constructor for the UserDataClass. It is set to
-     * private to prevent instantiation of the class.
-     * @param android_id User's device ID
-     */
-    private UserDataClass(String android_id) {
-        this.userPhoneID = android_id;
-        this.userRef = db.collection("Users").document(android_id);
-        this.userCodesRef = this.userRef.collection("Codes");
-    }
-
-    /**
      * This function retrieves and returns the user data instance,
      * which is a singleton instance
      * @return
@@ -80,52 +69,38 @@ public class UserDataClass {
         return INSTANCE;
     }
 
-    /**
-     * This function retrieves and returns the user data instance,
-     * which is a singleton instance
-     * @return
-     */
-    public static UserDataClass getInstance(String android_id) {
-        // Check if the instance is already created
-        if(INSTANCE == null) {
-            // synchronize the block to ensure only one thread can execute at a time
-            synchronized (UserDataClass.class) {
-                // check again if the instance is already created
-                if (INSTANCE == null) {
-                    // create the singleton instance
-                    INSTANCE = new UserDataClass(android_id);
-                }
-            }
-        }
-        // return the singleton instance
-        return INSTANCE;
-    }
-
-
     public interface checkRegisteredCallback {
         void onCallback(boolean isRegistered);
     }
 
     /**
-     * This method tries to register a user given their android_id,
+     * This method checks if the singleton is already registered
      * and uses a callback interface that takes a boolean saying whether
      * the user is already registered or not
+     * If the user is registered, then it retrieves user data
      * @param callback tryRegisterCallback interface called when document
-     *                 is retrieved
+     *                 is retrievedS
      */
     public void checkRegistered(checkRegisteredCallback callback) {
+        this.userRef = db.collection("Users").document(this.userPhoneID);
+        this.userCodesRef = db.collection("Users").document(userPhoneID).collection("Codes");
         // try registering user
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        this.userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 boolean isRegistered;
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
+                    // User is already registered, retrieve information from database
+                    // User is not registered yet, do registry in callback
+                    // Get data from existing user
                     if (document.exists()) {
-                        // User is already registered, retrieve information from database
                         isRegistered = true;
+                        username = document.get("username").toString();
+                        emailInfo = document.get("email").toString();
+                        phoneInfo = document.get("phone").toString();
+                        totalScore = Integer.parseInt(document.get("totalScore").toString());
                     } else {
-                        // User is not registered yet, do registry in callback
                         isRegistered = false;
                     }
                     callback.onCallback(isRegistered);
@@ -142,7 +117,7 @@ public class UserDataClass {
      * @param data Map containing user data
      */
     public void setData(Map<String, Object> data) {
-        userRef
+        this.userRef
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -261,7 +236,7 @@ public class UserDataClass {
      * @return
      */
     public String getUserPhoneID() {
-        return userPhoneID;
+        return this.userPhoneID;
     }
 
     /**
