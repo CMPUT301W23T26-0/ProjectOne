@@ -55,7 +55,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         Player player = players.get(position);
 
         holder.playerName.setText(player.getName());
-        holder.playerTotalScore.setText(player.getScore());
+        holder.playerTotalScore.setText(String.valueOf(player.getScore()));
     }
 
     /**

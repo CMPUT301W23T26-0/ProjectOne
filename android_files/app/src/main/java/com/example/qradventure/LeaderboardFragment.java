@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -111,10 +113,12 @@ public class LeaderboardFragment extends Fragment {
         playerDataList = new ArrayList<>();
         playerAdapter = new PlayerListAdapter(getContext(), playerDataList);
         playerList.setAdapter(playerAdapter);
+        playerList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         return view;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         Query topScorers = db.collection("Users").orderBy("totalScore", Query.Direction.DESCENDING);
 
         topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -130,10 +134,10 @@ public class LeaderboardFragment extends Fragment {
                         player.setName(playerInfo.get("username").toString());
                         player.setScore(Integer.parseInt(playerInfo.get("totalScore").toString()));
                         playerDataList.add(player);
+                        playerAdapter.notifyItemInserted(-1);
                     }
 
                     // Updates need to be done in this scope
-                    playerAdapter.notifyDataSetChanged();
                     updateTopPlayers(view);
 
                 } else {
@@ -141,8 +145,8 @@ public class LeaderboardFragment extends Fragment {
                 }
             }
         });
-    }
 
+    }
 
     public void updateTopPlayers(View view) {
         TextView first = view.findViewById(R.id.first_place);
@@ -151,7 +155,13 @@ public class LeaderboardFragment extends Fragment {
 
         TextView[] topThree = new TextView[]{first, second, third};
 
-        for (int i = 0; i < playerAdapter.getItemCount(); i++) {
+        int min;
+        if (playerAdapter.getItemCount() < 3) {
+            min = playerAdapter.getItemCount();
+        } else {
+            min = 3;
+        }
+        for (int i = 0; i < min; i++) {
             topThree[i].setText(playerDataList.get(i).getName());
         }
 
