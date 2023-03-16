@@ -65,6 +65,21 @@ public class LoginActivity extends AppCompatActivity {
         user = user.getInstance();
         user.setUserPhoneID(android_id);
 
+        /*db.collection("Users").document(android_id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });*/
+
         user.checkRegistered(new UserDataClass.checkRegisteredCallback() {
             @Override
             public void onCallback(boolean isRegistered) {

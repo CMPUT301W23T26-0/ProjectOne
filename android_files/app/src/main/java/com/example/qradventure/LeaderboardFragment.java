@@ -133,7 +133,7 @@ public class LeaderboardFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    // Iterate through user codess
+                    // Iterate through user codes
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Log.d(TAG, document.getId() + " => " + document.getData());
                         // Populate user profile using db
