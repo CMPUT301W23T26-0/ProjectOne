@@ -6,12 +6,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.qradventure.qrcode.QRCode;
 import com.example.qradventure.R;
+import com.example.qradventure.ui.qrcode.qrFragment;
 import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,13 +42,12 @@ import java.util.Map;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements RecyclerView.OnItemTouchListener {
     // Data
     private UserDataClass user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userCodes;
     private CollectionReference dbCodes;
-
     private RecyclerView qrCodeList;
     private Button sortButton;
     private ProfilesListArrayAdapter qrCodeAdapter;
@@ -131,6 +133,7 @@ public class ProfileFragment extends Fragment {
         qrCodeDataList = new ArrayList<>();
         qrCodeAdapter = new ProfilesListArrayAdapter(getContext(), qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
+        qrCodeList.addOnItemTouchListener(this);
         return view;
     }
 
@@ -287,5 +290,43 @@ public class ProfileFragment extends Fragment {
         }
         String count = "Count: " + Integer.toString(qrCodeDataList.size());
         qrCount.setText(count);
+    }
+
+    /**
+     * This function allows the main fragments to be navigated
+     * through by the user via the app's bottom navigation bar.
+     * @param fragment
+     */
+    private void switchFragment(Fragment fragment) {
+        // Fragment manager example from the developers guide
+        // https://developer.android.com/guide/fragments/fragmentmanager#java
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.fragments, fragment)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+        View item = rv.findChildViewUnder(e.getX(), e.getY()); // gets xy pos of the part clicked
+        if (item != null && e.getAction() == MotionEvent.ACTION_UP) {
+            int pos = rv.getChildAdapterPosition(item);
+            if (pos != RecyclerView.NO_POSITION) {
+                switchFragment(new qrFragment()); // switch fragments if item is clicked
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+        // Do nothing
+    }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        // Do nothing
     }
 }
