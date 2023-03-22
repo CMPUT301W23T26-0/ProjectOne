@@ -293,6 +293,13 @@ public class ProfileFragment extends Fragment implements RecyclerView.OnItemTouc
         qrCount.setText(count);
     }
 
+    /**
+     * This function enables clicking on an item in recycler view
+     * @param rv, The recycler view object
+     * @param e, motion of the action
+     * @return
+     *      Boolean, if it successfully clicked
+     */
     @Override
     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
         View item = rv.findChildViewUnder(e.getX(), e.getY()); // gets xy pos of the part clicked

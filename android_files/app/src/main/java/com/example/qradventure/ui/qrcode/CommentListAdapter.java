@@ -14,11 +14,21 @@ import com.example.qradventure.R;
 
 import java.util.ArrayList;
 
+/**
+ * This class allows data lists to be displayed in a list view
+ */
 public class CommentListAdapter extends ArrayAdapter<Comment> {
     public CommentListAdapter(Context context, ArrayList<Comment> comments) {
         super(context, 0, comments);
     }
 
+    /**
+     * returns the view for the comment adapting it accordingly
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

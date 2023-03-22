@@ -16,7 +16,7 @@ import com.example.qradventure.R;
 import java.util.ArrayList;
 
 /**
- * This class allows data lists to be displayed in a list view
+ * This class allows data lists to be displayed in a recycler view
  */
 public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListArrayAdapter.ViewHolder>{
     // RecyclerView needs a custom adapter
