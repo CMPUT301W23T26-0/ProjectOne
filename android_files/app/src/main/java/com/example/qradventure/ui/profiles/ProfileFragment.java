@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -292,29 +293,34 @@ public class ProfileFragment extends Fragment implements RecyclerView.OnItemTouc
         qrCount.setText(count);
     }
 
-    /**
-     * This function allows the main fragments to be navigated
-     * through by the user via the app's bottom navigation bar.
-     * @param fragment
-     */
-    private void switchFragment(Fragment fragment) {
-        // Fragment manager example from the developers guide
-        // https://developer.android.com/guide/fragments/fragmentmanager#java
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        manager.beginTransaction()
-                .replace(R.id.fragments, fragment)
-                .setReorderingAllowed(true)
-                .addToBackStack(null)
-                .commit();
-    }
-
     @Override
     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
         View item = rv.findChildViewUnder(e.getX(), e.getY()); // gets xy pos of the part clicked
         if (item != null && e.getAction() == MotionEvent.ACTION_UP) {
             int pos = rv.getChildAdapterPosition(item);
             if (pos != RecyclerView.NO_POSITION) {
-                switchFragment(new qrFragment()); // switch fragments if item is clicked
+                //--- get the QR hash code and player ID
+                int index = rv.getChildAdapterPosition(item);
+                String hash = qrCodeDataList.get(index).getHashValue();
+                String uID = user.getUserPhoneID();
+
+                //--- Put arguments into fragment
+                qrFragment frag = new qrFragment();
+                Bundle args = new Bundle();
+                args.putString("hash", hash);
+                args.putString("UID", uID);
+                frag.setArguments(args);
+
+                //--- Change fragment
+                // Fragment manager example from the developers guide
+                // https://developer.android.com/guide/fragments/fragmentmanager#java
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.fragments, frag)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(null)
+                        .commit();
             }
         }
         return false;

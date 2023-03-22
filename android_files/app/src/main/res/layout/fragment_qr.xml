@@ -49,22 +49,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="4">
+        android:padding="10sp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profile_image"
+            android:layout_width="48sp"
+            android:layout_height="48sp"
+            android:src="@drawable/ic_baseline_person_24"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
+            app:strokeColor="@color/very_light_grey"
+            app:strokeWidth="2dp"/>
+
+        <EditText
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Comments:"
-            android:layout_marginHorizontal="10sp"
-            android:textSize="20sp"
-            android:layout_gravity="bottom"
-            android:layout_weight="4"/>
-
+            android:layout_weight="1"
+            android:hint="@string/comment_prompt"/>
+        
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add Comment"
-            android:paddingHorizontal="10sp"/>
+            android:id="@+id/comment_button"
+            android:layout_width="64sp"
+            android:layout_height="48sp"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
+            app:strokeColor="@color/very_light_grey"
+            app:strokeWidth="2dp"
+            android:text="+"/>
         
     </LinearLayout>
     

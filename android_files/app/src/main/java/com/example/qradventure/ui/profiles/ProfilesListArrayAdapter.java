@@ -62,7 +62,6 @@ public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListA
         QRController qrController = new QRController();
 
         holder.qrCodeTitle.setText(qrCode.getName());
-        holder.qrCodeComment.setText(qrCode.getComment());
         holder.qrCodeScore.setText(Integer.toString(qrCode.getScore()));
         holder.qrImage.setImageDrawable(qrController.generateImage(context, qrCode.getHashValue()));
     }
@@ -81,7 +80,6 @@ public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListA
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView qrCodeTitle;
-        public TextView qrCodeComment;
         public TextView qrCodeScore;
         public ImageView qrImage;
 
@@ -92,7 +90,6 @@ public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListA
         public ViewHolder(View view) {
             super(view);
             this.qrCodeTitle = view.findViewById(R.id.qr_title);
-            this.qrCodeComment = view.findViewById(R.id.qr_comment);
             this.qrCodeScore = view.findViewById(R.id.qr_score_value);
             this.qrImage = view.findViewById(R.id.qr_image);
         }

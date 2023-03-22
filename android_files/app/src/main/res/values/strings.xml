@@ -18,4 +18,5 @@
     <string name="sign_in_text">Sign In</string>
     <string name="title">Act Now Think Later</string>
     <string name="commentPrompt">Tap to see comments</string>
+    <string name="comment_prompt">Add a comment</string>
 </resources>
