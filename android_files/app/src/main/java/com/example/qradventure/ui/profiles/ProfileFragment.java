@@ -302,13 +302,11 @@ public class ProfileFragment extends Fragment implements RecyclerView.OnItemTouc
                 //--- get the QR hash code and player ID
                 int index = rv.getChildAdapterPosition(item);
                 String hash = qrCodeDataList.get(index).getHashValue();
-                String uID = user.getUserPhoneID();
 
                 //--- Put arguments into fragment
                 qrFragment frag = new qrFragment();
                 Bundle args = new Bundle();
                 args.putString("hash", hash);
-                args.putString("UID", uID);
                 frag.setArguments(args);
 
                 //--- Change fragment

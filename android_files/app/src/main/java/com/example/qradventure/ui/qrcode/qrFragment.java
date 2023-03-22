@@ -1,24 +1,24 @@
 package com.example.qradventure.ui.qrcode;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.qradventure.R;
 import com.example.qradventure.qrcode.QRController;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -30,15 +30,16 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 
 public class qrFragment extends Fragment {
     private ImageView img;
     private TextView qrName;
     private TextView qrScore;
+    private Button addButton;
+    private EditText editText;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private ListView comments;
     private ArrayList<Comment> commentList = new ArrayList<>();
@@ -72,13 +73,12 @@ public class qrFragment extends Fragment {
         Bundle args = getArguments();
         assert args != null;
         String hash = args.getString("hash");
-        String uID = args.getString("UID");
 
         //--- initialize views to qr code items
+        UserDataClass user = UserDataClass.getInstance();
         qrName = view.findViewById(R.id.qr_title);
         qrScore = view.findViewById(R.id.qr_score_value);
         img = view.findViewById(R.id.qr_image);
-
 
         //--- get info from database
         final DocumentReference code = db.collection("QRCodes").document(hash);
@@ -102,9 +102,40 @@ public class qrFragment extends Fragment {
         comments = view.findViewById(R.id.comments);
         listAdapter = new CommentListAdapter(this.getContext(), commentList);
         comments.setAdapter(listAdapter);
+        addButton = view.findViewById(R.id.comment_button);
+        editText = view.findViewById(R.id.comment_edit);
 
         final CollectionReference commentDB = code.collection("Comments");
 
+        // Add comments
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String contents = editText.getText().toString();
+                HashMap<String, String> data = new HashMap<>();
+                if (contents.length() > 0) {
+                    data.put("author", user.getUsername());
+                    data.put("contents", contents);
+                    commentDB.document(String.valueOf(commentList.size()))
+                            .set(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Log.d(TAG, "Data added successfully");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "Data couldn't be added" + e.toString());
+                                }
+                            });
+                }
+                editText.setText("");
+            }
+        });
+
+        // Update the list
         commentDB.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
