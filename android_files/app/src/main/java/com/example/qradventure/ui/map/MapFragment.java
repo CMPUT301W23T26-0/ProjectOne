@@ -41,13 +41,21 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +67,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
     EditText edit;
+//    private Location location = new Location();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference locations = db.collection("QRCodes");
+    private List<String> docLocations = new ArrayList<String>();
     private GoogleMap mMap;
     private Location currLocation;
     Button btLocation;
@@ -261,18 +273,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //test marker
-        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
-        googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
-                .position(uofa)
-                .title("University of Alberta"));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(uofa));      // move to uOfA and Zoom In
+//        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
+//        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
+//        googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
+//                .position(uofa)
+//                .title("University of Alberta"));
+//        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(uofa));      // move to uOfA and Zoom In
 
         // https://stackoverflow.com/questions/55933929/android-display-user-location-on-map-fragment
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
+
+        placeMarkers();
         updateLocation();
 
         //Placeholder for updating location in map fragment
@@ -282,6 +296,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 });
     }
 
+
+    // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
+    // "Alex Mamo", https://stackoverflow.com/users/5246885/alex-mamo
+    private void placeMarkers(){
+        locations.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        // get location and name values from DB
+                        LatLng tempLocation = (LatLng) document.get("location");
+                        String tempName = (String) document.get("name");
+                        assert tempLocation != null;
+                        // add a marker
+                        mMap.addMarker(new MarkerOptions()
+                                .position(tempLocation)
+                                .title(tempName));
+//                        docLocations.add(document.get("location"));
+                    }
+
+                    Log.d("SUCCESS", docLocations.toString());
+                } else {
+                    Log.d("NO BUENO", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
     /**
      * Get user location when switching back to MapFragment
      */
