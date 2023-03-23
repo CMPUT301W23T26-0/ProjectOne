@@ -22,7 +22,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/qr_title"
@@ -43,6 +44,16 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+
+        <Button
+            android:layout_width="64sp"
+            android:layout_height="64sp"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
+            app:strokeColor="@color/very_light_grey"
+            app:strokeWidth="2dp"
+            android:text="Add"
+            android:layout_gravity="end|bottom"
+            android:layout_marginHorizontal="10sp"/>
     </LinearLayout>
 
     <LinearLayout
