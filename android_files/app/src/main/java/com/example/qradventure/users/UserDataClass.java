@@ -297,9 +297,9 @@ public class UserDataClass {
         if (score > this.highestQrScore) {
             this.highestQrScore = score;
             this.highestQrHash = hash;
+            updateField("highestQrScore", score);
+            updateField("highestQrHash", hash);
         }
-        updateField("highestQrScore", score);
-        updateField("highestQrHash", hash);
     }
 
     /**
