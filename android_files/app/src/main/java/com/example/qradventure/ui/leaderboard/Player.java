@@ -1,10 +1,10 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.leaderboard;
 
 public class Player {
     private String name;
     private int score;
 
-    Player() {}
+    public Player() {}
 
     public String getName() {
         return name;
