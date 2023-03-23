@@ -316,11 +316,8 @@ public class UserDataClass {
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                         int newScore = (int) code.get("score");
-                        if (newScore > highestQrScore) {
-                            highestQrScore = newScore;
-                            highestQrHash = code.get("hash").toString();
-                        }
-                        checkHighestQr(highestQrHash, newScore);
+                        String hash = code.get("hash").toString();
+                        checkHighestQr(hash, newScore);
                         addTotalScore(newScore);
                     }
                 })
