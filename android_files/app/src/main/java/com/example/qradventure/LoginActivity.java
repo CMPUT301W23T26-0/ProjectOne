@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -134,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                             newUser.put("totalScore", 0);
                             newUser.put("highestQrScore", 0);
                             newUser.put("highestQrHash", "");
-                            newUser.put("location", new LatLng(0, 0));
+                            newUser.put("location", new Location(""));
                             // Set user singleton data
                             user.setData(newUser);
                             // Go to main activity
