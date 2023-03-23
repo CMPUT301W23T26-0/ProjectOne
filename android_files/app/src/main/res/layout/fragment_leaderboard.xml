@@ -23,12 +23,11 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <RadioGroup
-        android:id="@+id/toggle"
+        android:id="@+id/leaderboard_toggle"
         android:layout_width="200dp"
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/out_line"
-        android:checkedButton="@+id/offer"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +36,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <RadioButton
-            android:id="@+id/search"
+            android:id="@+id/QRCode_toggle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="1dp"
@@ -48,10 +47,10 @@
             android:button="@null"
             android:gravity="center"
             android:text="QR Code"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
 
         <RadioButton
-            android:id="@+id/offer"
+            android:id="@+id/Total_toggle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginTop="1dp"
@@ -62,7 +61,7 @@
             android:button="@null"
             android:gravity="center"
             android:text="Total"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
     </RadioGroup>
 
     <ImageView
@@ -74,7 +73,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toggle"
+        app:layout_constraintTop_toBottomOf="@+id/leaderboard_toggle"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
@@ -86,7 +85,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/toggle"
+        app:layout_constraintTop_toBottomOf="@+id/leaderboard_toggle"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
@@ -98,22 +97,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toggle"
+        app:layout_constraintTop_toBottomOf="@+id/leaderboard_toggle"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/second_place"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:text="@string/username"
         android:textColor="@color/black"
         android:textAlignment="center"
-        app:layout_constraintEnd_toStartOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/first_place"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/first_place"
         android:layout_width="128dp"
         android:layout_height="wrap_content"
         android:text="@string/username"
@@ -124,29 +123,29 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/third_place"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:text="@string/username"
         android:textColor="@color/black"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintStart_toEndOf="@+id/first_place"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
-    <ListView
-        android:id="@+id/user_qr_code_list"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/player_list"
         android:layout_width="match_parent"
-        android:layout_height="525dp"
+        android:layout_height="0dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="12dp"
         android:background="@color/very_light_grey"
         android:paddingTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/first_place"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
