@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.qradventure.users.UserDataClass;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -133,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                             newUser.put("totalScore", 0);
                             newUser.put("highestQrScore", 0);
                             newUser.put("highestQrHash", "");
-                            newUser.put("location", new GeoPoint(0, 0));
+                            newUser.put("location", new LatLng(0, 0));
                             // Set user singleton data
                             user.setData(newUser);
                             // Go to main activity
