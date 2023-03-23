@@ -293,6 +293,15 @@ public class UserDataClass {
         updateField("totalScore", this.totalScore);
     }
 
+    public void checkHighestQr(String hash, int score) {
+        if (score > this.highestQrScore) {
+            this.highestQrScore = score;
+            this.highestQrHash = hash;
+        }
+        updateField("highestQrScore", score);
+        updateField("highestQrHash", hash);
+    }
+
     /**
      * This function adds a code to the user's Code collection,
      * and updates the user's total score and highest scoring QR code as needed
@@ -311,6 +320,7 @@ public class UserDataClass {
                             highestQrScore = newScore;
                             highestQrHash = code.get("hash").toString();
                         }
+                        checkHighestQr(highestQrHash, newScore);
                         addTotalScore(newScore);
                     }
                 })
