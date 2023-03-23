@@ -56,6 +56,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -272,22 +273,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //test marker
-//        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
-//        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
-//        googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
-//                .position(uofa)
-//                .title("University of Alberta"));
-//        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(uofa));      // move to uOfA and Zoom In
 
         // https://stackoverflow.com/questions/55933929/android-display-user-location-on-map-fragment
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
 
-        placeMarkers();
         updateLocation();
+        placeMarkers();
 
         //Placeholder for updating location in map fragment
         btLocation.setOnClickListener(
@@ -306,10 +299,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 if (task.isSuccessful()) {
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        // get location and name values from DB
-                        LatLng tempLocation = (LatLng) document.get("location");
-                        String tempName = (String) document.get("name");
-                        assert tempLocation != null;
+//                         get location and name values from DB
+                        Map<String, Object> map = document.getData();
+                        Double lat = (Double) map.get("latitude");
+                        Double lon = (Double) map.get("longitude");
+
+//                        String location = (String) map.get("location");
+
+                        String tempName = document.getString("name");
+//                        Double lat = document.getDouble("latitude");
+//                        Double lon = document.getDouble("longitude");
+//                        assert location != null;
+                        if (lat == null || lon == null){
+                            continue;
+                        }
+                        LatLng tempLocation = new LatLng(lat, lon);
                         // add a marker
                         mMap.addMarker(new MarkerOptions()
                                 .position(tempLocation)
