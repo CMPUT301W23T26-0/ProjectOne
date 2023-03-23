@@ -278,6 +278,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
 
         updateLocation();
         placeMarkers();
@@ -289,9 +290,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 });
     }
 
-
     // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
     // "Alex Mamo", https://stackoverflow.com/users/5246885/alex-mamo
+    /*
+        Get locations of scanned QR codes from DB and save them as markers on the map
+     */
     private void placeMarkers(){
         locations.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -299,28 +302,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 if (task.isSuccessful()) {
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
-//                         get location and name values from DB
-                        Map<String, Object> map = document.getData();
-                        Double lat = (Double) map.get("latitude");
-                        Double lon = (Double) map.get("longitude");
+                        // get the location thing, which is a map, from the DB
+                        Map<String, Object> locations = (Map<String, Object>) document.get("location");
 
-//                        String location = (String) map.get("location");
-
-                        String tempName = document.getString("name");
-//                        Double lat = document.getDouble("latitude");
-//                        Double lon = document.getDouble("longitude");
-//                        assert location != null;
-                        if (lat == null || lon == null){
+                        // if user chose not to save location, skip
+                        if (locations == null){
                             continue;
                         }
-                        LatLng tempLocation = new LatLng(lat, lon);
+
+                        // get long and lat
+                        Double longitude = (Double) locations.get("longitude");
+                        Double latitude = (Double) locations.get("latitude");
+                        // get name of marker
+                        String tempName = document.getString("name");
+                        // create a temporary LatLng object
+                        LatLng tempLocation = new LatLng(latitude, longitude);
                         // add a marker
                         mMap.addMarker(new MarkerOptions()
                                 .position(tempLocation)
                                 .title(tempName));
-//                        docLocations.add(document.get("location"));
                     }
-
                     Log.d("SUCCESS", docLocations.toString());
                 } else {
                     Log.d("NO BUENO", "Error getting documents: ", task.getException());
@@ -328,6 +329,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             }
         });
     }
+
     /**
      * Get user location when switching back to MapFragment
      */
