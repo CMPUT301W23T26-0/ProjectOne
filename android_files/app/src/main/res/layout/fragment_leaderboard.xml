@@ -28,7 +28,6 @@
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/out_line"
-        android:checkedButton="@+id/total_toggle"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,8 +47,7 @@
             android:button="@null"
             android:gravity="center"
             android:text="QR Code"
-            android:textColor="@color/black"
-            android:onClick="onRadioButtonClicked"/>
+            android:textColor="@color/black" />
 
         <RadioButton
             android:id="@+id/Total_toggle"
@@ -63,8 +61,7 @@
             android:button="@null"
             android:gravity="center"
             android:text="Total"
-            android:textColor="@color/black"
-            android:onClick="onRadioButtonClicked"/>
+            android:textColor="@color/black" />
     </RadioGroup>
 
     <ImageView

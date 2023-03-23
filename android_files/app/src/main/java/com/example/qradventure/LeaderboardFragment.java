@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -49,7 +50,7 @@ public class LeaderboardFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private UserDataClass user;
-    private String field;
+    private RadioGroup leaderboardToggler;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView playerList;
     private PlayerListAdapter playerAdapter;
@@ -112,8 +113,7 @@ public class LeaderboardFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
 
-        RadioButton toggleTotalScore = view.findViewById(R.id.Total_toggle);
-        RadioButton toggleQrScore = view.findViewById(R.id.QRCode_toggle);
+        leaderboardToggler = view.findViewById(R.id.leaderboard_toggle);
         playerList = view.findViewById(R.id.player_list);
         playerDataList = new ArrayList<>();
         playerAdapter = new PlayerListAdapter(getContext(), playerDataList);
@@ -133,45 +133,48 @@ public class LeaderboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Query topScorers = db.collection("Users").orderBy(this.field, Query.Direction.DESCENDING);
-        topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        leaderboardToggler.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    // Iterate through user codes
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d(TAG, document.getId() + " => " + document.getData());
-                        // Populate user profile using db
-                        Map<String, Object> playerInfo = document.getData();
-                        Player player = new Player();
-                        player.setName(playerInfo.get("username").toString());
-                        player.setScore(Integer.parseInt(playerInfo.get(field).toString()));
-                        playerDataList.add(player);
-                        playerAdapter.notifyItemInserted(-1);
-                    }
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Query topScorers;
+                String field;
 
-                    // Updates need to be done in this scope
-                    updateTopPlayers(view);
+                playerDataList.clear();
+                playerAdapter.notifyDataSetChanged();
 
+                if (checkedId == R.id.QRCode_toggle) {
+                    field = "highestQrScore";
                 } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
+                    field = "totalScore";
                 }
+
+                topScorers = db.collection("Users").orderBy(field, Query.Direction.DESCENDING);
+                topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            // Iterate through user codes
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                // Populate user profile using db
+                                Map<String, Object> playerInfo = document.getData();
+                                Player player = new Player();
+                                player.setName(playerInfo.get("username").toString());
+                                player.setScore(Integer.parseInt(playerInfo.get(field).toString()));
+                                playerDataList.add(player);
+                                playerAdapter.notifyItemInserted(-1);
+                            }
+
+                            // Updates need to be done in this scope
+                            updateTopPlayers(view);
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
             }
         });
-    }
-
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-        switch (view.getId()) {
-            case R.id.Total_toggle:
-                if (checked)
-                    this.field = "totalScore";
-                break;
-            case R.id.QRCode_toggle:
-                if (checked)
-                    this.field = "highestQrScore";
-        }
     }
 
     /**
