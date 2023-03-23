@@ -1,26 +1,24 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.profiles;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.qrcode.QRController;
+import com.example.qradventure.R;
 
 import java.util.ArrayList;
 
 /**
- * This class allows data lists to be displayed in a list view
+ * This class allows data lists to be displayed in a recycler view
  */
-public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.ViewHolder>{
+public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListArrayAdapter.ViewHolder>{
     // RecyclerView needs a custom adapter
 
     private Context context;
@@ -31,7 +29,7 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.Vi
      * @param context The context of the data list
      * @param qrCodes The data list of QR codes to be adapted
      */
-    public CustomListAdapter(Context context, ArrayList<QRCode> qrCodes) {
+    public ProfilesListArrayAdapter(Context context, ArrayList<QRCode> qrCodes) {
         this.context = context;
         this.qrCodes = qrCodes;
     }
@@ -64,7 +62,6 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.Vi
         QRController qrController = new QRController();
 
         holder.qrCodeTitle.setText(qrCode.getName());
-        holder.qrCodeComment.setText(qrCode.getComment());
         holder.qrCodeScore.setText(Integer.toString(qrCode.getScore()));
         holder.qrImage.setImageDrawable(qrController.generateImage(context, qrCode.getHashValue()));
     }
@@ -83,7 +80,6 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.Vi
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView qrCodeTitle;
-        public TextView qrCodeComment;
         public TextView qrCodeScore;
         public ImageView qrImage;
 
@@ -94,7 +90,6 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.Vi
         public ViewHolder(View view) {
             super(view);
             this.qrCodeTitle = view.findViewById(R.id.qr_title);
-            this.qrCodeComment = view.findViewById(R.id.qr_comment);
             this.qrCodeScore = view.findViewById(R.id.qr_score_value);
             this.qrImage = view.findViewById(R.id.qr_image);
         }

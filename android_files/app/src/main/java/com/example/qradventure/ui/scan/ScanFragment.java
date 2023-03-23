@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.scan;
 
 import static android.content.ContentValues.TAG;
 
@@ -20,6 +20,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,7 +43,7 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class ScanFragment extends Fragment implements DisplayCodePromptPictureFragment.CameraInScanFrag,
-        SavePictureFragment.GeolocationInScanFrag{
+        SavePictureFragment.GeolocationInScanFrag {
     // For data
     private UserDataClass user;
     private QRCode code;

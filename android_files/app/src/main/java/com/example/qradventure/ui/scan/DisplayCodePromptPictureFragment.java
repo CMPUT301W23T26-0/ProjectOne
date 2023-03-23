@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.scan;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -6,10 +6,15 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 import androidx.fragment.app.DialogFragment;
+
+import com.example.qradventure.R;
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.qrcode.QRController;
 
 /**
  * This class extends DialogFragment, and it serves to display a
@@ -68,7 +73,7 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
 
         // Initialize variables
         TextView codeNameText = (TextView) view.findViewById(R.id.scan_display_code_name_text);
-//        ImageView codeImage = (ImageView) view.findViewById(R.id.scan_display_code_image); // For image display later
+        ImageView codeImage = (ImageView) view.findViewById(R.id.scan_display_code_image); // For image display later
         TextView codeScoreText = (TextView) view.findViewById(R.id.scan_display_code_score_text);
         TextView bottomText = (TextView) view.findViewById(R.id.scan_display_code_bottom_text);
 
@@ -91,6 +96,9 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
         title.setText(fragmentTitle);
         title.setGravity(Gravity.CENTER);
         title.setTextSize(20);
+
+        QRController qrController = new QRController();
+        codeImage.setImageDrawable(qrController.generateImage(getContext(), code.getHashValue()));
 
         // Return dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())

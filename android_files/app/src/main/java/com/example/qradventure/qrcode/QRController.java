@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.qrcode;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -8,6 +8,8 @@ import android.graphics.drawable.LayerDrawable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.example.qradventure.R;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -16,7 +18,7 @@ public class QRController {
     /**
      * Empty constructor, contains nothing,
      */
-    QRController() {
+    public QRController() {
         // Empty
     }
 

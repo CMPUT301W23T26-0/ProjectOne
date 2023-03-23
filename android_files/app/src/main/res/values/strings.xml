@@ -17,4 +17,6 @@
     <string name="searchPrompt">Search:</string>
     <string name="sign_up_text">Sign Up</string>
     <string name="title">Act Now Think Later</string>
+    <string name="commentPrompt">Tap to see comments</string>
+    <string name="comment_prompt">Add a comment</string>
 </resources>

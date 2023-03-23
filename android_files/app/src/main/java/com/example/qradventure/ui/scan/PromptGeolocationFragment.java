@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.scan;
 
 import static android.content.ContentValues.TAG;
 
@@ -19,6 +19,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.qradventure.users.UserDataClass;
+import com.example.qradventure.qrcode.QRCode;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;

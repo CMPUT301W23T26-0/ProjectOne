@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.leaderboard;
 
 import static android.content.ContentValues.TAG;
 
@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+
+import com.example.qradventure.R;
 
 /**
  * A simple {@link Fragment} subclass.

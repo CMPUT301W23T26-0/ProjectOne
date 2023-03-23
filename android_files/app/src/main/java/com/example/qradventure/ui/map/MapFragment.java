@@ -7,7 +7,7 @@
 // https://developers.google.com/maps/documentation/android-sdk/location#:~:text=If%20your%20app%20needs%20to,location%20returned%20by%20the%20API.
 // https://www.geeksforgeeks.org/how-to-get-current-location-inside-android-fragment/
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-package com.example.qradventure;
+package com.example.qradventure.ui.map;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
 
@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +34,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
