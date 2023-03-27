@@ -332,6 +332,7 @@ public class UserDataClass {
                             }
                         }
                         setTotalScore(getTotalScore() + score);
+                        updateField("QrScores", qrScores);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -393,7 +394,7 @@ public class UserDataClass {
                                 setHighestQrScore(max);
                             }
                         }
-
+                        updateField("QrScores", qrScores);
                         setTotalScore(getTotalScore() - score);
                     }
                 })
