@@ -142,7 +142,11 @@ public class qrFragment extends Fragment {
         picsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Put arguments into fragment
                 qrPicsFragment frag = new qrPicsFragment();
+                Bundle args = new Bundle();
+                args.putString("hash", hash);
+                frag.setArguments(args);
 
                 // Change the current fragment to display the qrPicsFragment
                 // https://developer.android.com/guide/fragments/fragmentmanager#java
