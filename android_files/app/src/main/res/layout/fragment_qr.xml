@@ -47,6 +47,7 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/pics_button"
             android:layout_width="72dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"

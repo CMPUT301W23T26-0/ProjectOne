@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class qrFragment extends Fragment {
     private ArrayList<Comment> commentList = new ArrayList<>();
     private CommentListAdapter listAdapter;
     final String TAG = "QR Fragment";
+    private Button picsButton;
 
     public qrFragment() {
         // Required empty public constructor
@@ -107,6 +109,8 @@ public class qrFragment extends Fragment {
 
         final CollectionReference commentDB = code.collection("Comments");
 
+        picsButton = view.findViewById(R.id.pics_button);
+
         // Add comments
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +136,22 @@ public class qrFragment extends Fragment {
                             });
                 }
                 editText.setText("");
+            }
+        });
+
+        picsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                qrPicsFragment frag = new qrPicsFragment();
+
+                // Change the current fragment to display the qrPicsFragment
+                // https://developer.android.com/guide/fragments/fragmentmanager#java
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.fragments, frag)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
