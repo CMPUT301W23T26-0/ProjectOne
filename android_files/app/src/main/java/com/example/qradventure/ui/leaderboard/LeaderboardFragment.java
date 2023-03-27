@@ -128,6 +128,33 @@ public class LeaderboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        String field = "totalScore";
+        Query topScorers = db.collection("Users").orderBy(field, Query.Direction.DESCENDING);
+        topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    // Iterate through user codes
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                        // Populate user profile using db
+                        Map<String, Object> playerInfo = document.getData();
+                        Player player = new Player();
+                        player.setName(playerInfo.get("username").toString());
+                        player.setScore(Integer.parseInt(playerInfo.get(field).toString()));
+                        playerDataList.add(player);
+                        playerAdapter.notifyItemInserted(-1);
+                    }
+
+                    // Updates need to be done in this scope
+                    updateTopPlayers(view);
+
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+
         leaderboardToggler.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -192,7 +219,6 @@ public class LeaderboardFragment extends Fragment {
         for (int i = 0; i < min; i++) {
             topThree[i].setText(playerDataList.get(i).getName());
         }
-
     }
 
 }
