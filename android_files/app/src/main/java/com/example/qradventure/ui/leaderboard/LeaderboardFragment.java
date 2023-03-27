@@ -128,6 +128,8 @@ public class LeaderboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        leaderboardToggler.check(R.id.Total_toggle);
+
         String field = "totalScore";
         Query topScorers = db.collection("Users").orderBy(field, Query.Direction.DESCENDING);
         topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
