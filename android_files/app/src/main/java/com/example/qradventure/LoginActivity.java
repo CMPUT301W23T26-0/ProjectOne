@@ -29,6 +29,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -129,12 +130,12 @@ public class LoginActivity extends AppCompatActivity {
                             String phone = phoneInput.getText().toString();
 
                             Map<String, Object> newUser = new HashMap<>();
+                            Map<Integer, ArrayList<String>> QrScores = new HashMap<>();
                             newUser.put("username", username);
                             newUser.put("email", email);
                             newUser.put("phone", phone);
                             newUser.put("totalScore", 0);
-                            newUser.put("highestQrScore", 0);
-                            newUser.put("highestQrHash", "");
+                            newUser.put("QrScores", QrScores);
                             newUser.put("location", new Location(""));
                             // Set user singleton data
                             user.setData(newUser);
