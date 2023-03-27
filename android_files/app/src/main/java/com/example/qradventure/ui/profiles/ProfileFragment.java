@@ -222,20 +222,7 @@ public class ProfileFragment extends Fragment implements RecyclerView.OnItemTouc
 
                 // https://firebase.google.com/docs/firestore/manage-data/delete-data
                 // Remove QR code from user in db
-                userCodes.document(codeToRemove.getHashValue())
-                        .delete()
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error deleting document", e);
-                            }
-                        });
+                user.deleteCode(codeToRemove);
 
                 // Remove user from qr code in db
                 dbCodes.document(codeToRemove.getHashValue())
