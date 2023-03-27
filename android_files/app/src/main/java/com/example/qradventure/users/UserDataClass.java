@@ -47,6 +47,7 @@ public class UserDataClass {
     private int totalScore;
     private String userPhoneID;
     private Map<Integer, ArrayList<String>> qrScores;
+    private int highestQrScore;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef;
     private CollectionReference userCodesRef;
@@ -112,6 +113,7 @@ public class UserDataClass {
                         phoneInfo = document.get("phone").toString();
                         totalScore = Integer.parseInt(document.get("totalScore").toString());
                         qrScores = (Map<Integer, ArrayList<String>>) document.get("QrScores");
+                        highestQrScore = Integer.parseInt(document.get("highestQrScore").toString());
                     } else {
                         isRegistered = false;
                     }
@@ -148,6 +150,7 @@ public class UserDataClass {
         this.phoneInfo = data.get("phone").toString();
         this.totalScore = Integer.parseInt(data.get("totalScore").toString());
         this.qrScores = (Map<Integer, ArrayList<String>>) data.get("qrScores");
+        this.highestQrScore = Integer.parseInt(data.get("highestQrScore").toString());
     }
 
     /**
@@ -164,6 +167,11 @@ public class UserDataClass {
      */
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    public void setHighestQrScore (int score) {
+        this.highestQrScore = score;
+        updateField("highestQrScore", score);
     }
 
     /**
@@ -223,18 +231,12 @@ public class UserDataClass {
     }
 
     public int getHighestQrScore() {
-        int max = 0;
-        for (Integer score: this.qrScores.keySet()) {
-            if (score > max) {
-                max = score;
-            }
-        }
-        return max;
+        return this.highestQrScore;
     }
 
     public String getHighestQrHash() {
         ArrayList<String> topQrs;
-        topQrs = this.qrScores.get(getHighestQrScore());
+        topQrs = this.qrScores.get(this.highestQrScore);
         if (!topQrs.isEmpty()) {
             return topQrs.get(-1);
         } else {
@@ -298,8 +300,8 @@ public class UserDataClass {
         updateField("totalScore", score);
     }
 
-    public boolean checkNewHighestQr(String hash, int score) {
-        return score > getHighestQrScore();
+    public boolean newHighestQr(int score) {
+        return score > this.highestQrScore;
     }
 
     /**
@@ -318,13 +320,16 @@ public class UserDataClass {
                         int score = (int) QrCode.get("score");
                         String hash = QrCode.get("hash").toString();
                         if (qrScores.containsKey(score)) {
-                            ArrayList<String> newEntry = new ArrayList<String>();
-                            newEntry.add(hash);
-                            qrScores.put(score, newEntry);
-                        } else {
                             ArrayList<String> currentEntries = qrScores.get(score);
                             currentEntries.add(hash);
                             qrScores.put(score, currentEntries);
+                        } else {
+                            ArrayList<String> newEntry = new ArrayList<String>();
+                            newEntry.add(hash);
+                            qrScores.put(score, newEntry);
+                            if (newHighestQr(score)) {
+                                setHighestQrScore(score);
+                            }
                         }
                         setTotalScore(getTotalScore() + score);
                     }
@@ -377,6 +382,16 @@ public class UserDataClass {
 
                         if (currentHashes.isEmpty()) {
                             qrScores.remove(score);
+
+                            if (score == getHighestQrScore()) {
+                                int max = 0;
+                                for (int s: qrScores.keySet()) {
+                                    if (s > max) {
+                                        max = s;
+                                    }
+                                }
+                                setHighestQrScore(max);
+                            }
                         }
 
                         setTotalScore(getTotalScore() - score);

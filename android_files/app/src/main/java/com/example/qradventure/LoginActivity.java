@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         user = user.getInstance();
         user.setUserPhoneID(android_id);
 
-        /*db.collection("Users").document(android_id)
+        db.collection("Users").document(android_id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error deleting document", e);
                     }
-                });*/
+                });
 
         user.checkRegistered(new UserDataClass.checkRegisteredCallback() {
             @Override
@@ -136,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                             newUser.put("phone", phone);
                             newUser.put("totalScore", 0);
                             newUser.put("QrScores", QrScores);
+                            newUser.put("highestQrScore", 0);
                             newUser.put("location", new Location(""));
                             // Set user singleton data
                             user.setData(newUser);
