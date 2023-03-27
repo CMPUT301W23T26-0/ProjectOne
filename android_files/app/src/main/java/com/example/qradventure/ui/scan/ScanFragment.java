@@ -192,8 +192,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         user = user.getInstance();
 
         // Instantiate data from database
-        userCodes = db.collection("Users").document(user.getUserPhoneID())
-                .collection("Codes");
+        userCodes = user.getUserCodesRef();
         dbCodes = db.collection("QRCodes");
 
         // Inflate the layout for this fragment
@@ -250,19 +249,8 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                         newCode.put("name", code.getName());
                         newCode.put("score", code.getScore());
                         newCode.put("hash", code.getHashValue());
-                        docRef.set(newCode)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error writing document", e);
-                                    }
-                                });
+
+                        user.addUserCode(code.getHashValue(), newCode);
 
                         // Save it again (but associate user with code this time)
                         saveCodeToDb();
@@ -278,6 +266,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
             }
         });
     }
+
 
     /**
      * A function that saves QR codes to the database. This is done to keep

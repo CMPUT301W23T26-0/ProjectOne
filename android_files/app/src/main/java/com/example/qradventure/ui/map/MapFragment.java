@@ -41,13 +41,22 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +68,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
     EditText edit;
+//    private Location location = new Location();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference locations = db.collection("QRCodes");
+    private List<String> docLocations = new ArrayList<String>();
     private GoogleMap mMap;
     private Location currLocation;
     Button btLocation;
@@ -260,26 +273,61 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //test marker
-        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
-        googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
-                .position(uofa)
-                .title("University of Alberta"));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(uofa));      // move to uOfA and Zoom In
 
         // https://stackoverflow.com/questions/55933929/android-display-user-location-on-map-fragment
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
+
         updateLocation();
+        placeMarkers();
 
         //Placeholder for updating location in map fragment
         btLocation.setOnClickListener(
                 view1 -> {
                     updateLocation();
                 });
+    }
+
+    // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
+    // "Alex Mamo", https://stackoverflow.com/users/5246885/alex-mamo
+    /*
+        Get locations of scanned QR codes from DB and save them as markers on the map
+     */
+    private void placeMarkers(){
+        locations.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        // get the location thing, which is a map, from the DB
+                        Map<String, Object> locations = (Map<String, Object>) document.get("location");
+
+                        // if user chose not to save location, skip
+                        if (locations == null){
+                            continue;
+                        }
+
+                        // get long and lat
+                        Double longitude = (Double) locations.get("longitude");
+                        Double latitude = (Double) locations.get("latitude");
+                        // get name of marker
+                        String tempName = document.getString("name");
+                        // create a temporary LatLng object
+                        LatLng tempLocation = new LatLng(latitude, longitude);
+                        // add a marker
+                        mMap.addMarker(new MarkerOptions()
+                                .position(tempLocation)
+                                .title(tempName));
+                    }
+                    Log.d("SUCCESS", docLocations.toString());
+                } else {
+                    Log.d("NO BUENO", "Error getting documents: ", task.getException());
+                }
+            }
+        });
     }
 
     /**

@@ -122,8 +122,7 @@ public class ProfileFragment extends Fragment implements RecyclerView.OnItemTouc
                              Bundle savedInstanceState) {
         // data instantiation
         user = user.getInstance();
-        userCodes = db.collection("Users").document(user.getUserPhoneID())
-                .collection("Codes");
+        userCodes = user.getUserCodesRef();
         dbCodes = db.collection("QRCodes");
 
         // Inflate the layout for this fragment
