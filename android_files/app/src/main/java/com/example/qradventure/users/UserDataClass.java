@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.qradventure.qrcode.QRCode;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,8 +21,14 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.K;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -39,8 +46,7 @@ public class UserDataClass {
     private String username;
     private int totalScore;
     private String userPhoneID;
-    private int highestQrScore;
-    private String highestQrHash;
+    private Map<Integer, ArrayList<String>> qrScores;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef;
     private CollectionReference userCodesRef;
@@ -105,8 +111,7 @@ public class UserDataClass {
                         emailInfo = document.get("email").toString();
                         phoneInfo = document.get("phone").toString();
                         totalScore = Integer.parseInt(document.get("totalScore").toString());
-                        highestQrScore = Integer.parseInt(document.get("highestQrScore").toString());
-                        highestQrHash = document.get("highestQrHash").toString();
+                        qrScores = (Map<Integer, ArrayList<String>>) document.get("QrScores");
                     } else {
                         isRegistered = false;
                     }
@@ -142,9 +147,7 @@ public class UserDataClass {
         this.emailInfo = data.get("email").toString();
         this.phoneInfo = data.get("phone").toString();
         this.totalScore = Integer.parseInt(data.get("totalScore").toString());
-        this.highestQrScore = Integer.parseInt(data.get("highestQrScore").toString());
-        this.highestQrHash = data.get("highestQrHash").toString();
-
+        this.qrScores = (Map<Integer, ArrayList<String>>) data.get("qrScores");
     }
 
     /**
@@ -215,16 +218,28 @@ public class UserDataClass {
      * This function gets the user's highest scoring QR code
      * @return
      */
-    public int getHighestQrScore() {
-        return this.highestQrScore;
+    public Map<Integer, ArrayList<String>> getQrScores() {
+        return this.qrScores;
     }
 
-    /**
-     * This function gets the hash of the user's highest scoring QR code
-     * @return
-     */
+    public int getHighestQrScore() {
+        int max = 0;
+        for (Integer score: this.qrScores.keySet()) {
+            if (score > max) {
+                max = score;
+            }
+        }
+        return max;
+    }
+
     public String getHighestQrHash() {
-        return this.highestQrHash;
+        ArrayList<String> topQrs;
+        topQrs = this.qrScores.get(getHighestQrScore());
+        if (!topQrs.isEmpty()) {
+            return topQrs.get(-1);
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -283,42 +298,35 @@ public class UserDataClass {
         updateField("totalScore", score);
     }
 
-    /**
-     * This function increments the user's total score
-     * and updates the database
-     * @param score
-     */
-    public void addTotalScore(int score) {
-        this.totalScore += score;
-        updateField("totalScore", this.totalScore);
-    }
-
-    public void checkHighestQr(String hash, int score) {
-        if (score > this.highestQrScore) {
-            this.highestQrScore = score;
-            this.highestQrHash = hash;
-            updateField("highestQrScore", score);
-            updateField("highestQrHash", hash);
-        }
+    public boolean checkNewHighestQr(String hash, int score) {
+        return score > getHighestQrScore();
     }
 
     /**
      * This function adds a code to the user's Code collection,
      * and updates the user's total score and highest scoring QR code as needed
      * @param codeID The code's hash value that acts as the documentID
-     * @param code A map containing the code data to be inputted to the database
+     * @param QrCode A map containing the code data to be inputted to the database
      */
-    public void addUserCode(String codeID, Map<String, Object> code) {
+    public void addUserCode(String codeID, Map<String, Object> QrCode) {
         userCodesRef.document(codeID)
-                .set(code)
+                .set(QrCode)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
-                        int newScore = (int) code.get("score");
-                        String hash = code.get("hash").toString();
-                        checkHighestQr(hash, newScore);
-                        addTotalScore(newScore);
+                        int score = (int) QrCode.get("score");
+                        String hash = QrCode.get("hash").toString();
+                        if (qrScores.containsKey(score)) {
+                            ArrayList<String> newEntry = new ArrayList<String>();
+                            newEntry.add(hash);
+                            qrScores.put(score, newEntry);
+                        } else {
+                            ArrayList<String> currentEntries = qrScores.get(score);
+                            currentEntries.add(hash);
+                            qrScores.put(score, currentEntries);
+                        }
+                        setTotalScore(getTotalScore() + score);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -328,6 +336,7 @@ public class UserDataClass {
                     }
                 });
     }
+
 
     /**
      * This function is a helper function that is called
@@ -342,6 +351,35 @@ public class UserDataClass {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+    }
+
+    public void deleteCode(QRCode QrCode) {
+        String hash = QrCode.getHashValue();
+        this.userCodesRef.document(hash)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        int score = QrCode.getScore();
+                        String hash = QrCode.getHashValue();
+
+                        ArrayList<String> currentHashes = qrScores.get(score);
+                        currentHashes.remove(hash);
+
+                        if (currentHashes.isEmpty()) {
+                            qrScores.remove(score);
+                        }
+
+                        setTotalScore(getTotalScore() - score);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
