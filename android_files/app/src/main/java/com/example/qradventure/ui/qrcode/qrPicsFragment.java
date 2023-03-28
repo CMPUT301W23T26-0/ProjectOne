@@ -68,6 +68,7 @@ public class qrPicsFragment extends Fragment {
         assert args != null;
         hash = args.getString("hash");
 
+        // Set QR code's name in text
         TextView qr_pics_text = view.findViewById(R.id.qr_pics_text);
         QRController codeController = new QRController();
         String string = String.format("Pictures of %s's location", codeController.generateName(hash));
@@ -101,7 +102,6 @@ public class qrPicsFragment extends Fragment {
                             // Convert saved strings into bitmaps
                             // https://stackoverflow.com/questions/23005948/convert-string-to-bitmap
                             String encodedPicDataString = (String) document.getData().get("picture");
-
                             byte[] encodedPicDataBytes = Base64.decode(encodedPicDataString, Base64.URL_SAFE);
                             Bitmap picToAdd = BitmapFactory.decodeByteArray(encodedPicDataBytes, 0, encodedPicDataBytes.length);
 

@@ -50,34 +50,6 @@ public class qrListArrayAdapter extends RecyclerView.Adapter<qrListArrayAdapter.
      */
     @Override
     public void onBindViewHolder(qrListArrayAdapter.ViewHolder holder, int position) {
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // nothing for now
-//                QRCode qrCode = qrCodes.get(position);
-//
-//                qrFragment frag = new qrFragment();
-//                Bundle args = new Bundle();
-//                args.putString("hash", qrCode.getHashValue());
-//                frag.setArguments(args);
-//
-//                FragmentActivity activity = (FragmentActivity) context;
-//                FragmentManager manager = activity.getSupportFragmentManager();
-//
-//                manager.beginTransaction()
-//                        .replace(R.id.fragments, frag)
-//                        .setReorderingAllowed(true)
-//                        .addToBackStack(null)
-//                        .commit();
-            }
-        });
-
-//        QRCode qrCode = qrCodes.get(position);
-//        QRController qrController = new QRController();
-//
-//        holder.qrCodeTitle.setText(qrCode.getName());
-//        holder.qrCodeScore.setText(Integer.toString(qrCode.getScore()));
-//        holder.qrImage.setImageDrawable(qrController.generateImage(context, qrCode.getHashValue()));
         Bitmap pic = picsList.get(position);
         holder.qrPic.setImageBitmap(pic);
     }
@@ -86,9 +58,6 @@ public class qrListArrayAdapter extends RecyclerView.Adapter<qrListArrayAdapter.
      * This class is used to update the view.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-//        public TextView qrCodeTitle;
-//        public TextView qrCodeScore;
-//        public ImageView qrImage;
         public ImageView qrPic;
 
         /**
@@ -98,9 +67,6 @@ public class qrListArrayAdapter extends RecyclerView.Adapter<qrListArrayAdapter.
         public ViewHolder(View view) {
             super(view);
             this.qrPic = view.findViewById(R.id.qr_pics_image);
-//            this.qrCodeTitle = view.findViewById(R.id.qr_title);
-//            this.qrCodeScore = view.findViewById(R.id.qr_score_value);
-//            this.qrImage = view.findViewById(R.id.qr_image);
         }
     }
 

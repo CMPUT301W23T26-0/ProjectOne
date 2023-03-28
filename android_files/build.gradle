@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
   repositories {
-    // Make sure that you have the following two repositories (for maps and glide)
+    // Make sure that you have the following two repositories (for maps)
         google()  // Google's Maven repository
         mavenCentral()  // Maven Central repository
     }
