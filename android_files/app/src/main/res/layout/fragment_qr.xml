@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_pics_button"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.qrcode.qrFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.qrcode.qrFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,18 +23,18 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/qr_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="10sp"
                 android:text="QR Unique Name"
-                android:textSize="20sp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:layout_marginVertical="10sp"/>
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/qr_score_value"
@@ -46,22 +47,23 @@
         </LinearLayout>
 
         <Button
-            android:layout_width="64sp"
-            android:layout_height="64sp"
+            android:id="@+id/pics_button"
+            android:layout_width="72dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_marginHorizontal="10sp"
+            android:text="Pics"
             app:shapeAppearanceOverlay="@style/CircleImageView"
             app:strokeColor="@color/very_light_grey"
-            app:strokeWidth="2dp"
-            android:text="Add"
-            android:layout_gravity="end|bottom"
-            android:layout_marginHorizontal="10sp"/>
+            app:strokeWidth="2dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/very_light_grey"
         android:orientation="horizontal"
-        android:padding="10sp"
-        android:background="@color/very_light_grey">
+        android:padding="10sp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/profile_image"
@@ -70,29 +72,29 @@
             android:src="@drawable/ic_baseline_person_24"
             app:shapeAppearanceOverlay="@style/CircleImageView"
             app:strokeColor="@color/very_light_grey"
-            app:strokeWidth="2dp"/>
+            app:strokeWidth="2dp" />
 
         <EditText
             android:id="@+id/comment_edit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/comment_prompt"/>
-        
+            android:hint="@string/comment_prompt" />
+
         <Button
             android:id="@+id/comment_button"
             android:layout_width="64sp"
             android:layout_height="48sp"
+            android:text="+"
             app:shapeAppearanceOverlay="@style/CircleImageView"
             app:strokeColor="@color/very_light_grey"
-            app:strokeWidth="2dp"
-            android:text="+"/>
-        
+            app:strokeWidth="2dp" />
+
     </LinearLayout>
-    
+
     <ListView
         android:id="@+id/comments"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
