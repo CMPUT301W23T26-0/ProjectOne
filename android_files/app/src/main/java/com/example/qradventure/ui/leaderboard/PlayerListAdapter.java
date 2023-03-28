@@ -1,15 +1,19 @@
 package com.example.qradventure.ui.leaderboard;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qradventure.R;
+import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
 
 import java.util.ArrayList;
 
@@ -54,6 +58,26 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Player player = players.get(position);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Player player = players.get(position);
+
+                PlayersFragment playersFragment = new PlayersFragment();
+                Bundle args = new Bundle();
+                //args.putString("hash", qrCode.getHashValue());
+                playersFragment.setArguments(args);
+                FragmentActivity activity = (FragmentActivity) context;
+                FragmentManager manager = activity.getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.fragments, playersFragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         holder.playerName.setText(player.getName());
         holder.playerScore.setText(String.valueOf(player.getScore()));
