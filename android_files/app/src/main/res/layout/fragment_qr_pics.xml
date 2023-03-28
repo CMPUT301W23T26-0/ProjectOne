@@ -7,7 +7,7 @@
     tools:context=".ui.profiles.ProfileFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/qr_pic_list"
+        android:id="@+id/qr_pics_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="8dp"
@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:text="Pictures of..."
         android:textSize="20sp"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
