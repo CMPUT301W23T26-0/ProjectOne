@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class is used to store user data. It follows
@@ -307,11 +308,7 @@ public class UserDataClass {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                         int newScore = (int) code.get("score");
                         if (newScore > highestQrScore) {
-                            highestQrScore = newScore;
-                            highestQrHash = code.get("hash").toString();
-                        }
-                        if (newScore > highestQrScore) {
-                            setHighestQr(highestQrHash, newScore);
+                            setHighestQr(codeID, newScore);
                         }
                         setTotalScore(totalScore + newScore);
                     }
@@ -332,8 +329,12 @@ public class UserDataClass {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         int score = code.getScore();
-                        setTotalScore(totalScore - score);
-                        if (highestQrHash == hash) {
+                        if (totalScore < score) {
+                            setTotalScore(0);
+                        } else {
+                            setTotalScore(totalScore - score);
+                        }
+                        if (Objects.equals(highestQrHash, hash)) {
                             refreshHighestQr();
                         }
                     }
