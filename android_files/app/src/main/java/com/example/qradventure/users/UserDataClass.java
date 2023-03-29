@@ -283,16 +283,6 @@ public class UserDataClass {
         updateField("totalScore", score);
     }
 
-    /**
-     * This function increments the user's total score
-     * and updates the database
-     * @param score
-     */
-    public void addTotalScore(int score) {
-        this.totalScore += score;
-        updateField("totalScore", this.totalScore);
-    }
-
     public void checkHighestQr(String hash, int score) {
         if (score > this.highestQrScore) {
             this.highestQrScore = score;
@@ -321,7 +311,7 @@ public class UserDataClass {
                             highestQrHash = code.get("hash").toString();
                         }
                         checkHighestQr(highestQrHash, newScore);
-                        addTotalScore(newScore);
+                        setTotalScore(totalScore + newScore);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
