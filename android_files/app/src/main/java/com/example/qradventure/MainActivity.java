@@ -7,19 +7,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-
 import com.example.qradventure.databinding.ActivityMainBinding;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.qradventure.ui.leaderboard.LeaderboardFragment;
+import com.example.qradventure.ui.map.MapFragment;
+import com.example.qradventure.ui.profiles.ProfileFragment;
+import com.example.qradventure.ui.scan.ScanFragment;
 
+/**
+ * This activity allows the user to access all of the main
+ * fragments, which include ProfileFragment, ScanFragment,
+ * LeaderboardFragment, and MapFragment
+ */
 public class MainActivity extends AppCompatActivity {
-
     ActivityMainBinding binding;
-    FirebaseFirestore db;
 
+    /**
+     * This function runs a set of instructions upon activity
+     * creation, which includes permission and view set up.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
         switchFragment(new ProfileFragment());
-
-        //User user = new User();
 
         //request location permission
         requestPermissions(new String[] {
@@ -57,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This function allows the main fragments to be navigated
+     * through by the user via the app's bottom navigation bar.
+     * @param fragment
+     */
     private void switchFragment(Fragment fragment) {
         // Fragment manager example from the developers guide
         // https://developer.android.com/guide/fragments/fragmentmanager#java

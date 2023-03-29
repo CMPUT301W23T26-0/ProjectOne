@@ -11,8 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,70 +24,78 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This activity checks if a user is new or not. If they are
+ * new, they are prompted to make an account. Otherwise, they
+ * are logged into their existing account using their android
+ * device ID.
+ */
 public class LoginActivity extends AppCompatActivity {
     private Button signInButton;
     private EditText emailInput;
     private EditText phoneInput;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    // Data
+    private EditText usernameInput;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "LoginActivity";
     private UserDataClass user;
 
+    /**
+     * This function runs a set of instructions upon activity
+     * creation, which includes data instantiation and activity
+     * set up.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // initialize singleton userdata
         user = user.getInstance();
+
         // Get device ID for database checking
         @SuppressLint("HardwareIds")
         String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        user.setUsername(android_id);
-        // deletes your device from the database,
-        // uncomment if you want to see the sign in page when running
-        /*
-        db.collection("Users").document(android_id)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error deleting document", e);
-                    }
-                });
-         */
+        user.setUserPhoneID(android_id);
 
-        DocumentReference userRef = db.collection("Users").document(android_id);
         // Check database for user
+        DocumentReference userRef = db.collection("Users").document(android_id);
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    // If new user, display login page and user to database
+                    // If new user, display login page and add user to database
                     if (!document.exists()) {
                         // Display login page
                         setContentView(R.layout.activity_login);
                         signInButton = findViewById(R.id.login_button);
                         emailInput = findViewById(R.id.emailContact);
                         phoneInput = findViewById(R.id.phoneContact);
-                        // If sign in button clicked, add user, email, phone fields
+                        usernameInput = findViewById(R.id.username);
+                        // If sign in button clicked, add user, username, email, phone fields
                         signInButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 // fill user data in singleton
                                 String email = emailInput.getText().toString();
                                 String phone = phoneInput.getText().toString();
+                                String username = usernameInput.getText().toString();
                                 user.setEmailInfo(email);
                                 user.setPhoneInfo(phone);
+                                // If user didn't give a username, default name is their device ID
+                                if (username.isEmpty()) {
+                                    username = user.getUserPhoneID();
+                                }
+                                user.setUsername(username);
+
                                 // create hashmap for database entry
                                 Map<String, Object> newUser = new HashMap<>();
-                                newUser.put("username", android_id);
+                                newUser.put("username", username);
                                 newUser.put("email", email);
                                 newUser.put("phone", phone);
+
+                                // add user to database
                                 db.collection("Users").document(android_id)
                                         .set(newUser)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -107,8 +115,12 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(registered);
                             }
                         });
-                    // User already has account, go to main
+                    // User already has account, update user singleton and go to main
                     } else {
+                        Map<String, Object> userInfo = document.getData();
+                        String username = (String) userInfo.get("username");
+
+                        user.setUsername(username);
                         Intent login = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(login);
                     }

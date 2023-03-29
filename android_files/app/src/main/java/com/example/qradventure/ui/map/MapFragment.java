@@ -7,7 +7,7 @@
 // https://developers.google.com/maps/documentation/android-sdk/location#:~:text=If%20your%20app%20needs%20to,location%20returned%20by%20the%20API.
 // https://www.geeksforgeeks.org/how-to-get-current-location-inside-android-fragment/
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-package com.example.qradventure;
+package com.example.qradventure.ui.map;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
 
@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,18 +34,29 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,14 +68,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
     EditText edit;
+//    private Location location = new Location();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference locations = db.collection("QRCodes");
+    private List<String> docLocations = new ArrayList<String>();
     private GoogleMap mMap;
     private Location currLocation;
     Button btLocation;
-    FusedLocationProviderClient client;
-    UserDataClass user = UserDataClass.getInstance();
+    private FusedLocationProviderClient client;
+    private UserDataClass user = UserDataClass.getInstance();
 
+    /**
+     * Constructor for MapFragment
+     */
     public MapFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -82,11 +98,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         return fragment;
     }
 
+    /**
+     * Initialize fragment
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Inflate layout of fragment and assign variables to views
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,6 +142,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         return view;
     }
 
+    /**
+     * Update the current user location
+     */
     private void updateLocation(){
         // check condition
         if (ContextCompat.checkSelfPermission(
@@ -118,7 +154,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // When permission is granted
             // Call method
-            locationSetter();
+            retrieveLocation();
             updateLocationUI();
         }
         else {
@@ -131,6 +167,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
+    /**
+     * Check if the user allowed their location to be tracked. If granted, update the user location.
+     * If denied, display "Permission denied."
+     * @param requestCode The request code passed in {@link #requestPermissions(String[], int)}.
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
@@ -150,8 +196,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
+    /**
+     * Set the user's last location
+     */
     @SuppressLint("MissingPermission")
-    private void locationSetter() {
+    private void retrieveLocation() {
         // Initialize Location manager
         LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         // Check condition
@@ -164,10 +213,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         // Initialize location
                         currLocation = task.getResult();
                         user.setCurrentLocation(task.getResult());
-
-                        //Debugging
-                        //Location tempLocation = user.getCurrentLocation();
-                        //edit.setText(String.valueOf(tempLocation.getLatitude()));
 
                         // Check condition
                         if (currLocation == null) {
@@ -187,10 +232,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     // Initialize location
                                     currLocation = locationResult.getLastLocation();
                                     user.setCurrentLocation(currLocation);
-
-                                    //Debugging
-                                    //Location tempLocation = user.getCurrentLocation();
-                                    //edit.setText(String.valueOf(tempLocation.getLatitude()));
                                 }
                             };
 
@@ -211,6 +252,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     }
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
+    /**
+     * Set Google Maps to display MyLocationButton if a location is available
+     */
     private void updateLocationUI() {
         if (mMap == null) {
             return;
@@ -223,22 +267,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
+    /**
+     * Initialize Google Maps MapView
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //test marker
-        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
-        googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
-                .position(uofa)
-                .title("University of Alberta"));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(uofa));      // move to uOfA and Zoom In
 
         // https://stackoverflow.com/questions/55933929/android-display-user-location-on-map-fragment
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
+
         updateLocation();
+        placeMarkers();
 
         //Placeholder for updating location in map fragment
         btLocation.setOnClickListener(
@@ -247,6 +290,49 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 });
     }
 
+    // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
+    // "Alex Mamo", https://stackoverflow.com/users/5246885/alex-mamo
+    /*
+        Get locations of scanned QR codes from DB and save them as markers on the map
+     */
+    private void placeMarkers(){
+        locations.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        // get the location thing, which is a map, from the DB
+                        Map<String, Object> locations = (Map<String, Object>) document.get("location");
+
+                        // if user chose not to save location, skip
+                        if (locations == null){
+                            continue;
+                        }
+
+                        // get long and lat
+                        Double longitude = (Double) locations.get("longitude");
+                        Double latitude = (Double) locations.get("latitude");
+                        // get name of marker
+                        String tempName = document.getString("name");
+                        // create a temporary LatLng object
+                        LatLng tempLocation = new LatLng(latitude, longitude);
+                        // add a marker
+                        mMap.addMarker(new MarkerOptions()
+                                .position(tempLocation)
+                                .title(tempName));
+                    }
+                    Log.d("SUCCESS", docLocations.toString());
+                } else {
+                    Log.d("NO BUENO", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    /**
+     * Get user location when switching back to MapFragment
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -254,35 +340,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         //update location when switching to map fragment
         updateLocation();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mapView.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mapView.onStop();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
     }
 }
