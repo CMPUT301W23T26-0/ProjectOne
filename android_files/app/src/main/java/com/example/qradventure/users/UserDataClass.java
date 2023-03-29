@@ -283,13 +283,11 @@ public class UserDataClass {
         updateField("totalScore", score);
     }
 
-    public void checkHighestQr(String hash, int score) {
-        if (score > this.highestQrScore) {
-            this.highestQrScore = score;
-            this.highestQrHash = hash;
-            updateField("highestQrScore", score);
-            updateField("highestQrHash", hash);
-        }
+    public void setHighestQr(String hash, int score) {
+        this.highestQrScore = score;
+        this.highestQrHash = hash;
+        updateField("highestQrScore", score);
+        updateField("highestQrHash", hash);
     }
 
     /**
@@ -310,7 +308,9 @@ public class UserDataClass {
                             highestQrScore = newScore;
                             highestQrHash = code.get("hash").toString();
                         }
-                        checkHighestQr(highestQrHash, newScore);
+                        if (newScore > highestQrScore) {
+                            setHighestQr(highestQrHash, newScore);
+                        }
                         setTotalScore(totalScore + newScore);
                     }
                 })
