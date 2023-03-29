@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.qradventure.qrcode.QRCode;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -318,6 +320,41 @@ public class UserDataClass {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error writing document", e);
+                    }
+                });
+    }
+
+    public void deleteUserCode(QRCode code) {
+        String hash = code.getHashValue();
+        userCodesRef.document(hash)
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        int score = code.getScore();
+                        setTotalScore(totalScore - score);
+                        if (highestQrHash == hash) {
+                            refreshHighestQr();
+                        }
+                    }
+                });
+    }
+
+    public void refreshHighestQr() {
+        userCodesRef.orderBy("score", Query.Direction.DESCENDING).limit(1)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Map<String, Object> QRInfo = document.getData();
+                                String hash = QRInfo.get("hash").toString();
+                                int score = Integer.parseInt(QRInfo.get("score").toString());
+                                setHighestQr(hash, score);
+                            }
+                        }
                     }
                 });
     }
