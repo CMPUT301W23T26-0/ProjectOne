@@ -131,7 +131,7 @@ public class LeaderboardFragment extends Fragment {
         leaderboardToggler.check(R.id.Total_toggle);
 
         String field = "totalScore";
-        Query topScorers = db.collection("Users").orderBy(field, Query.Direction.DESCENDING);
+        Query topScorers = db.collection("Users").orderBy(field, Query.Direction.DESCENDING).limit(50);
         topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {

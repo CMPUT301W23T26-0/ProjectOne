@@ -39,7 +39,6 @@ import java.util.Map;
  * device ID.
  */
 public class LoginActivity extends AppCompatActivity {
-    private Button signInButton;
     private EditText emailInput;
     private EditText phoneInput;
 
@@ -102,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
     private void registerUser() {
         // Display login page
         setContentView(R.layout.activity_login);
-        signInButton = findViewById(R.id.login_button);
+        Button signInButton = findViewById(R.id.login_button);
         emailInput = findViewById(R.id.emailContact);
         phoneInput = findViewById(R.id.phoneContact);
         usernameInput = findViewById(R.id.username);
