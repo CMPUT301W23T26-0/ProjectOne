@@ -37,7 +37,7 @@
             android:id="@+id/bt_location"
             android:layout_width="0sp"
             android:layout_height="wrap_content"
-            android:text="Update"
+            android:text="Get Close"
             android:layout_weight="1" />
     </LinearLayout>
 

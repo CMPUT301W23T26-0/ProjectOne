@@ -55,8 +55,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,10 +74,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 //    private Location location = new Location();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference locations = db.collection("QRCodes");
-    private List<String> docLocations = new ArrayList<String>();
+    private List<String> docLocations = new ArrayList<>();
+    // https://stackoverflow.com/questions/13543457/how-do-you-create-a-dictionary-in-java
+    // "arshajii" https://stackoverflow.com/users/1357341/arshajii
+    // edited by "Timo Giese", https://stackoverflow.com/users/4440113/timo-giese
+    private Map<String, LatLng> locationDict = new HashMap<>();
+    private Map<String, Double> lengthDict = new HashMap<>();
     private GoogleMap mMap;
     private Location currLocation;
-    Button btLocation;
+    Button getCloseButton;
     private FusedLocationProviderClient client;
     private UserDataClass user = UserDataClass.getInstance();
 
@@ -133,7 +141,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         mapView.onCreate(mapBundle);
         mapView.getMapAsync(this);
         // Assign variable
-        btLocation = view.findViewById(R.id.bt_location);
+        getCloseButton = view.findViewById(R.id.bt_location);
         edit = view.findViewById(R.id.editText);
 
         // Initialize location client
@@ -283,11 +291,53 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         updateLocation();
         placeMarkers();
 
-        //Placeholder for updating location in map fragment
-        btLocation.setOnClickListener(
-                view1 -> {
-                    updateLocation();
-                });
+        getCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // initialize user and marker longs and lats
+                double userLongitude = currLocation.getLongitude();
+                double userLatitude = currLocation.getLatitude();
+                LatLng tempLocation;
+                double tempLongitude;
+                double tempLatitude;
+                double distance;
+                // for each marker, get the distance between the user and the marker using pythag
+                // https://www.w3schools.com/java/java_hashmap.asp
+                for (String i : locationDict.keySet()) {
+                    tempLocation = locationDict.get(i);
+                    tempLatitude = tempLocation.latitude;
+                    tempLongitude = tempLocation.longitude;
+                    // get the distance using pythagoras
+                    distance = getPythag(userLongitude, userLatitude, tempLongitude, tempLatitude);
+                    // put each marker with its distance to the user in a dictionary
+                    lengthDict.put(i, distance);
+                }
+                // https://howtodoinjava.com/java/sort/java-sort-map-by-values/
+                // sorts dictionary into a new dictionary
+                LinkedHashMap<String, Double> sortedMap = lengthDict.entrySet()
+                        .stream()
+                        .sorted(Map.Entry.comparingByValue())
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+                // https://www.geeksforgeeks.org/how-to-get-first-or-last-entry-from-java-linkedhashmap/
+                // converts keys of dictionary into an array
+                String[] aKeys = sortedMap.keySet().toArray(new String[sortedMap.size()]);
+                // Print the first element in the array (the closest name of the Marker to the user)
+                edit.setText(aKeys[0]);
+            }
+        });
+    }
+
+    /*
+        returns the distance between two points (the first two params are the user and
+        the next two params are a marker) using Pythagoras.
+     */
+    private double getPythag(double userLongitude, double userLatitude, double tempLongitude, double tempLatitude){
+        double x = Math.pow((userLatitude - tempLatitude), 2);      // x = (ULat - TLat)^2
+        double y = Math.pow((userLongitude - tempLongitude), 2);    // y = (ULong - TLong)^2
+        return Math.sqrt(x + y);                                    // sqrt(x + y)
     }
 
     // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
@@ -309,7 +359,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         if (locations == null){
                             continue;
                         }
-
                         // get long and lat
                         Double longitude = (Double) locations.get("longitude");
                         Double latitude = (Double) locations.get("latitude");
@@ -317,6 +366,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         String tempName = document.getString("name");
                         // create a temporary LatLng object
                         LatLng tempLocation = new LatLng(latitude, longitude);
+                        // add location to list
+                        locationDict.put(tempName, tempLocation);
                         // add a marker
                         mMap.addMarker(new MarkerOptions()
                                 .position(tempLocation)
