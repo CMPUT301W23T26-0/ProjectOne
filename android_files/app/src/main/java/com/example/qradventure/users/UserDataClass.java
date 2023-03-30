@@ -348,12 +348,16 @@ public class UserDataClass {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                Map<String, Object> QRInfo = document.getData();
-                                String hash = QRInfo.get("hash").toString();
-                                int score = Integer.parseInt(QRInfo.get("score").toString());
-                                setHighestQr(hash, score);
+                            if (!task.getResult().isEmpty()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Map<String, Object> QRInfo = document.getData();
+                                    String hash = QRInfo.get("hash").toString();
+                                    int score = Integer.parseInt(QRInfo.get("score").toString());
+                                    setHighestQr(hash, score);
+                                }
+                            } else {
+                                setHighestQr("", 0);
                             }
                         }
                     }
