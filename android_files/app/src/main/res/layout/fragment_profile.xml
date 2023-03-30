@@ -9,11 +9,11 @@
     <EditText
         android:id="@+id/profile_search"
         android:layout_width="match_parent"
-        android:layout_height="32sp"
+        android:layout_height="wrap_content"
         android:imeOptions="actionSearch"
         android:inputType="text"
+        android:hint="Search for a player..."
         android:maxLines="1"
-        android:textSize="20sp"
         android:layout_marginTop="12sp"
         android:layout_marginHorizontal="48sp"
         app:layout_constraintTop_toTopOf="parent"/>
