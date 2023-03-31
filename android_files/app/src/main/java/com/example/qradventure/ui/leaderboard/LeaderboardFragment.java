@@ -128,43 +128,11 @@ public class LeaderboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        leaderboardToggler.check(R.id.Total_toggle);
-
-        String field = "totalScore";
-        Query topScorers = db.collection("Users").orderBy(field, Query.Direction.DESCENDING);
-        topScorers.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    // Iterate through user codes
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d(TAG, document.getId() + " => " + document.getData());
-                        // Populate user profile using db
-                        Map<String, Object> playerInfo = document.getData();
-                        Player player = new Player();
-                        player.setName(playerInfo.get("username").toString());
-                        player.setScore(Integer.parseInt(playerInfo.get(field).toString()));
-                        playerDataList.add(player);
-                        playerAdapter.notifyItemInserted(-1);
-                    }
-
-                    // Updates need to be done in this scope
-                    updateTopPlayers(view);
-
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
-                }
-            }
-        });
-
         leaderboardToggler.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 Query topScorers;
                 String field;
-
-                playerDataList.clear();
-                playerAdapter.notifyDataSetChanged();
 
                 if (checkedId == R.id.QRCode_toggle) {
                     field = "highestQrScore";
@@ -177,6 +145,7 @@ public class LeaderboardFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            playerDataList.clear();
                             // Iterate through user codes
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
@@ -186,9 +155,9 @@ public class LeaderboardFragment extends Fragment {
                                 player.setName(playerInfo.get("username").toString());
                                 player.setScore(Integer.parseInt(playerInfo.get(field).toString()));
                                 playerDataList.add(player);
-                                playerAdapter.notifyItemInserted(-1);
                             }
 
+                            playerAdapter.notifyDataSetChanged();
                             // Updates need to be done in this scope
                             updateTopPlayers(view);
 
@@ -199,6 +168,8 @@ public class LeaderboardFragment extends Fragment {
                 });
             }
         });
+
+        leaderboardToggler.check(R.id.Total_toggle);
     }
 
     /**
