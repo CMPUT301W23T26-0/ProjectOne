@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.qradventure.qrcode.QRCode;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -17,12 +18,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class is used to store user data. It follows
@@ -283,23 +286,11 @@ public class UserDataClass {
         updateField("totalScore", score);
     }
 
-    /**
-     * This function increments the user's total score
-     * and updates the database
-     * @param score
-     */
-    public void addTotalScore(int score) {
-        this.totalScore += score;
-        updateField("totalScore", this.totalScore);
-    }
-
-    public void checkHighestQr(String hash, int score) {
-        if (score > this.highestQrScore) {
-            this.highestQrScore = score;
-            this.highestQrHash = hash;
-            updateField("highestQrScore", score);
-            updateField("highestQrHash", hash);
-        }
+    public void setHighestQr(String hash, int score) {
+        this.highestQrScore = score;
+        this.highestQrHash = hash;
+        updateField("highestQrScore", score);
+        updateField("highestQrHash", hash);
     }
 
     /**
@@ -317,17 +308,58 @@ public class UserDataClass {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                         int newScore = (int) code.get("score");
                         if (newScore > highestQrScore) {
-                            highestQrScore = newScore;
-                            highestQrHash = code.get("hash").toString();
+                            setHighestQr(codeID, newScore);
                         }
-                        checkHighestQr(highestQrHash, newScore);
-                        addTotalScore(newScore);
+                        setTotalScore(totalScore + newScore);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error writing document", e);
+                    }
+                });
+    }
+
+    public void deleteUserCode(QRCode code) {
+        String hash = code.getHashValue();
+        userCodesRef.document(hash)
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        int score = code.getScore();
+                        if (totalScore < score) {
+                            setTotalScore(0);
+                        } else {
+                            setTotalScore(totalScore - score);
+                        }
+                        if (Objects.equals(highestQrHash, hash)) {
+                            refreshHighestQr();
+                        }
+                    }
+                });
+    }
+
+    public void refreshHighestQr() {
+        userCodesRef.orderBy("score", Query.Direction.DESCENDING).limit(1)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (!task.getResult().isEmpty()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Map<String, Object> QRInfo = document.getData();
+                                    String hash = QRInfo.get("hash").toString();
+                                    int score = Integer.parseInt(QRInfo.get("score").toString());
+                                    setHighestQr(hash, score);
+                                }
+                            } else {
+                                setHighestQr("", 0);
+                            }
+                        }
                     }
                 });
     }

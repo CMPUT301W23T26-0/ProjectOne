@@ -57,6 +57,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
 
         holder.playerName.setText(player.getName());
         holder.playerScore.setText(String.valueOf(player.getScore()));
+        holder.playerPlace.setText(String.valueOf(position + 1));
     }
 
     /**
@@ -75,6 +76,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         public TextView playerName;
         public TextView playerScore;
         public ImageView playerImage;
+        public TextView playerPlace;
 
         /**
          * A function that updates the view.
@@ -85,6 +87,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
             this.playerName = view.findViewById(R.id.player_name);
             this.playerScore = view.findViewById(R.id.player_score);
             this.playerImage = view.findViewById(R.id.player_image);
+            this.playerPlace = view.findViewById(R.id.player_place);
         }
     }
 }
