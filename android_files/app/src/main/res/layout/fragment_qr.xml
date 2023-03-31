@@ -23,6 +23,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="top|fill"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -44,18 +45,29 @@
                 android:textColor="@color/black"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/qr_players_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|bottom"
+                android:text="Scanned by..."
+                android:textColor="@color/grey"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/pics_button"
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:layout_marginHorizontal="10sp"
+                android:text="Pics"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="@color/very_light_grey"
+                app:strokeWidth="2dp" />
+
         </LinearLayout>
 
-        <Button
-            android:id="@+id/pics_button"
-            android:layout_width="72dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginHorizontal="10sp"
-            android:text="Pics"
-            app:shapeAppearanceOverlay="@style/CircleImageView"
-            app:strokeColor="@color/very_light_grey"
-            app:strokeWidth="2dp" />
     </LinearLayout>
 
     <LinearLayout
