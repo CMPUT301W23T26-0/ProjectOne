@@ -120,7 +120,7 @@ public class qrFragment extends Fragment {
 
         // Text to show who else has scanned this QR code
         qrPlayersText = view.findViewById(R.id.qr_players_text);
-        
+
         // Update qrPlayersText using db
         code.collection("Users").get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -168,7 +168,7 @@ public class qrFragment extends Fragment {
                                                 qrPlayers[0], qrPlayers[1]);
                                     } else {
                                         // More than 2 players scanned it
-                                        outputText = String.format("Scanned by you, %s, %s, and %d others.",
+                                        outputText = String.format("Scanned by you, %s, %s, and %d other(s).",
                                                 qrPlayers[0], qrPlayers[1], excessPlayerCount);
                                     }
                                 } else {
@@ -191,7 +191,7 @@ public class qrFragment extends Fragment {
                                                 qrPlayers[0], qrPlayers[1]);
                                     } else {
                                         // More than 2 players scanned it
-                                        outputText = String.format("Scanned by %s, %s, and %d others.",
+                                        outputText = String.format("Scanned by %s, %s, and %d other(s).",
                                                 qrPlayers[0], qrPlayers[1], excessPlayerCount);
                                     }
                                 } else {

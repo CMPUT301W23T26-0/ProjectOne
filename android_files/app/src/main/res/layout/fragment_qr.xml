@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|bottom"
-                android:text="Scanned by you, TheQRMaster, Xero, and 2,402,419 others."
+                android:text="Scanned by..."
                 android:textColor="@color/grey"
                 android:textSize="10sp"
                 android:textStyle="bold" />
