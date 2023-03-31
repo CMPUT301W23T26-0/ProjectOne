@@ -180,6 +180,7 @@ public class ProfileFragment extends Fragment {
                 return false;
             }
 
+            // Disables swiping when viewing other's profiles
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 if (!viewingUser) return 0;
@@ -221,6 +222,8 @@ public class ProfileFragment extends Fragment {
         };
 
         new ItemTouchHelper(itemTouchHelperUser).attachToRecyclerView(qrCodeList);
+
+        // Responsible for search bar actions
         profileSearchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -265,6 +268,12 @@ public class ProfileFragment extends Fragment {
         qrCount.setText(count);
     }
 
+    /**
+     * This function searches for a user with the given username in the database,
+     * calls displayProfileInfo if successful, otherwise creates a Toast alert
+     * @param username  String of username being searched
+     * @param view      View to be passed to displayProfileInfo
+     */
     public void searchProfile(String username, View view) {
         Toast searchAlert = Toast.makeText(getActivity().getApplicationContext(), "User does not exist, try again", Toast.LENGTH_SHORT);
         db.collection("Users").whereEqualTo("username", username).limit(1)
@@ -288,6 +297,13 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    /**
+     * This function displays profile information and by updating the list adapter
+     * as well as the score highlights.
+     * @param profileCodes  CollectionReference of the user's scanned codes
+     * @param username      String of the user's username
+     * @param view          View to be updated
+     */
     private void displayProfileInfo(CollectionReference profileCodes, String username, View view) {
         profileCodes.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
