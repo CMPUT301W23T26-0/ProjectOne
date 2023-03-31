@@ -174,10 +174,16 @@ public class ProfileFragment extends Fragment {
         });
 
         // Responsible for swipe delete
-        ItemTouchHelper.SimpleCallback itemTouchHelper = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+        ItemTouchHelper.SimpleCallback itemTouchHelperUser = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
+            }
+
+            @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if (!viewingUser) return 0;
+                return super.getSwipeDirs(recyclerView, viewHolder);
             }
 
             @Override
@@ -214,7 +220,7 @@ public class ProfileFragment extends Fragment {
             }
         };
 
-        new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(qrCodeList);
+        new ItemTouchHelper(itemTouchHelperUser).attachToRecyclerView(qrCodeList);
         profileSearchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -269,8 +275,8 @@ public class ProfileFragment extends Fragment {
                             if (!task.getResult().isEmpty()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String id = document.getId();
+                                    viewingUser = id == user.getUserPhoneID();
                                     CollectionReference profileCodes = db.collection("Users").document(id).collection("Codes");
-                                    viewingUser = false;
                                     displayProfileInfo(profileCodes, username, view);
                                 }
                             } else {
