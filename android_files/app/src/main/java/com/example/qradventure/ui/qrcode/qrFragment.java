@@ -1,5 +1,7 @@
 package com.example.qradventure.ui.qrcode;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,8 +22,10 @@ import android.widget.TextView;
 import com.example.qradventure.R;
 import com.example.qradventure.qrcode.QRController;
 import com.example.qradventure.users.UserDataClass;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -34,6 +38,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class qrFragment extends Fragment {
     private ImageView img;
@@ -47,6 +52,7 @@ public class qrFragment extends Fragment {
     private CommentListAdapter listAdapter;
     final String TAG = "QR Fragment";
     private Button picsButton;
+    private TextView qrPlayersText;
 
     public qrFragment() {
         // Required empty public constructor
@@ -109,7 +115,100 @@ public class qrFragment extends Fragment {
 
         final CollectionReference commentDB = code.collection("Comments");
 
+        // Pics
         picsButton = view.findViewById(R.id.pics_button);
+
+        // Text to show who else has scanned this QR code
+        qrPlayersText = view.findViewById(R.id.qr_players_text);
+        
+        // Update qrPlayersText using db
+        code.collection("Users").get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            // Some user owns this QR code
+                            String username;
+                            String[] qrPlayers = new String[2];
+                            Boolean isOwned = false;
+                            int excessPlayerCount = 0;
+                            int index = 0;
+                            for (QueryDocumentSnapshot document: task.getResult()) {
+                                Map<String, Object> users = document.getData();
+                                username = (String) users.get("username");
+                                if (username.equals(user.getUsername())) {
+                                    // Check if current player owns code
+                                    isOwned = true;
+                                } else if (index < 2) {
+                                    // Display a max of 2 other players
+                                    qrPlayers[index] = username;
+                                    index++;
+                                } else {
+                                    // Once we find 2 others, start counting excess
+                                    excessPlayerCount++;
+                                }
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                            }
+
+                            // Format outputText
+                            String outputText;
+                            if (isOwned) {
+                                // Current player scanned it
+                                if (index == 0) {
+                                    // No other players scanned it
+                                    outputText = "Scanned by only you.";
+                                } else if (index == 1) {
+                                    // One other player scanned it
+                                    outputText = String.format("Scanned by you and %s.",
+                                            qrPlayers[0]);
+                                } else if (index == 2) {
+                                    if (excessPlayerCount == 0) {
+                                        // Only 2 players scanned it
+                                        outputText = String.format("Scanned by you, %s, and %s.",
+                                                qrPlayers[0], qrPlayers[1]);
+                                    } else {
+                                        // More than 2 players scanned it
+                                        outputText = String.format("Scanned by you, %s, %s, and %d others.",
+                                                qrPlayers[0], qrPlayers[1], excessPlayerCount);
+                                    }
+                                } else {
+                                    // Should not be reached
+                                    outputText = "Error";
+                                }
+                            } else {
+                                // Current player did not scan it
+                                if (index == 0) {
+                                    // No other players scanned it
+                                    outputText = "Not scanned by anyone.";
+                                } else if (index == 1) {
+                                    // One other player scanned it
+                                    outputText = String.format("Scanned by %s.",
+                                            qrPlayers[0]);
+                                } else if (index == 2) {
+                                    if (excessPlayerCount == 0) {
+                                        // Only 2 players scanned it
+                                        outputText = String.format("Scanned by %s and %s.",
+                                                qrPlayers[0], qrPlayers[1]);
+                                    } else {
+                                        // More than 2 players scanned it
+                                        outputText = String.format("Scanned by %s, %s, and %d others.",
+                                                qrPlayers[0], qrPlayers[1], excessPlayerCount);
+                                    }
+                                } else {
+                                    // Should not be reached
+                                    outputText = "Error";
+                                }
+                            }
+
+                            qrPlayersText.setText(outputText);
+
+                        } else {
+                            // No users own this QR code or error occurs
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            qrPlayersText.setText("Not scanned by anyone.");
+                        }
+                    }
+                });
 
         // Add comments
         addButton.setOnClickListener(new View.OnClickListener() {
