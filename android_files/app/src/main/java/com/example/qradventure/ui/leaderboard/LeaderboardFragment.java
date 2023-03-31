@@ -134,9 +134,6 @@ public class LeaderboardFragment extends Fragment {
                 Query topScorers;
                 String field;
 
-                playerDataList.clear();
-                playerAdapter.notifyDataSetChanged();
-
                 if (checkedId == R.id.QRCode_toggle) {
                     field = "highestQrScore";
                 } else {
@@ -148,6 +145,7 @@ public class LeaderboardFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            playerDataList.clear();
                             // Iterate through user codes
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
@@ -157,9 +155,9 @@ public class LeaderboardFragment extends Fragment {
                                 player.setName(playerInfo.get("username").toString());
                                 player.setScore(Integer.parseInt(playerInfo.get(field).toString()));
                                 playerDataList.add(player);
-                                playerAdapter.notifyItemInserted(-1);
                             }
 
+                            playerAdapter.notifyDataSetChanged();
                             // Updates need to be done in this scope
                             updateTopPlayers(view);
 

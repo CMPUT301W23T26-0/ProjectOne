@@ -311,6 +311,7 @@ public class ProfileFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             qrCodeDataList.clear();
+                            qrCodeAdapter.notifyDataSetChanged();
                             // Iterate through user codes
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // Populate user profile using db
