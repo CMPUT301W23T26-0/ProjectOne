@@ -306,92 +306,43 @@ public class ProfileFragment extends Fragment {
      */
     private void displayProfileInfo(CollectionReference profileCodes, String username, View view) {
         profileCodes.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            qrCodeDataList.clear();
-                            qrCodeAdapter.notifyDataSetChanged();
-                            // Iterate through user codes
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // Populate user profile using db
-                                Map<String, Object> map = document.getData();
-                                QRCode codeToAdd = new QRCode();
-                                codeToAdd.setName((String) map.get("name"));
-                                // https://stackoverflow.com/questions/17164014/java-lang-classcastexception-java-lang-long-cannot-be-cast-to-java-lang-integer
-                                codeToAdd.setScore(((Long) map.get("score")).intValue());
-                                codeToAdd.setHashValue((String) map.get("hash"));
-                                qrCodeDataList.add(codeToAdd);
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                            }
-
-                            TextView usernameText = (TextView) view.findViewById(R.id.username_text);
-                            usernameText.setText(username);
-
-                            // Set profile image using user data (not required yet)
-                            // ImageView userImg = view.findViewById(R.id.profile_image);
-                            // userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
-
-                            // Updates need to be done in this scope
-                            qrCodeAdapter.notifyDataSetChanged();
-                            updateScoreHighlights(view);
-
-                            // Sort using comparison getScore
-                            qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
-                            Collections.reverse(qrCodeDataList);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        qrCodeDataList.clear();
+                        qrCodeAdapter.notifyDataSetChanged();
+                        // Iterate through user codes
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Populate user profile using db
+                            Map<String, Object> map = document.getData();
+                            QRCode codeToAdd = new QRCode();
+                            codeToAdd.setName((String) map.get("name"));
+                            // https://stackoverflow.com/questions/17164014/java-lang-classcastexception-java-lang-long-cannot-be-cast-to-java-lang-integer
+                            codeToAdd.setScore(((Long) map.get("score")).intValue());
+                            codeToAdd.setHashValue((String) map.get("hash"));
+                            qrCodeDataList.add(codeToAdd);
+                            Log.d(TAG, document.getId() + " => " + document.getData());
                         }
+
+                        TextView usernameText = (TextView) view.findViewById(R.id.username_text);
+                        usernameText.setText(username);
+
+                        // Set profile image using user data (not required yet)
+                        // ImageView userImg = view.findViewById(R.id.profile_image);
+                        // userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
+
+                        // Updates need to be done in this scope
+                        qrCodeAdapter.notifyDataSetChanged();
+                        updateScoreHighlights(view);
+
+                        // Sort using comparison getScore
+                        qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
+                        Collections.reverse(qrCodeDataList);
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
                     }
-                });
+                }
+            });
         }
-
-    /**
-     * This function enables clicking on an item in recycler view
-     //* @param rv, The recycler view object
-     //* @param e, motion of the action
-     //* @return
-     *      Boolean, if it successfully clicked
-
-     //@Override
-     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-     View item = rv.findChildViewUnder(e.getX(), e.getY()); // gets xy pos of the part clicked
-     if (item != null && e.getAction() == MotionEvent.ACTION_UP) {
-     int pos = rv.getChildAdapterPosition(item);
-     if (pos != RecyclerView.NO_POSITION) {
-     //--- get the QR hash code and player ID
-     int index = rv.getChildAdapterPosition(item);
-     String hash = qrCodeDataList.get(index).getHashValue();
-
-     //--- Put arguments into fragment
-     qrFragment frag = new qrFragment();
-     Bundle args = new Bundle();
-     args.putString("hash", hash);
-     frag.setArguments(args);
-
-     //--- Change fragment
-     // Fragment manager example from the developers guide
-     // https://developer.android.com/guide/fragments/fragmentmanager#java
-     FragmentManager manager = getActivity().getSupportFragmentManager();
-
-     manager.beginTransaction()
-     .replace(R.id.fragments, frag)
-     .setReorderingAllowed(true)
-     .addToBackStack(null)
-     .commit();
-     }
-     }
-     return false;
-     }
-
-     @Override
-     public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-     // Do nothing
-     }
-
-     @Override
-     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-     // Do nothing
-     }
-     */
 }
