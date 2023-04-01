@@ -48,7 +48,7 @@ public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListA
      *               an adapter position.
      * @param viewType The view type of the new View.
      *
-     * @return
+     * @return The created ViewHolder
      */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -96,7 +96,7 @@ public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListA
 
     /**
      * A function that returns the data list size.
-     * @return
+     * @return The size of the QR code data list
      */
     @Override
     public int getItemCount() {

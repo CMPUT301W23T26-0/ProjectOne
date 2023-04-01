@@ -13,7 +13,9 @@ import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -26,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -70,7 +72,6 @@ import java.util.stream.Collectors;
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     // Views
     private MapView mapView;
-    EditText edit;
 //    private Location location = new Location();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference locations = db.collection("QRCodes");
@@ -142,7 +143,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         mapView.getMapAsync(this);
         // Assign variable
         getCloseButton = view.findViewById(R.id.bt_location);
-        edit = view.findViewById(R.id.editText);
 
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -294,6 +294,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         getCloseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                updateLocation();
                 // initialize user and marker longs and lats
                 double userLongitude = currLocation.getLongitude();
                 double userLatitude = currLocation.getLatitude();
@@ -324,8 +325,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 // https://www.geeksforgeeks.org/how-to-get-first-or-last-entry-from-java-linkedhashmap/
                 // converts keys of dictionary into an array
                 String[] aKeys = sortedMap.keySet().toArray(new String[sortedMap.size()]);
-                // Print the first element in the array (the closest name of the Marker to the user)
-                edit.setText(aKeys[0]);
+                nearbyQRCodeDialog(aKeys);
             }
         });
     }
@@ -379,6 +379,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 }
             }
         });
+    }
+
+    /**
+     * Displays nearby QR codes. Shows up to 5 codes.
+     */
+    private void nearbyQRCodeDialog(String[] qrCodeList) {
+        int qrCodeListLength = qrCodeList.length;
+        int maxListLimit = 5;
+
+        //error check max limit
+        int lowestLength;
+        if (qrCodeListLength < maxListLimit){
+            lowestLength = qrCodeListLength;
+        }
+        else {
+            lowestLength = maxListLimit;
+        }
+
+        //initialize displayed QR codes
+        String[] tempList = new String[lowestLength];
+        int i = 0;
+        while (i < lowestLength){
+            tempList[i] = qrCodeList[i];
+            i++;
+        }
+
+        //moves camera to selected QR code
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LatLng tempLocation = locationDict.get(qrCodeList[which]);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tempLocation, 20));
+            }
+        };
+
+        //displays QR code list
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle("Nearby QR Codes")
+                .setItems(tempList, listener)
+                .setCancelable(true)
+                .show();
     }
 
     /**
