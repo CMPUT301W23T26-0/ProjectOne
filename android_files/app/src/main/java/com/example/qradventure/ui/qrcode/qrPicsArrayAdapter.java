@@ -10,18 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.qradventure.R;
 import java.util.ArrayList;
 
-public class qrListArrayAdapter extends RecyclerView.Adapter<qrListArrayAdapter.ViewHolder>{
-    // RecyclerView needs a custom adapter
-
+/**
+ * This class allows pictures to be placed in a list view
+ */
+public class qrPicsArrayAdapter extends RecyclerView.Adapter<qrPicsArrayAdapter.ViewHolder>{
     private Context context;
     private ArrayList<Bitmap> picsList;
 
     /**
-     * A constructor for CustomListAdapter.
+     * A constructor for qrPicsArrayAdapter.
      * @param context The context of the data list
      * @param picsList The data list of QR codes to be adapted
      */
-    public qrListArrayAdapter(Context context, ArrayList<Bitmap> picsList) {
+    public qrPicsArrayAdapter(Context context, ArrayList<Bitmap> picsList) {
         this.context = context;
         this.picsList = picsList;
     }
@@ -49,7 +50,7 @@ public class qrListArrayAdapter extends RecyclerView.Adapter<qrListArrayAdapter.
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(qrListArrayAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(qrPicsArrayAdapter.ViewHolder holder, int position) {
         Bitmap pic = picsList.get(position);
         holder.qrPic.setImageBitmap(pic);
     }
@@ -61,7 +62,7 @@ public class qrListArrayAdapter extends RecyclerView.Adapter<qrListArrayAdapter.
         public ImageView qrPic;
 
         /**
-         * A function that updates the view.
+         * A constructor that updates the view.
          * @param view
          */
         public ViewHolder(View view) {
@@ -71,7 +72,7 @@ public class qrListArrayAdapter extends RecyclerView.Adapter<qrListArrayAdapter.
     }
 
     /**
-     * A function that returns the data list size.
+     * A required function that returns the data list size.
      * @return
      */
     @Override

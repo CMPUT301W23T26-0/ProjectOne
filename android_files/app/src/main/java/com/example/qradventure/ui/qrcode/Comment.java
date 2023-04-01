@@ -1,11 +1,14 @@
 package com.example.qradventure.ui.qrcode;
 
+/**
+ * This class represents a text comment that users can make on a given QR code
+ */
 public class Comment {
     private String author;
     private String content;
 
     /**
-     * Constructing a comment
+     * Constructor for a comment
      * @param author, Author of the comment
      * @param content, The comment's contents
      */
@@ -16,7 +19,7 @@ public class Comment {
 
     /**
      * Getter for author
-     * @return
+     * @return Name of the author
      */
     public String getAuthor() {
         return this.author;
@@ -24,7 +27,7 @@ public class Comment {
 
     /**
      * Getter for contents
-     * @return
+     * @return Contents of the comment
      */
     public String getContents() {
         return this.content;

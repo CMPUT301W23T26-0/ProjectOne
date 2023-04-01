@@ -40,6 +40,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This fragment allows a QR code's information to be displayed
+ */
 public class qrFragment extends Fragment {
     private ImageView img;
     private TextView qrName;
@@ -54,17 +57,18 @@ public class qrFragment extends Fragment {
     private Button picsButton;
     private TextView qrPlayersText;
 
+    /**
+     * The constructor for the qrFragment class
+     */
     public qrFragment() {
         // Required empty public constructor
     }
 
-    public static qrFragment newInstance(String param1, String param2) {
-        qrFragment fragment = new qrFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    /**
+     * A function that runs a set of instructions upon class creation
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +76,18 @@ public class qrFragment extends Fragment {
         }
     }
 
+    /**
+     * A function that runs a set of instructions upon view creation
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -127,24 +143,25 @@ public class qrFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            // Some user owns this QR code
                             String username;
                             String[] qrPlayers = new String[2];
                             Boolean isOwned = false;
                             int excessPlayerCount = 0;
                             int index = 0;
+
+                            // Find players that own the QR code
                             for (QueryDocumentSnapshot document: task.getResult()) {
                                 Map<String, Object> users = document.getData();
                                 username = (String) users.get("username");
                                 if (username.equals(user.getUsername())) {
-                                    // Check if current player owns code
+                                    // Check if current player owns the code
                                     isOwned = true;
                                 } else if (index < 2) {
-                                    // Display a max of 2 other players
+                                    // Find 2 others that own the code for name display purposes
                                     qrPlayers[index] = username;
                                     index++;
                                 } else {
-                                    // Once we find 2 others, start counting excess
+                                    // Once 2 others are found, start counting the excess players for display purposes
                                     excessPlayerCount++;
                                 }
                                 Log.d(TAG, document.getId() + " => " + document.getData());
@@ -163,11 +180,11 @@ public class qrFragment extends Fragment {
                                             qrPlayers[0]);
                                 } else if (index == 2) {
                                     if (excessPlayerCount == 0) {
-                                        // Only 2 players scanned it
+                                        // Only 2 other players scanned it
                                         outputText = String.format("Scanned by you, %s, and %s.",
                                                 qrPlayers[0], qrPlayers[1]);
                                     } else {
-                                        // More than 2 players scanned it
+                                        // More than 2 other players scanned it
                                         outputText = String.format("Scanned by you, %s, %s, and %d other(s).",
                                                 qrPlayers[0], qrPlayers[1], excessPlayerCount);
                                     }
@@ -186,11 +203,11 @@ public class qrFragment extends Fragment {
                                             qrPlayers[0]);
                                 } else if (index == 2) {
                                     if (excessPlayerCount == 0) {
-                                        // Only 2 players scanned it
+                                        // Only 2 other players scanned it
                                         outputText = String.format("Scanned by %s and %s.",
                                                 qrPlayers[0], qrPlayers[1]);
                                     } else {
-                                        // More than 2 players scanned it
+                                        // More than 2 other players scanned it
                                         outputText = String.format("Scanned by %s, %s, and %d other(s).",
                                                 qrPlayers[0], qrPlayers[1], excessPlayerCount);
                                     }
@@ -203,14 +220,14 @@ public class qrFragment extends Fragment {
                             qrPlayersText.setText(outputText);
 
                         } else {
-                            // No users own this QR code or error occurs
+                            // Users document doesn't exist, so no users own this QR code
                             Log.d(TAG, "Error getting documents: ", task.getException());
                             qrPlayersText.setText("Not scanned by anyone.");
                         }
                     }
                 });
 
-        // Add comments
+        // Adds comments
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -238,6 +255,7 @@ public class qrFragment extends Fragment {
             }
         });
 
+        // Opens the qrPicsFragment
         picsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
