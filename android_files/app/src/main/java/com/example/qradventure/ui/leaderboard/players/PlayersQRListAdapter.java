@@ -1,18 +1,22 @@
 package com.example.qradventure.ui.leaderboard.players;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qradventure.R;
 import com.example.qradventure.qrcode.QRCode;
 import com.example.qradventure.qrcode.QRController;
 import com.example.qradventure.ui.profiles.ProfilesListArrayAdapter;
+import com.example.qradventure.ui.qrcode.qrFragment;
 
 import java.util.ArrayList;
 
@@ -39,6 +43,28 @@ public class PlayersQRListAdapter extends RecyclerView.Adapter<ProfilesListArray
 
     @Override
     public void onBindViewHolder(ProfilesListArrayAdapter.ViewHolder holder, int position) {
+        // Allow QR codes to be viewed
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                QRCode qrCode = qrCodes.get(position);
+
+                qrFragment frag = new qrFragment();
+                Bundle args = new Bundle();
+                args.putString("hash", qrCode.getHashValue());
+                frag.setArguments(args);
+
+                FragmentActivity activity = (FragmentActivity) context;
+                FragmentManager manager = activity.getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.fragments, frag)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
         QRCode qrCode = qrCodes.get(position);
         QRController qrController = new QRController();
 
