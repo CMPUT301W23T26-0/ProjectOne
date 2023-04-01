@@ -73,7 +73,7 @@ public class qrPicsArrayAdapter extends RecyclerView.Adapter<qrPicsArrayAdapter.
 
     /**
      * A required function that returns the data list size.
-     * @return
+     * @return The size of the pics data list
      */
     @Override
     public int getItemCount() {
