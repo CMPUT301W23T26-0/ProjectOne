@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -86,6 +87,9 @@ public class PlayersFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EditText searchBar = view.findViewById(R.id.profile_search);
+        searchBar.setVisibility(View.GONE);
+
         Bundle args = getArguments();
         assert args != null;
         TextView username = view.findViewById(R.id.username_text);
