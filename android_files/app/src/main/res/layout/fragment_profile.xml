@@ -105,7 +105,7 @@
             app:layout_constraintBottom_toTopOf="@+id/highest_score_value"
             app:layout_constraintEnd_toStartOf="@+id/total_score_header"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/total_score_header"
+            app:layout_constraintTop_toBottomOf="@+id/total_score_value"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
@@ -133,7 +133,7 @@
             app:layout_constraintBottom_toTopOf="@+id/lowest_score_value"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/total_score_header"
-            app:layout_constraintTop_toTopOf="@+id/total_score_header"
+            app:layout_constraintTop_toBottomOf="@+id/total_score_value"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
@@ -156,6 +156,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingTop="8dp"
+        android:paddingBottom="55sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -182,7 +183,8 @@
         android:textColor="@color/contentTexts"
         app:layout_constraintBottom_toTopOf="@+id/user_qr_code_list"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/profile_qr_count"

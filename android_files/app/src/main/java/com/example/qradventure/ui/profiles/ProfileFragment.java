@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class allows the user's profile to be displayed
@@ -55,13 +56,7 @@ public class ProfileFragment extends Fragment {
     private EditText profileSearchBar;
     private ProfilesListArrayAdapter qrCodeAdapter;
     private ArrayList<QRCode> qrCodeDataList;
-
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+    private TextView deleteInfo;
 
     /**
      * Constructor for the ProfileFragment
@@ -80,12 +75,7 @@ public class ProfileFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters2
     public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        return new ProfileFragment();
     }
 
     /**
@@ -97,10 +87,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     /**
@@ -134,6 +120,7 @@ public class ProfileFragment extends Fragment {
         qrCodeDataList = new ArrayList<>();
         qrCodeAdapter = new ProfilesListArrayAdapter(getContext(), qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
+        deleteInfo = view.findViewById(R.id.delete_text);
         //qrCodeList.addOnItemTouchListener(this);
         return view;
     }
@@ -331,6 +318,11 @@ public class ProfileFragment extends Fragment {
                         // Sort using comparison getScore
                         qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
                         Collections.reverse(qrCodeDataList);
+
+                        // Sets the delete text to visible only if the viewed profile is owners' profile
+                        if (Objects.equals(user.getUsername(), username)) {
+                            deleteInfo.setVisibility(View.VISIBLE);
+                        }
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
                     }
