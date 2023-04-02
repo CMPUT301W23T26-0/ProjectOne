@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="50sp"
+            android:layout_marginTop="10sp"
             android:paddingHorizontal="20sp"
             android:paddingVertical="5sp"
             android:hint="Search for a player..."
@@ -70,15 +71,13 @@
             android:layout_marginTop="12sp"
             android:src="@drawable/ic_baseline_person_24"
             android:background="@color/contentBg"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profile_search"
-            app:layout_constraintVertical_bias="0.0"
             app:shapeAppearanceOverlay="@style/CircleImageView"
             android:padding="3sp"
             app:strokeColor="@color/contentBg"
-            app:strokeWidth="3sp" />
+            app:strokeWidth="3sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_search" />
 
         <TextView
             android:id="@+id/total_score_value"
