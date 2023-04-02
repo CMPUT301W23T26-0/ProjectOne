@@ -82,6 +82,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:shadowColor="@color/contentTexts"
+            android:singleLine="true"
             android:textColor="@color/contentTexts"
             android:textColorHint="@color/contentTextsSecondary"
             android:textSize="12dp"
