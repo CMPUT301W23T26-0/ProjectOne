@@ -2,8 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10sp"
+    android:background="@drawable/qr_item_bg">
 
     <TextView
         android:id="@+id/scan_display_code_name_text"
@@ -11,6 +13,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="QR Code Name"
+        android:textColor="@color/boldText"
+        android:textStyle="bold"
         android:textSize="20sp" />
 
     <ImageView
@@ -25,6 +29,7 @@
         android:layout_height="wrap_content"
         android:text="QR Code Score"
         android:textSize="20sp"
+        android:textColor="@color/boldText"
         android:gravity="center"/>
 
     <TextView
@@ -32,6 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Bottom Text"
+        android:textColor="@color/contentTexts"
         android:gravity="center"/>
 
     <TextView
@@ -39,6 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Would you like to take a picture of the code's location?"
+        android:textColor="@color/contentTexts"
         android:textSize="20sp"
         android:gravity="center"/>
 
