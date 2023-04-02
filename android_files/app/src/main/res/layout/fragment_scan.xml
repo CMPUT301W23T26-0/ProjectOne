@@ -5,17 +5,21 @@
     android:id="@+id/scan"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/contentBg"
     tools:context=".ui.scan.ScanFragment">
 
     <TextView
         android:id="@+id/resultText"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/top_info"
         android:gravity="center"
+        android:paddingTop="100sp"
+        android:paddingBottom="150sp"
         android:text="Scan a QR Code!"
         android:textSize="50sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/contentBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,11 +28,16 @@
         android:id="@+id/scanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Scan"
+        android:layout_marginBottom="150dp"
+        android:backgroundTint="@color/appBg"
+        android:padding="20sp"
+        android:text="Start a Scan"
+        android:textColor="@color/contentBg"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resultText" />
+        app:layout_constraintTop_toBottomOf="@+id/resultText"
+        app:shapeAppearanceOverlay="@style/CircleImageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
