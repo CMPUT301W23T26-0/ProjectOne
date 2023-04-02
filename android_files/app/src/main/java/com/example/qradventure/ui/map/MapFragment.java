@@ -70,9 +70,7 @@ import java.util.stream.Collectors;
  */
 
 public class MapFragment extends Fragment implements OnMapReadyCallback{
-    // Views
     private MapView mapView;
-//    private Location location = new Location();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference locations = db.collection("QRCodes");
     private List<String> docLocations = new ArrayList<>();
@@ -141,6 +139,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
         mapView.onCreate(mapBundle);
         mapView.getMapAsync(this);
+
         // Assign variable
         getCloseButton = view.findViewById(R.id.bt_location);
 
@@ -302,14 +301,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 double tempLongitude;
                 double tempLatitude;
                 double distance;
-                // for each marker, get the distance between the user and the marker using pythag
+
+                // for each marker, get the distance between the user and the marker using pythagoras
                 // https://www.w3schools.com/java/java_hashmap.asp
                 for (String i : locationDict.keySet()) {
                     tempLocation = locationDict.get(i);
                     tempLatitude = tempLocation.latitude;
                     tempLongitude = tempLocation.longitude;
+
                     // get the distance using pythagoras
                     distance = getPythag(userLongitude, userLatitude, tempLongitude, tempLatitude);
+
                     // put each marker with its distance to the user in a dictionary
                     lengthDict.put(i, distance);
                 }
@@ -325,14 +327,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 // https://www.geeksforgeeks.org/how-to-get-first-or-last-entry-from-java-linkedhashmap/
                 // converts keys of dictionary into an array
                 String[] aKeys = sortedMap.keySet().toArray(new String[sortedMap.size()]);
+
+                // display list of nearby QR codes
                 nearbyQRCodeDialog(aKeys);
             }
         });
     }
 
-    /*
-        returns the distance between two points (the first two params are the user and
-        the next two params are a marker) using Pythagoras.
+    /**
+     * Returns the distance between two points (the first two params are the user and
+     * the next two params are a marker) using Pythagoras.
+     * @param userLongitude
+     * @param userLatitude
+     * @param tempLongitude
+     * @param tempLatitude
+     * @return Distance between user and marker
      */
     private double getPythag(double userLongitude, double userLatitude, double tempLongitude, double tempLatitude){
         double x = Math.pow((userLatitude - tempLatitude), 2);      // x = (ULat - TLat)^2
@@ -342,26 +351,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
     // "Alex Mamo", https://stackoverflow.com/users/5246885/alex-mamo
-    /*
-        Get locations of scanned QR codes from DB and save them as markers on the map
+    /**
+     * Get locations of scanned QR codes from DB and save them as markers on the map
      */
     private void placeMarkers(){
         locations.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        // get the location thing, which is a map, from the DB
-                        Map<String, Object> locations = (Map<String, Object>) document.get("location");
+                        // get the location of QR code from the DB
+                        Map<String, Object> qrLocation = (Map<String, Object>) document.get("location");
 
                         // if user chose not to save location, skip
-                        if (locations == null){
+                        if (qrLocation == null){
                             continue;
                         }
                         // get long and lat
-                        Double longitude = (Double) locations.get("longitude");
-                        Double latitude = (Double) locations.get("latitude");
+                        Double longitude = (Double) qrLocation.get("longitude");
+                        Double latitude = (Double) qrLocation.get("latitude");
                         // get name of marker
                         String tempName = document.getString("name");
                         // create a temporary LatLng object
