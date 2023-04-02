@@ -18,4 +18,8 @@
     <color name="appBg">#674188</color>
     <color name="contentBg">#EEEBF5</color>
     <color name="unSelected">#A983CA</color>
+    <color name="texts">#F7EFE5</color>
+    <color name="contentTexts">#2D2727</color>
+    <color name="boldText">#191825</color>
+    <color name="listContents">#E0E0E0</color>
 </resources>
