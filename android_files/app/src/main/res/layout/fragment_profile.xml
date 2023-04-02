@@ -27,6 +27,7 @@
             android:paddingVertical="5sp"
             android:hint="Search for a player..."
             android:background="@drawable/search_bar"
+            android:textColor="@color/contentTexts"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"

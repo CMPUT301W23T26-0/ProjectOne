@@ -98,6 +98,7 @@
             android:layout_weight="1"
             android:background="@drawable/search_bar"
             android:padding="5sp"
+            android:textColor="@color/contentTexts"
             android:layout_marginHorizontal="5sp"
             android:hint="@string/comment_prompt" />
 
