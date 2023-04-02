@@ -18,8 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qradventure.R;
 import com.example.qradventure.qrcode.QRCode;
-import com.example.qradventure.ui.profiles.ProfileFragment;
-import com.example.qradventure.ui.profiles.ProfilesListArrayAdapter;
 import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,45 +30,48 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * This class allows for the profiles of players (that aren't the
+ * current user) to be displayed
+ */
 public class PlayersFragment extends Fragment {
-
-    private UserDataClass user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference userCodes;
-    private CollectionReference dbCodes;
     private RecyclerView qrCodeList;
     private Button sortButton;
     private PlayersQRListAdapter qrCodeAdapter;
     private ArrayList<QRCode> qrCodeDataList;
 
-    private CollectionReference userCodesRef;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    /**
+     * Constructor for PlayersFragment
+     */
     public PlayersFragment() {
         // Required empty public constructor
     }
 
-    public static PlayersFragment newInstance(String param1, String param2) {
-        PlayersFragment fragment = new PlayersFragment();
-        Bundle args = new Bundle();
-        return fragment;
-    }
-
+    /**
+     * A function that runs a set of instructions upon creating the fragment
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * A function that runs a set of instructions upon creating the view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return The newly created view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -85,6 +86,12 @@ public class PlayersFragment extends Fragment {
         return view;
     }
 
+    /**
+     * A function that runs a set of instructions after the view is created
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         EditText searchBar = view.findViewById(R.id.profile_search);
@@ -96,7 +103,6 @@ public class PlayersFragment extends Fragment {
         String userClicked = args.getString("username");
         username.setText(userClicked);
 
-        CollectionReference playersCodes;
         Query clickedPlayer = db.collection("Users")
                 .whereEqualTo("username", userClicked);
 
@@ -106,7 +112,6 @@ public class PlayersFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        //playerID = document.getId();
                         Log.d("CLICKED_USER", document.getId() + " => " + document.getData());
 
                         db.collection("Users")
@@ -131,7 +136,6 @@ public class PlayersFragment extends Fragment {
                                             }
 
                                             // Updates need to be done in this scope
-                                            //qrCodeList.setAdapter(qrCodeAdapter);
                                             qrCodeAdapter.notifyDataSetChanged();
                                             updateScoreHighlights(view);
 
@@ -143,7 +147,6 @@ public class PlayersFragment extends Fragment {
                                         }
                                     }
                                 });
-                        //Map<String, Object> map = document.getData();
                     }
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
@@ -164,10 +167,12 @@ public class PlayersFragment extends Fragment {
         // RecyclerView adapter and linear layout
         qrCodeList.setAdapter(qrCodeAdapter);
         qrCodeList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-
-
     }
 
+    /**
+     * Updates the score highlights in the view
+     * @param view The view whose score highlights are to be updated
+     */
     private void updateScoreHighlights(View view) {
         TextView totalScore = view.findViewById(R.id.total_score_value);
         TextView highestScore = view.findViewById(R.id.highest_score_value);

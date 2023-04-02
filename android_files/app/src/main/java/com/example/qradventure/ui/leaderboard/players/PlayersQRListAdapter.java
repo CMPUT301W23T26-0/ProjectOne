@@ -20,6 +20,9 @@ import com.example.qradventure.ui.qrcode.qrFragment;
 
 import java.util.ArrayList;
 
+/**
+ * This class allows QR codes to be displayed in PlayersFragment
+ */
 public class PlayersQRListAdapter extends RecyclerView.Adapter<ProfilesListArrayAdapter.ViewHolder>{
     private Context context;
     private ArrayList<QRCode> qrCodes;
@@ -34,6 +37,15 @@ public class PlayersQRListAdapter extends RecyclerView.Adapter<ProfilesListArray
         this.qrCodes = qrCodes;
     }
 
+    /**
+     * A function that runs a set of instructions upon creating the view holder
+     *
+     * @param parent The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param viewType The view type of the new View.
+     *
+     * @return The newly created view holder
+     */
     @Override
     public ProfilesListArrayAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.profile_qrcontent, parent, false);
@@ -41,6 +53,12 @@ public class PlayersQRListAdapter extends RecyclerView.Adapter<ProfilesListArray
         return viewHolder;
     }
 
+    /**
+     * A function that runs a set of instructions upon binding a given ViewHolder
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(ProfilesListArrayAdapter.ViewHolder holder, int position) {
         // Allow QR codes to be viewed
@@ -75,7 +93,7 @@ public class PlayersQRListAdapter extends RecyclerView.Adapter<ProfilesListArray
 
     /**
      * A function that returns the data list size.
-     * @return
+     * @return Size of the data list
      */
     @Override
     public int getItemCount() {
@@ -92,7 +110,7 @@ public class PlayersQRListAdapter extends RecyclerView.Adapter<ProfilesListArray
 
         /**
          * A function that updates the view.
-         * @param view
+         * @param view The view to be updated
          */
         public ViewHolder(View view) {
             super(view);

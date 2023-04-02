@@ -64,11 +64,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class allows the map to be displayed
  */
-
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     private MapView mapView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -98,7 +95,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      *
      * @return A new instance of fragment MapFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
@@ -126,7 +122,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The newly created View
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -289,7 +285,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         // https://stackoverflow.com/questions/55933929/android-display-user-location-on-map-fragment
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());

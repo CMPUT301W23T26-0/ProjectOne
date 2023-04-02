@@ -1,37 +1,27 @@
 package com.example.qradventure.ui.leaderboard;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qradventure.R;
-import com.example.qradventure.qrcode.QRCode;
 import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Map;
 
+/**
+ * This class allows players to be displayed in a list in the LeaderboardFragment
+ */
 public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.ViewHolder> {
-    // RecyclerView needs a custom adapter
-
     private Context context;
     private ArrayList<Player> players;
 
@@ -48,13 +38,13 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
     }
 
     /**
-     * A function that runs a set of instructions upon view creation,
+     * A function that runs a set of instructions upon ViewHolder creation,
      * which includes setting up the view.
      * @param parent The ViewGroup into which the new View will be added after it is bound to
      *               an adapter position.
      * @param viewType The view type of the new View.
      *
-     * @return
+     * @return The newly created ViewHolder
      */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -101,7 +91,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
 
     /**
      * A function that returns the data list size.
-     * @return
+     * @return Size of the data list
      */
     @Override
     public int getItemCount() {

@@ -64,7 +64,7 @@ public class DisplayCodePromptPictureFragment extends DialogFragment {
      * @param savedInstanceState The last saved instance state of the Fragment,
      * or null if this is a freshly created Fragment.
      *
-     * @return
+     * @return The newly created Dialog
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

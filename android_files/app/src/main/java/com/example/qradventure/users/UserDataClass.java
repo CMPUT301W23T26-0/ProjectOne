@@ -17,13 +17,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,7 +56,7 @@ public class UserDataClass {
     /**
      * This function retrieves and returns the user data instance,
      * which is a singleton instance
-     * @return
+     * @return The user data instance
      */
     public static UserDataClass getInstance() {
         // Check if the instance is already created
@@ -152,7 +149,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's current location
-     * @return
+     * @return The user's current location
      */
     public Location getCurrentLocation() {
         return currentLocation;
@@ -168,7 +165,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's phone info
-     * @return
+     * @return The user's phone info
      */
     public String getPhoneInfo() {
         return this.phoneInfo;
@@ -176,7 +173,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's email info
-     * @return
+     * @return The user's email info
      */
     public String getEmailInfo() {
         return this.emailInfo;
@@ -184,7 +181,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's username
-     * @return
+     * @return The user's username
      */
     public String getUsername() {
         return this.username;
@@ -192,7 +189,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's total score
-     * @return
+     * @return The user's total score
      */
     public int getTotalScore() {
         return this.totalScore;
@@ -200,7 +197,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's document reference
-     * @return
+     * @return The user's document reference
      */
     public DocumentReference getUserRef() {
         return this.userRef;
@@ -208,7 +205,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's QR code collection reference
-     * @return
+     * @return The user's QR code collection reference
      */
     public CollectionReference getUserCodesRef() {
         return this.userCodesRef;
@@ -216,7 +213,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's highest scoring QR code
-     * @return
+     * @return The user's highest QR score
      */
     public int getHighestQrScore() {
         return this.highestQrScore;
@@ -224,7 +221,7 @@ public class UserDataClass {
 
     /**
      * This function gets the hash of the user's highest scoring QR code
-     * @return
+     * @return The user's highest scoring QR code
      */
     public String getHighestQrHash() {
         return this.highestQrHash;
@@ -233,7 +230,7 @@ public class UserDataClass {
     /**
      * This function sets the user's phone info
      * and updates the database
-     * @param phone
+     * @param phone The user's phone info
      */
     public void setPhoneInfo(String phone) {
         this.phoneInfo = phone;
@@ -243,7 +240,7 @@ public class UserDataClass {
     /**
      * This function sets the user's email info
      * and updates the database
-     * @param email
+     * @param email The user's email info
      */
     public void setEmailInfo(String email) {
         this.emailInfo = email;
@@ -253,7 +250,7 @@ public class UserDataClass {
     /**
      * This function sets the user's username
      * and updates the database
-     * @param username
+     * @param username The user's username
      */
     public void setUsername(String username) {
         this.username = username;
@@ -262,7 +259,7 @@ public class UserDataClass {
 
     /**
      * This function gets the user's phone ID
-     * @return
+     * @return The user's phone ID
      */
     public String getUserPhoneID() {
         return this.userPhoneID;
@@ -270,7 +267,7 @@ public class UserDataClass {
 
     /**
      * This function sets the user's phone ID
-     * @param userPhoneID
+     * @param userPhoneID The user's phone ID
      */
     public void setUserPhoneID(String userPhoneID) {
         this.userPhoneID = userPhoneID;
@@ -279,13 +276,18 @@ public class UserDataClass {
     /**
      * This function sets the user's total score
      * and updates the database
-     * @param score
+     * @param score The user's total score
      */
     public void setTotalScore(int score) {
         this.totalScore = score;
         updateField("totalScore", score);
     }
 
+    /**
+     * This function sets the user's highest QR code
+     * @param hash The hash of the QR code with the highest score
+     * @param score The score of the QR code associated with the hash
+     */
     public void setHighestQr(String hash, int score) {
         this.highestQrScore = score;
         this.highestQrHash = hash;
@@ -321,6 +323,10 @@ public class UserDataClass {
                 });
     }
 
+    /**
+     * This function deletes a user's QR code
+     * @param code The QR code to be deleted from the user's account
+     */
     public void deleteUserCode(QRCode code) {
         String hash = code.getHashValue();
         userCodesRef.document(hash)
@@ -341,6 +347,9 @@ public class UserDataClass {
                 });
     }
 
+    /**
+     * This function refreshes the highest QR code
+     */
     public void refreshHighestQr() {
         userCodesRef.orderBy("score", Query.Direction.DESCENDING).limit(1)
                 .get()
@@ -368,8 +377,8 @@ public class UserDataClass {
      * This function is a helper function that is called
      * whenever a user data changes locally, and automatically
      * updates the database with the changes
-     * @param field
-     * @param value
+     * @param field The field to be updated
+     * @param value The value that the field must be updated with
      */
     public void updateField(String field, Object value) {
         this.userRef.update(field, value)
