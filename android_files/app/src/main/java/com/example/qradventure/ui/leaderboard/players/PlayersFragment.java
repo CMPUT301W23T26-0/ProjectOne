@@ -152,47 +152,20 @@ public class PlayersFragment extends Fragment {
         });
 
         sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
+        sortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.reverse(qrCodeDataList);
+                qrCodeList.setAdapter(qrCodeAdapter);
+                sortButton.setText(sortButton.getText() == "Ʌ" ? "V" : "Ʌ");
+            }
+        });
 
         // RecyclerView adapter and linear layout
         qrCodeList.setAdapter(qrCodeAdapter);
         qrCodeList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        /*
-        db.collection("Users")
-                .document("480efbdbef78d266")
-                .collection("Codes");
 
 
-        playerCodes.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    // Iterate through user codes
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d("QR_CODES", document.getId() + " => " + document.getData());
-
-                        // Populate user profile using db
-                        Map<String, Object> map = document.getData();
-                        QRCode codeToAdd = new QRCode();
-                        codeToAdd.setName((String) map.get("name"));
-                        // https://stackoverflow.com/questions/17164014/java-lang-classcastexception-java-lang-long-cannot-be-cast-to-java-lang-integer
-                        codeToAdd.setScore(((Long) map.get("score")).intValue());
-                        codeToAdd.setHashValue((String) map.get("hash"));
-                        //qrCodeDataList.add(codeToAdd);
-
-                    }
-                    // Updates need to be done in this scope
-                    qrCodeAdapter.notifyDataSetChanged();
-                    updateScoreHighlights(view);
-
-                    // Sort using comparison getScore
-                    qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
-                    Collections.reverse(qrCodeDataList);
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
-                }
-            }
-        });
-        */
     }
 
     private void updateScoreHighlights(View view) {

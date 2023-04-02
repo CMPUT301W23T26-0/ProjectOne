@@ -84,6 +84,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     Button getCloseButton;
     private FusedLocationProviderClient client;
     private UserDataClass user = UserDataClass.getInstance();
+    private boolean currLocationInitialized = false;
 
     /**
      * Constructor for MapFragment
@@ -220,6 +221,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         // Initialize location
                         currLocation = task.getResult();
                         user.setCurrentLocation(task.getResult());
+                        if (!currLocationInitialized) {
+                            currLocationInitialized = true;
+                            initializeLocation();
+                        }
 
                         // Check condition
                         if (currLocation == null) {
@@ -239,6 +244,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     // Initialize location
                                     currLocation = locationResult.getLastLocation();
                                     user.setCurrentLocation(currLocation);
+                                    if (!currLocationInitialized) {
+                                        currLocationInitialized = true;
+                                        initializeLocation();
+                                    }
                                 }
                             };
 
@@ -332,15 +341,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 nearbyQRCodeDialog(aKeys);
             }
         });
+
+    }
+
+    /**
+     * Initializes the map to the user's location upon first opening the map view
+     */
+    private void initializeLocation() {
+        Location userLocation = user.getCurrentLocation();
+        LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLatLng));
     }
 
     /**
      * Returns the distance between two points (the first two params are the user and
      * the next two params are a marker) using Pythagoras.
-     * @param userLongitude
-     * @param userLatitude
-     * @param tempLongitude
-     * @param tempLatitude
+     * @param userLongitude Longitude coordinate of the user
+     * @param userLatitude Latitude coordinate of the user
+     * @param tempLongitude Longitude coordinate of a marker
+     * @param tempLatitude Latitude coordinate of a marker
      * @return Distance between user and marker
      */
     private double getPythag(double userLongitude, double userLatitude, double tempLongitude, double tempLatitude){
@@ -418,7 +438,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 LatLng tempLocation = locationDict.get(qrCodeList[which]);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tempLocation, 20));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tempLocation, 16));
             }
         };
 

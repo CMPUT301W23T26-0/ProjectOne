@@ -199,7 +199,7 @@ public class qrFragment extends Fragment {
                                     outputText = "Not scanned by anyone.";
                                 } else if (index == 1) {
                                     // One other player scanned it
-                                    outputText = String.format("Scanned by %s.",
+                                    outputText = String.format("Scanned by only %s.",
                                             qrPlayers[0]);
                                 } else if (index == 2) {
                                     if (excessPlayerCount == 0) {
