@@ -15,4 +15,7 @@
     <color name="cerise">#de3163</color>
     <color name="ruby">#e0115f</color>
 
+    <color name="appBg">#674188</color>
+    <color name="contentBg">#EEEBF5</color>
+    <color name="unSelected">#A983CA</color>
 </resources>
