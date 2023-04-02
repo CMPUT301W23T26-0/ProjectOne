@@ -70,7 +70,7 @@ public class PromptGeolocationFragment extends DialogFragment {
      * @param savedInstanceState The last saved instance state of the Fragment,
      * or null if this is a freshly created Fragment.
      *
-     * @return
+     * @return The newly created Dialog
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -199,7 +199,7 @@ public class PromptGeolocationFragment extends DialogFragment {
     /**
      * A function that saves a geolocation to a QR code. This is
      * recorded in the database.
-     * @param geolocation
+     * @param geolocation The user's current geolocation
      */
     private void saveGeolocation(Location geolocation) {
         // ScanFragment already ensures the code exists, don't have to do a check

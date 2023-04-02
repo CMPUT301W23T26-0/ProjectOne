@@ -23,11 +23,9 @@ import com.example.qradventure.ui.qrcode.qrFragment;
 import java.util.ArrayList;
 
 /**
- * This class allows data lists to be displayed in a recycler view
+ * This class allows QR codes to be displayed in the user's profile
  */
 public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListArrayAdapter.ViewHolder>{
-    // RecyclerView needs a custom adapter
-
     private Context context;
     private ArrayList<QRCode> qrCodes;
 
@@ -113,7 +111,7 @@ public class ProfilesListArrayAdapter extends RecyclerView.Adapter<ProfilesListA
 
         /**
          * A function that updates the view.
-         * @param view
+         * @param view The view to be updated
          */
         public ViewHolder(View view) {
             super(view);

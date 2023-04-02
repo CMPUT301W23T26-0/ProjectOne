@@ -34,7 +34,7 @@ public class qrPicsArrayAdapter extends RecyclerView.Adapter<qrPicsArrayAdapter.
      *               an adapter position.
      * @param viewType The view type of the new View.
      *
-     * @return
+     * @return The newly created ViewHolder
      */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -63,7 +63,7 @@ public class qrPicsArrayAdapter extends RecyclerView.Adapter<qrPicsArrayAdapter.
 
         /**
          * A constructor that updates the view.
-         * @param view
+         * @param view The view to be updated
          */
         public ViewHolder(View view) {
             super(view);

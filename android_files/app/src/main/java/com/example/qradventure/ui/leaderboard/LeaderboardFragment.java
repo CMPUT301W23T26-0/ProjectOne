@@ -30,18 +30,11 @@ import java.util.Map;
 import com.example.qradventure.R;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link LeaderboardFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class allows the leaderboard to be displayed
  */
 public class LeaderboardFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private UserDataClass user;
@@ -51,6 +44,9 @@ public class LeaderboardFragment extends Fragment {
     private PlayerListAdapter playerAdapter;
     private ArrayList<Player> playerDataList;
 
+    /**
+     * Constructor for leaderboard fragment
+     */
     public LeaderboardFragment() {
         // Required empty public constructor
     }
@@ -63,7 +59,6 @@ public class LeaderboardFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment LeaderboardFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static LeaderboardFragment newInstance(String param1, String param2) {
         LeaderboardFragment fragment = new LeaderboardFragment();
         Bundle args = new Bundle();
@@ -97,7 +92,7 @@ public class LeaderboardFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The newly created view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,7 +115,6 @@ public class LeaderboardFragment extends Fragment {
     /**
      * This function runs a set of instructions after the view
      * has been created, which includes querying the top total scorers
-     * TO DO: query top unique QR code scorers
      * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
@@ -174,7 +168,7 @@ public class LeaderboardFragment extends Fragment {
 
     /**
      * This function updates the top three user highlights
-     * @param view
+     * @param view The view to be updated
      */
     public void updateTopPlayers(View view) {
         TextView first = view.findViewById(R.id.first_place);

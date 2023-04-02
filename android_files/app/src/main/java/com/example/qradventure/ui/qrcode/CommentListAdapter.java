@@ -18,16 +18,21 @@ import java.util.ArrayList;
  * This class allows data lists to be displayed in a list view
  */
 public class CommentListAdapter extends ArrayAdapter<Comment> {
+    /**
+     * Constructor for CommentListAdapter
+     * @param context The context that the adapter should be in
+     * @param comments The comments to be displayed
+     */
     public CommentListAdapter(Context context, ArrayList<Comment> comments) {
         super(context, 0, comments);
     }
 
     /**
      * returns the view for the comment adapting it accordingly
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
+     * @param position The position of an item in the list view
+     * @param convertView The given View
+     * @param parent The given ViewGroup
+     * @return The newly created view
      */
     @NonNull
     @Override

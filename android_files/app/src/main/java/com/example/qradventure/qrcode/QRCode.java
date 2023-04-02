@@ -2,6 +2,9 @@ package com.example.qradventure.qrcode;
 
 import android.graphics.drawable.Drawable;
 
+/**
+ * This class represents a QR code
+ */
 public class QRCode {
     private String name;
     private int score;
