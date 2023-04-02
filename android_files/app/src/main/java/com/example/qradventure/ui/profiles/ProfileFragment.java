@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.qradventure.qrcode.QRCode;
 import com.example.qradventure.R;
+import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
 import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -228,7 +230,11 @@ public class ProfileFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 Log.d("TEST RESPONSE", "Action ID = " + actionId + "KeyEvent = " + event);
-                searchProfile(v.getText().toString(), view);
+
+                // Without check, gets called twice
+                if (event != null) {
+                    searchProfile(v.getText().toString(), view);
+                }
                 return false;
             }
         });
@@ -282,12 +288,7 @@ public class ProfileFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             if (!task.getResult().isEmpty()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    String id = document.getId();
-                                    viewingUser = id == user.getUserPhoneID();
-                                    CollectionReference profileCodes = db.collection("Users").document(id).collection("Codes");
-                                    displayProfileInfo(profileCodes, username, view);
-                                }
+                                openPlayerInfo(username);
                             } else {
                                 searchAlert.show();
                             }
@@ -345,4 +346,24 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }
+
+    /**
+     * Opens a player's profile after a successful search
+     * @param username The username of a given player
+     */
+    private void openPlayerInfo(String username) {
+        Bundle args = new Bundle();
+        args.putString("username", username);
+
+        PlayersFragment playersFragment = new PlayersFragment();
+        playersFragment.setArguments(args);
+        FragmentActivity activity = (FragmentActivity) getContext();
+        FragmentManager manager = activity.getSupportFragmentManager();
+
+        manager.beginTransaction()
+                .replace(R.id.fragments, playersFragment)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
+    }
 }
