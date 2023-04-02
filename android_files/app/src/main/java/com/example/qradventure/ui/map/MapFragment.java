@@ -345,8 +345,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private void initializeLocation() {
         Location userLocation = user.getCurrentLocation();
         LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(16));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLatLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
     }
 
     /**
@@ -433,7 +432,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 LatLng tempLocation = locationDict.get(qrCodeList[which]);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tempLocation, 16));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(tempLocation, 16));
             }
         };
 
