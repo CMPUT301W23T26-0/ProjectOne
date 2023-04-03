@@ -1,8 +1,6 @@
 // https://www.tutorialspoint.com/java/java_using_singleton.htm
 package com.example.qradventure.users;
 
-import static android.content.ContentValues.TAG;
-
 import android.location.Location;
 import android.util.Log;
 
@@ -17,13 +15,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -77,6 +72,9 @@ public class UserDataClass {
         return INSTANCE;
     }
 
+    /**
+     * Listener called when checkRegister task completes successfully
+     */
     public interface checkRegisteredCallback {
         void onCallback(boolean isRegistered);
     }
@@ -93,30 +91,27 @@ public class UserDataClass {
         this.userRef = db.collection("Users").document(this.userPhoneID);
         this.userCodesRef = db.collection("Users").document(userPhoneID).collection("Codes");
         // try registering user
-        this.userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                boolean isRegistered;
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // User is already registered, retrieve information from database
-                    // User is not registered yet, do registry in callback
-                    // Get data from existing user
-                    if (document.exists()) {
-                        isRegistered = true;
-                        username = document.get("username").toString();
-                        emailInfo = document.get("email").toString();
-                        phoneInfo = document.get("phone").toString();
-                        totalScore = Integer.parseInt(document.get("totalScore").toString());
-                        highestQrScore = Integer.parseInt(document.get("highestQrScore").toString());
-                        highestQrHash = document.get("highestQrHash").toString();
-                    } else {
-                        isRegistered = false;
-                    }
-                    callback.onCallback(isRegistered);
+        this.userRef.get().addOnCompleteListener(task -> {
+            boolean isRegistered;
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                // User is already registered, retrieve information from database
+                // User is not registered yet, do registry in callback
+                // Get data from existing user
+                if (document.exists()) {
+                    isRegistered = true;
+                    username = document.get("username").toString();
+                    emailInfo = document.get("email").toString();
+                    phoneInfo = document.get("phone").toString();
+                    totalScore = Integer.parseInt(document.get("totalScore").toString());
+                    highestQrScore = Integer.parseInt(document.get("highestQrScore").toString());
+                    highestQrHash = document.get("highestQrHash").toString();
                 } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
+                    isRegistered = false;
                 }
+                callback.onCallback(isRegistered);
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
     }
