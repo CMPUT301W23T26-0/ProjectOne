@@ -19,7 +19,7 @@ import com.example.qradventure.ui.scan.ScanFragment;
  * LeaderboardFragment, and MapFragment
  */
 public class MainActivity extends AppCompatActivity {
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
 
     /**
      * This function runs a set of instructions upon activity

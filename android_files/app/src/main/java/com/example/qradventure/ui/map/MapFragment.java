@@ -78,7 +78,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private Map<String, Double> lengthDict = new HashMap<>();
     private GoogleMap mMap;
     private Location currLocation;
-    Button getCloseButton;
+    private Button getCloseButton;
     private FusedLocationProviderClient client;
     private UserDataClass user = UserDataClass.getInstance();
     private boolean currLocationInitialized = false;

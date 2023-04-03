@@ -25,8 +25,6 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
     private Context context;
     private ArrayList<Player> players;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     /**
      * A constructor for PlayerListAdapter.
      * @param context The context of the data list

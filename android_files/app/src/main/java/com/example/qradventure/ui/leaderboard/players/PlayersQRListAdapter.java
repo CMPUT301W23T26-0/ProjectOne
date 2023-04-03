@@ -100,23 +100,4 @@ public class PlayersQRListAdapter extends RecyclerView.Adapter<ProfilesListArray
         return qrCodes.size();
     }
 
-    /**
-     * This class is used to update the view.
-     */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView qrCodeTitle;
-        public TextView qrCodeScore;
-        public ImageView qrImage;
-
-        /**
-         * A function that updates the view.
-         * @param view The view to be updated
-         */
-        public ViewHolder(View view) {
-            super(view);
-            this.qrCodeTitle = view.findViewById(R.id.qr_title);
-            this.qrCodeScore = view.findViewById(R.id.qr_score_value);
-            this.qrImage = view.findViewById(R.id.qr_image);
-        }
-    }
 }
