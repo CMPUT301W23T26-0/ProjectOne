@@ -179,6 +179,14 @@ public class UserDataClass {
     }
 
     /**
+     * This function sets the user's document reference
+     * @return The user's document reference
+     */
+    public void setUserCodesRef(CollectionReference ref) {
+        this.userCodesRef = ref;
+    }
+
+    /**
      * This function gets the user's phone info
      * @return The user's phone info
      */
