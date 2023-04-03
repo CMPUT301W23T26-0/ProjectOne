@@ -173,8 +173,8 @@ public class LeaderboardFragment extends Fragment {
     }
 
     /**
-     * This function updates the top three user highlights
-     * @param view
+     * Updates the top three user highlights
+     * @param view View to be updated
      */
     public void updateTopPlayers(View view) {
         TextView first = view.findViewById(R.id.first_place);
