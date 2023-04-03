@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
 
 import java.util.ArrayList;
 
@@ -48,9 +50,12 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
         Comment comment = getItem(position);
         TextView author = view.findViewById(R.id.profile_name);
         TextView contents = view.findViewById(R.id.comment_contents);
+        ImageView picture = view.findViewById(R.id.profile_image);
 
         author.setText(comment.getAuthor());
         contents.setText(comment.getContents());
+        picture.setImageDrawable(UserDataClass.getInstance().generateUserIcon(getContext(), comment.getAuthor()));
+
 
         return view;
     }

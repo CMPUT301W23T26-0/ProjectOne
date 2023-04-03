@@ -19,11 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.qradventure.qrcode.QRCode;
 import com.example.qradventure.R;
+import com.example.qradventure.qrcode.QRController;
 import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
 import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -57,6 +59,7 @@ public class ProfileFragment extends Fragment {
     private ProfilesListArrayAdapter qrCodeAdapter;
     private ArrayList<QRCode> qrCodeDataList;
     private TextView deleteInfo;
+    private ImageView profilePic;
 
     /**
      * Constructor for the ProfileFragment
@@ -121,6 +124,7 @@ public class ProfileFragment extends Fragment {
         qrCodeAdapter = new ProfilesListArrayAdapter(getContext(), qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
         deleteInfo = view.findViewById(R.id.delete_text);
+        profilePic = view.findViewById(R.id.profile_image);
         //qrCodeList.addOnItemTouchListener(this);
         return view;
     }
@@ -320,9 +324,11 @@ public class ProfileFragment extends Fragment {
                         Collections.reverse(qrCodeDataList);
 
                         // Sets the delete text to visible only if the viewed profile is owners' profile
-                        if (Objects.equals(user.getUsername(), username)) {
-                            deleteInfo.setVisibility(View.VISIBLE);
-                        }
+                        deleteInfo.setVisibility(View.VISIBLE);
+
+                        // Sets the profile image
+                        profilePic.setImageDrawable(user.generateUserIcon(getContext(), username));
+
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
                     }

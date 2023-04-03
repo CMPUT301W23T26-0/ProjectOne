@@ -47,14 +47,12 @@ public class qrFragment extends Fragment {
     private ImageView img;
     private TextView qrName;
     private TextView qrScore;
-    private Button addButton;
     private EditText editText;
+    private ImageView userImg;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private ListView comments;
-    private ArrayList<Comment> commentList = new ArrayList<>();
+    private final ArrayList<Comment> commentList = new ArrayList<>();
     private CommentListAdapter listAdapter;
     final String TAG = "QR Fragment";
-    private Button picsButton;
     private TextView qrPlayersText;
 
     /**
@@ -103,6 +101,8 @@ public class qrFragment extends Fragment {
         qrName = view.findViewById(R.id.qr_title);
         qrScore = view.findViewById(R.id.qr_score_value);
         img = view.findViewById(R.id.qr_image);
+        userImg = view.findViewById(R.id.profile_image);
+        userImg.setImageDrawable(user.generateUserIcon(getContext(), user.getUsername()));
 
         //--- get info from database
         final DocumentReference code = db.collection("QRCodes").document(hash);
@@ -123,16 +123,16 @@ public class qrFragment extends Fragment {
         });
 
         //-- comments
-        comments = view.findViewById(R.id.comments);
+        ListView comments = view.findViewById(R.id.comments);
         listAdapter = new CommentListAdapter(this.getContext(), commentList);
         comments.setAdapter(listAdapter);
-        addButton = view.findViewById(R.id.comment_button);
+        Button addButton = view.findViewById(R.id.comment_button);
         editText = view.findViewById(R.id.comment_edit);
 
         final CollectionReference commentDB = code.collection("Comments");
 
         // Pics
-        picsButton = view.findViewById(R.id.pics_button);
+        Button picsButton = view.findViewById(R.id.pics_button);
 
         // Text to show who else has scanned this QR code
         qrPlayersText = view.findViewById(R.id.qr_players_text);
