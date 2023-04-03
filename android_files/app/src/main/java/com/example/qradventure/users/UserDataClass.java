@@ -31,7 +31,6 @@ public class UserDataClass {
     private static volatile UserDataClass INSTANCE = null;
 
     // user data
-    private Location currentLocation;
     private String phoneInfo;
     private String emailInfo;
     private String username;
@@ -143,22 +142,6 @@ public class UserDataClass {
         this.highestQrScore = Integer.parseInt(data.get("highestQrScore").toString());
         this.highestQrHash = data.get("highestQrHash").toString();
 
-    }
-
-    /**
-     * Gets the user's current location
-     * @return Location object representing user's current location
-     */
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    /**
-     * Sets the user's current location
-     * @param currentLocation Location object to be set
-     */
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
     }
 
     /**
