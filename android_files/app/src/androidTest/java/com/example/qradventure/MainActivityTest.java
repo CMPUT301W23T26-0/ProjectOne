@@ -86,11 +86,13 @@ public class MainActivityTest{
         }
     }
 
+    /*
+     * Tests if QR Codes can be added successfully
+     */
     @Test
     public void addQR() {
+        testLogIn(); // Will assert if test is in MainActivity
         String id = user.getUserPhoneID();
-        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
-
         QRCode code = new QRCode("028cdf2261a35d620d7a4ecd9466cb3ba5d39dee006a86e7483a8dcbdf695695");
         CollectionReference cRef = db.collection("Users").document(id).collection("Codes");
         Map<String, Object> newCode = new HashMap<>();
@@ -100,6 +102,20 @@ public class MainActivityTest{
         cRef.add(newCode);
     }
 
+    /*
+     * Tests if QR Codes can be removed successfully
+     */
+    @Test
+    public void removeQR() {
+        testLogIn(); // Will assert if test is in MainActivity
+        String id = user.getUserPhoneID();
+        QRCode code = new QRCode("028cdf2261a35d620d7a4ecd9466cb3ba5d39dee006a86e7483a8dcbdf695695");
+        CollectionReference cRef = db.collection("Users").document(id).collection("Codes");
+        cRef.document(code.getHashValue())
+                .collection("Users")
+                .document(id)
+                .delete();
+    }
     /**
      * Close activity after each test
      * @throws Exception
