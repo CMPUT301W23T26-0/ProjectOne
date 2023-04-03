@@ -57,9 +57,9 @@ public class UserDataClass {
     private UserDataClass() {}
 
     /**
-     * This function retrieves and returns the user data instance,
+     * Retrieves and returns the user data instance,
      * which is a singleton instance
-     * @return
+     * @return  Singleton instance
      */
     public static UserDataClass getInstance() {
         // Check if the instance is already created
@@ -82,12 +82,12 @@ public class UserDataClass {
     }
 
     /**
-     * This method checks if the singleton is already registered
+     * Checks if the singleton is already registered
      * and uses a callback interface that takes a boolean saying whether
      * the user is already registered or not
      * If the user is registered, then it retrieves user data
-     * @param callback tryRegisterCallback interface called when document
-     *                 is retrieved
+     * @param callback checkRegisteredCallback interface that is called when
+     *                 document is retrieved
      */
     public void checkRegistered(checkRegisteredCallback callback) {
         this.userRef = db.collection("Users").document(this.userPhoneID);
@@ -122,8 +122,8 @@ public class UserDataClass {
     }
 
     /**
-     * This method creates a new document in the database for the user
-     * and saves the data locally
+     * Creates a new document in the database for the user
+     * and sets the data locally
      * @param data Map containing user data
      */
     public void setData(Map<String, Object> data) {
@@ -151,89 +151,89 @@ public class UserDataClass {
     }
 
     /**
-     * This function gets the user's current location
-     * @return
+     * Gets the user's current location
+     * @return Location object representing user's current location
      */
     public Location getCurrentLocation() {
         return currentLocation;
     }
 
     /**
-     * This function sets the user's current location
-     * @param currentLocation
+     * Sets the user's current location
+     * @param currentLocation Location object to be set
      */
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
     }
 
     /**
-     * This function gets the user's phone info
-     * @return
+     * Gets the user's phone info
+     * @return String representing user's phone number
      */
     public String getPhoneInfo() {
         return this.phoneInfo;
     }
 
     /**
-     * This function gets the user's email info
-     * @return
+     * Gets the user's email info
+     * @return String representing user's email
      */
     public String getEmailInfo() {
         return this.emailInfo;
     }
 
     /**
-     * This function gets the user's username
-     * @return
+     * Gets the user's username
+     * @return String representing user's username
      */
     public String getUsername() {
         return this.username;
     }
 
     /**
-     * This function gets the user's total score
-     * @return
+     * Gets the user's total score
+     * @return Integer representing user's total score
      */
     public int getTotalScore() {
         return this.totalScore;
     }
 
     /**
-     * This function gets the user's document reference
-     * @return
+     * Gets the user's document reference
+     * @return DocumentReference of user's data
      */
     public DocumentReference getUserRef() {
         return this.userRef;
     }
 
     /**
-     * This function gets the user's QR code collection reference
-     * @return
+     * Gets the user's QR code collection reference
+     * @return CollectionReference of user's code data
      */
     public CollectionReference getUserCodesRef() {
         return this.userCodesRef;
     }
 
     /**
-     * This function gets the user's highest scoring QR code
-     * @return
+     * Gets the score of the user's highest scoring QR code
+     * @return Integer representing score of user's highest scoring QR code
      */
     public int getHighestQrScore() {
         return this.highestQrScore;
     }
 
     /**
-     * This function gets the hash of the user's highest scoring QR code
-     * @return
+     * Gets the hash of the user's highest scoring QR code
+     * @return String representing the hash of user's highest scoring QR code
      */
     public String getHighestQrHash() {
         return this.highestQrHash;
     }
 
     /**
-     * This function sets the user's phone info
+     * Sets the user's phone info
      * and updates the database
-     * @param phone
+     * @param phone Phone information to be set
      */
     public void setPhoneInfo(String phone) {
         this.phoneInfo = phone;
@@ -241,9 +241,9 @@ public class UserDataClass {
     }
 
     /**
-     * This function sets the user's email info
+     * Sets the user's email info
      * and updates the database
-     * @param email
+     * @param email Email information to be set
      */
     public void setEmailInfo(String email) {
         this.emailInfo = email;
@@ -251,9 +251,9 @@ public class UserDataClass {
     }
 
     /**
-     * This function sets the user's username
+     * Sets the user's username
      * and updates the database
-     * @param username
+     * @param username Username to be set
      */
     public void setUsername(String username) {
         this.username = username;
@@ -261,31 +261,37 @@ public class UserDataClass {
     }
 
     /**
-     * This function gets the user's phone ID
-     * @return
+     * Gets the user's phone ID
+     * @return String representing user's androidID
      */
     public String getUserPhoneID() {
         return this.userPhoneID;
     }
 
     /**
-     * This function sets the user's phone ID
-     * @param userPhoneID
+     * Sets the user's phone ID
+     * @param userPhoneID androidID to be set
      */
     public void setUserPhoneID(String userPhoneID) {
         this.userPhoneID = userPhoneID;
     }
 
     /**
-     * This function sets the user's total score
+     * Sets the user's total score
      * and updates the database
-     * @param score
+     * @param score score to be set
      */
     public void setTotalScore(int score) {
         this.totalScore = score;
         updateField("totalScore", score);
     }
 
+    /**
+     * Sets information for the user's highest scoring QR code
+     * and updates the database
+     * @param hash hash to be set
+     * @param score score to be set
+     */
     public void setHighestQr(String hash, int score) {
         this.highestQrScore = score;
         this.highestQrHash = hash;
@@ -294,8 +300,9 @@ public class UserDataClass {
     }
 
     /**
-     * This function adds a code to the user's Code collection,
-     * and updates the user's total score and highest scoring QR code as needed
+     * Adds a code to the user's Code collection and updates the user's
+     * total score and highest scoring QR code if the score to be added is
+     * higher than current score
      * @param codeID The code's hash value that acts as the documentID
      * @param code A map containing the code data to be inputted to the database
      */
@@ -321,6 +328,12 @@ public class UserDataClass {
                 });
     }
 
+    /**
+     * Deletes a code from the user's Code collection and updates the user's
+     * total score and highest scoring QR code if it was the current highest
+     * scoring QR code
+     * @param code QRCode to be removed
+     */
     public void deleteUserCode(QRCode code) {
         String hash = code.getHashValue();
         userCodesRef.document(hash)
@@ -341,6 +354,10 @@ public class UserDataClass {
                 });
     }
 
+    /**
+     * Queries for the user's highest scoring QR code
+     * in the database and sets local data for the highest QR code
+     */
     public void refreshHighestQr() {
         userCodesRef.orderBy("score", Query.Direction.DESCENDING).limit(1)
                 .get()
@@ -365,11 +382,10 @@ public class UserDataClass {
     }
 
     /**
-     * This function is a helper function that is called
-     * whenever a user data changes locally, and automatically
-     * updates the database with the changes
-     * @param field
-     * @param value
+     * A helper function that is called whenever user data changes locally,
+     * and updates the database with the changes
+     * @param field Field to be updated
+     * @param value Value to update the field with
      */
     public void updateField(String field, Object value) {
         this.userRef.update(field, value)
