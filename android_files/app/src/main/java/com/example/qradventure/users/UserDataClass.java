@@ -1,12 +1,17 @@
 // https://www.tutorialspoint.com/java/java_using_singleton.htm
 package com.example.qradventure.users;
 
+import static android.content.ContentValues.TAG;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.qrcode.QRController;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +36,7 @@ public class UserDataClass {
     private static volatile UserDataClass INSTANCE = null;
 
     // user data
+    private Location currentLocation;
     private String phoneInfo;
     private String emailInfo;
     private String username;
@@ -38,6 +44,7 @@ public class UserDataClass {
     private String userPhoneID;
     private int highestQrScore;
     private String highestQrHash;
+    private final QRController controller = new QRController();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef;
     private CollectionReference userCodesRef;
@@ -51,9 +58,9 @@ public class UserDataClass {
     private UserDataClass() {}
 
     /**
-     * Retrieves and returns the user data instance,
+     * This function retrieves and returns the user data instance,
      * which is a singleton instance
-     * @return  Singleton instance
+     * @return The user data instance
      */
     public static UserDataClass getInstance() {
         // Check if the instance is already created
@@ -79,7 +86,7 @@ public class UserDataClass {
     }
 
     /**
-     * Checks if the singleton is already registered
+     * This method checks if the singleton is already registered
      * and uses a callback interface that takes a boolean saying whether
      * the user is already registered or not
      * If the user is registered, then it retrieves user data
@@ -90,27 +97,30 @@ public class UserDataClass {
         this.userRef = db.collection("Users").document(this.userPhoneID);
         this.userCodesRef = db.collection("Users").document(userPhoneID).collection("Codes");
         // try registering user
-        this.userRef.get().addOnCompleteListener(task -> {
-            boolean isRegistered;
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                // User is already registered, retrieve information from database
-                // User is not registered yet, do registry in callback
-                // Get data from existing user
-                if (document.exists()) {
-                    isRegistered = true;
-                    username = document.get("username").toString();
-                    emailInfo = document.get("email").toString();
-                    phoneInfo = document.get("phone").toString();
-                    totalScore = Integer.parseInt(document.get("totalScore").toString());
-                    highestQrScore = Integer.parseInt(document.get("highestQrScore").toString());
-                    highestQrHash = document.get("highestQrHash").toString();
+        this.userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                boolean isRegistered;
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    // User is already registered, retrieve information from database
+                    // User is not registered yet, do registry in callback
+                    // Get data from existing user
+                    if (document.exists()) {
+                        isRegistered = true;
+                        username = document.get("username").toString();
+                        emailInfo = document.get("email").toString();
+                        phoneInfo = document.get("phone").toString();
+                        totalScore = Integer.parseInt(document.get("totalScore").toString());
+                        highestQrScore = Integer.parseInt(document.get("highestQrScore").toString());
+                        highestQrHash = document.get("highestQrHash").toString();
+                    } else {
+                        isRegistered = false;
+                    }
+                    callback.onCallback(isRegistered);
                 } else {
-                    isRegistered = false;
+                    Log.d(TAG, "Error getting documents: ", task.getException());
                 }
-                callback.onCallback(isRegistered);
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
     }
@@ -145,73 +155,89 @@ public class UserDataClass {
     }
 
     /**
-     * Gets the user's phone info
-     * @return String representing user's phone number
+     * This function gets the user's current location
+     * @return The user's current location
+     */
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    /**
+     * This function sets the user's current location
+     * @param currentLocation
+     */
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    /**
+     * This function gets the user's phone info
+     * @return The user's phone info
      */
     public String getPhoneInfo() {
         return this.phoneInfo;
     }
 
     /**
-     * Gets the user's email info
-     * @return String representing user's email
+     * This function gets the user's email info
+     * @return The user's email info
      */
     public String getEmailInfo() {
         return this.emailInfo;
     }
 
     /**
-     * Gets the user's username
-     * @return String representing user's username
+     * This function gets the user's username
+     * @return The user's username
      */
     public String getUsername() {
         return this.username;
     }
 
     /**
-     * Gets the user's total score
-     * @return Integer representing user's total score
+     * This function gets the user's total score
+     * @return The user's total score
      */
     public int getTotalScore() {
         return this.totalScore;
     }
 
     /**
-     * Gets the user's document reference
-     * @return DocumentReference of user's data
+     * This function gets the user's document reference
+     * @return The user's document reference
      */
     public DocumentReference getUserRef() {
         return this.userRef;
     }
 
     /**
-     * Gets the user's QR code collection reference
-     * @return CollectionReference of user's code data
+     * This function gets the user's QR code collection reference
+     * @return The user's QR code collection reference
      */
     public CollectionReference getUserCodesRef() {
         return this.userCodesRef;
     }
 
     /**
-     * Gets the score of the user's highest scoring QR code
-     * @return Integer representing score of user's highest scoring QR code
+     * This function gets the user's highest scoring QR code
+     * @return The user's highest QR score
      */
     public int getHighestQrScore() {
         return this.highestQrScore;
     }
 
     /**
-     * Gets the hash of the user's highest scoring QR code
-     * @return String representing the hash of user's highest scoring QR code
+     * This function gets the hash of the user's highest scoring QR code
+     * @return The user's highest scoring QR code
      */
     public String getHighestQrHash() {
         return this.highestQrHash;
     }
 
     /**
-     * Sets the user's phone info
+     * This function sets the user's phone info
      * and updates the database
-     * @param phone Phone information to be set
+     * @param phone The user's phone info
      */
     public void setPhoneInfo(String phone) {
         this.phoneInfo = phone;
@@ -219,9 +245,9 @@ public class UserDataClass {
     }
 
     /**
-     * Sets the user's email info
+     * This function sets the user's email info
      * and updates the database
-     * @param email Email information to be set
+     * @param email The user's email info
      */
     public void setEmailInfo(String email) {
         this.emailInfo = email;
@@ -229,9 +255,9 @@ public class UserDataClass {
     }
 
     /**
-     * Sets the user's username
+     * This function sets the user's username
      * and updates the database
-     * @param username Username to be set
+     * @param username The user's username
      */
     public void setUsername(String username) {
         this.username = username;
@@ -239,25 +265,25 @@ public class UserDataClass {
     }
 
     /**
-     * Gets the user's phone ID
-     * @return String representing user's androidID
+     * This function gets the user's phone ID
+     * @return The user's phone ID
      */
     public String getUserPhoneID() {
         return this.userPhoneID;
     }
 
     /**
-     * Sets the user's phone ID
-     * @param userPhoneID androidID to be set
+     * This function sets the user's phone ID
+     * @param userPhoneID The user's phone ID
      */
     public void setUserPhoneID(String userPhoneID) {
         this.userPhoneID = userPhoneID;
     }
 
     /**
-     * Sets the user's total score
+     * This function sets the user's total score
      * and updates the database
-     * @param score score to be set
+     * @param score The user's total score
      */
     public void setTotalScore(int score) {
         this.totalScore = score;
@@ -265,10 +291,9 @@ public class UserDataClass {
     }
 
     /**
-     * Sets information for the user's highest scoring QR code
-     * and updates the database
-     * @param hash hash to be set
-     * @param score score to be set
+     * This function sets the user's highest QR code
+     * @param hash The hash of the QR code with the highest score
+     * @param score The score of the QR code associated with the hash
      */
     public void setHighestQr(String hash, int score) {
         this.highestQrScore = score;
@@ -277,10 +302,22 @@ public class UserDataClass {
         updateField("highestQrHash", hash);
     }
 
+    public Drawable generateUserIcon(Context ctx, String uName) {
+        // turn username into a hex hash
+        byte[] bytes = (uName + "lauremepsumlauremepsum").getBytes();
+        StringBuilder hex = new StringBuilder();
+        for (byte b : bytes) {
+            hex.append(String.format("%02X", b));
+        }
+        String profileHash = hex.toString();
+        Log.d(TAG, profileHash);
+
+        return controller.generateImage(ctx, profileHash);
+    }
+
     /**
-     * Adds a code to the user's Code collection and updates the user's
-     * total score and highest scoring QR code if the score to be added is
-     * higher than current score
+     * This function adds a code to the user's Code collection,
+     * and updates the user's total score and highest scoring QR code as needed
      * @param codeID The code's hash value that acts as the documentID
      * @param code A map containing the code data to be inputted to the database
      */
@@ -307,10 +344,8 @@ public class UserDataClass {
     }
 
     /**
-     * Deletes a code from the user's Code collection and updates the user's
-     * total score and highest scoring QR code if it was the current highest
-     * scoring QR code
-     * @param code QRCode to be removed
+     * This function deletes a user's QR code
+     * @param code The QR code to be deleted from the user's account
      */
     public void deleteUserCode(QRCode code) {
         String hash = code.getHashValue();
@@ -333,8 +368,7 @@ public class UserDataClass {
     }
 
     /**
-     * Queries for the user's highest scoring QR code
-     * in the database and sets local data for the highest QR code
+     * This function refreshes the highest QR code
      */
     public void refreshHighestQr() {
         userCodesRef.orderBy("score", Query.Direction.DESCENDING).limit(1)
@@ -360,10 +394,11 @@ public class UserDataClass {
     }
 
     /**
-     * A helper function that is called whenever user data changes locally,
-     * and updates the database with the changes
-     * @param field Field to be updated
-     * @param value Value to update the field with
+     * This function is a helper function that is called
+     * whenever a user data changes locally, and automatically
+     * updates the database with the changes
+     * @param field The field to be updated
+     * @param value The value that the field must be updated with
      */
     public void updateField(String field, Object value) {
         this.userRef.update(field, value)

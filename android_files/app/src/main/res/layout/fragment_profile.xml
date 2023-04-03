@@ -4,169 +4,187 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/contentBg"
     tools:context=".ui.profiles.ProfileFragment">
 
-    <EditText
-        android:id="@+id/profile_search"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:imeOptions="actionSearch"
-        android:inputType="text"
-        android:hint="Search for a player..."
-        android:maxLines="1"
-        android:layout_marginTop="12sp"
-        android:layout_marginHorizontal="48sp"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <TextView
-        android:id="@+id/total_score_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:gravity="center"
-        android:text="@string/total_score_header"
-        android:textColor="@color/grey"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingVertical="12sp"
+        android:background="@drawable/top_info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username_text"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/username_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="@string/username"
-        android:textColor="@color/dark_grey"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        <EditText
+            android:id="@+id/profile_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="50sp"
+            android:layout_marginTop="10sp"
+            android:paddingHorizontal="20sp"
+            android:paddingVertical="5sp"
+            android:hint="Search for a player..."
+            android:background="@drawable/search_bar"
+            android:textColor="@color/contentTexts"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/profile_image"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginTop="12dp"
-        android:src="@drawable/ic_baseline_person_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_search"
-        app:layout_constraintVertical_bias="0.0"
-        app:shapeAppearanceOverlay="@style/CircleImageView"
-        app:strokeColor="@color/very_light_grey"
-        app:strokeWidth="2dp"/>
-    <!--
-    app:shapeAppearanceOverlay="@style/CircleImageView"
-        app:strokeColor="@color/very_light_grey"
-        app:strokeWidth="2dp"/>
-    -->
+        <TextView
+            android:id="@+id/total_score_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="@string/total_score_header"
+            android:textColor="@color/texts"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username_text"
+            app:layout_constraintVertical_bias="0.0" />
 
+        <TextView
+            android:id="@+id/username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="@string/username"
+            android:textColor="@color/texts"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
-    <TextView
-        android:id="@+id/total_score_value"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/default_total_val"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/total_score_header"
-        app:layout_constraintVertical_bias="0.0" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profile_image"
+            android:layout_width="96sp"
+            android:layout_height="96sp"
+            android:layout_marginTop="12sp"
+            android:src="@drawable/ic_baseline_person_24"
+            android:background="@color/contentBg"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
+            android:padding="3sp"
+            app:strokeColor="@color/contentBg"
+            app:strokeWidth="3sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_search" />
 
-    <TextView
-        android:id="@+id/highest_score_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:text="@string/highest_score_header"
-        android:textAlignment="center"
-        android:textColor="@color/grey"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/highest_score_value"
-        app:layout_constraintEnd_toStartOf="@+id/lowest_score_header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/total_score_value"
-        app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/total_score_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/default_total_val"
+            android:textColor="@color/contentBg"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/total_score_header"
+            app:layout_constraintEnd_toEndOf="@+id/total_score_header"
+            app:layout_constraintTop_toBottomOf="@+id/total_score_header" />
 
-    <TextView
-        android:id="@+id/highest_score_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
-        android:text="@string/default_high_low_val"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/lowest_score_header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/highest_score_header" />
+        <TextView
+            android:id="@+id/highest_score_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/highest_score_header"
+            android:textAlignment="center"
+            android:textColor="@color/texts"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/highest_score_value"
+            app:layout_constraintEnd_toStartOf="@+id/total_score_header"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/total_score_value"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/lowest_score_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:text="@string/lowest_score_header"
-        android:textAlignment="center"
-        android:textColor="@color/grey"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/lowest_score_value"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/highest_score_header"
-        app:layout_constraintTop_toBottomOf="@+id/total_score_value"
-        app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/highest_score_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_high_low_val"
+            android:textAlignment="center"
+            android:textColor="@color/contentBg"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/highest_score_header"
+            app:layout_constraintEnd_toEndOf="@+id/highest_score_header"
+            app:layout_constraintTop_toBottomOf="@id/highest_score_header" />
 
-    <TextView
-        android:id="@+id/lowest_score_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:text="@string/default_high_low_val"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/highest_score_header"
-        app:layout_constraintTop_toBottomOf="@id/lowest_score_header" />
+        <TextView
+            android:id="@+id/lowest_score_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lowest_score_header"
+            android:textAlignment="center"
+            android:textColor="@color/texts"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/lowest_score_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/total_score_header"
+            app:layout_constraintTop_toBottomOf="@+id/total_score_value"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/lowest_score_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_high_low_val"
+            android:textAlignment="center"
+            android:textColor="@color/contentBg"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/lowest_score_header"
+            app:layout_constraintStart_toStartOf="@+id/lowest_score_header"
+            app:layout_constraintTop_toBottomOf="@id/lowest_score_header" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_qr_code_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:background="@color/very_light_grey"
-        android:paddingTop="10dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="55sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sort_profileqr_button"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@id/sort_profileqr_button"/>
 
     <Button
         android:id="@+id/sort_profileqr_button"
-        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="40sp"
+        android:layout_height="50sp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/appBg"
+        android:text="@string/default_sort_button"
+        android:textSize="12sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_info"
+        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+    <TextView
+        android:id="@+id/delete_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="@string/default_sort_button"
-        android:textSize="14sp"
+        android:text="Swipe to delete"
+        android:textColor="@color/contentTexts"
+        app:layout_constraintBottom_toTopOf="@+id/user_qr_code_list"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lowest_score_value" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/profile_qr_count"
@@ -174,8 +192,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/default_count_val"
+        android:textColor="@color/contentTexts"
         app:layout_constraintBottom_toTopOf="@+id/user_qr_code_list"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/highest_score_value" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

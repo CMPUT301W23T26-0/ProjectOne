@@ -38,9 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ScanFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class allows the ScanFragment to be displayed
  */
 public class ScanFragment extends Fragment implements DisplayCodePromptPictureFragment.CameraInScanFrag,
         SavePictureFragment.GeolocationInScanFrag {
@@ -183,7 +181,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The newly created View
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

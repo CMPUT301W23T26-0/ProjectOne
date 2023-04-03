@@ -13,7 +13,9 @@ import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -26,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -62,16 +64,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class allows the map to be displayed
  */
-
 public class MapFragment extends Fragment implements OnMapReadyCallback{
-    // Views
     private MapView mapView;
-    EditText edit;
-//    private Location location = new Location();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference locations = db.collection("QRCodes");
     private List<String> docLocations = new ArrayList<>();
@@ -82,9 +78,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private Map<String, Double> lengthDict = new HashMap<>();
     private GoogleMap mMap;
     private Location currLocation;
-    Button getCloseButton;
+    private Button getCloseButton;
     private FusedLocationProviderClient client;
     private UserDataClass user = UserDataClass.getInstance();
+    private boolean currLocationInitialized = false;
 
     /**
      * Constructor for MapFragment
@@ -98,7 +95,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      *
      * @return A new instance of fragment MapFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
@@ -126,7 +122,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The newly created View
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -140,9 +136,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
         mapView.onCreate(mapBundle);
         mapView.getMapAsync(this);
+
         // Assign variable
         getCloseButton = view.findViewById(R.id.bt_location);
-        edit = view.findViewById(R.id.editText);
 
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -221,6 +217,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         // Initialize location
                         currLocation = task.getResult();
                         user.setCurrentLocation(task.getResult());
+                        if (!currLocationInitialized) {
+                            currLocationInitialized = true;
+                            initializeLocation();
+                        }
 
                         // Check condition
                         if (currLocation == null) {
@@ -240,6 +240,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     // Initialize location
                                     currLocation = locationResult.getLastLocation();
                                     user.setCurrentLocation(currLocation);
+                                    if (!currLocationInitialized) {
+                                        currLocationInitialized = true;
+                                        initializeLocation();
+                                    }
                                 }
                             };
 
@@ -281,7 +285,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         // https://stackoverflow.com/questions/55933929/android-display-user-location-on-map-fragment
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
@@ -294,6 +297,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         getCloseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                updateLocation();
                 // initialize user and marker longs and lats
                 double userLongitude = currLocation.getLongitude();
                 double userLatitude = currLocation.getLatitude();
@@ -301,14 +305,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 double tempLongitude;
                 double tempLatitude;
                 double distance;
-                // for each marker, get the distance between the user and the marker using pythag
+
+                // for each marker, get the distance between the user and the marker using pythagoras
                 // https://www.w3schools.com/java/java_hashmap.asp
                 for (String i : locationDict.keySet()) {
                     tempLocation = locationDict.get(i);
                     tempLatitude = tempLocation.latitude;
                     tempLongitude = tempLocation.longitude;
+
                     // get the distance using pythagoras
                     distance = getPythag(userLongitude, userLatitude, tempLongitude, tempLatitude);
+
                     // put each marker with its distance to the user in a dictionary
                     lengthDict.put(i, distance);
                 }
@@ -324,15 +331,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 // https://www.geeksforgeeks.org/how-to-get-first-or-last-entry-from-java-linkedhashmap/
                 // converts keys of dictionary into an array
                 String[] aKeys = sortedMap.keySet().toArray(new String[sortedMap.size()]);
-                // Print the first element in the array (the closest name of the Marker to the user)
-                edit.setText(aKeys[0]);
+
+                // display list of nearby QR codes
+                nearbyQRCodeDialog(aKeys);
             }
         });
+
     }
 
-    /*
-        returns the distance between two points (the first two params are the user and
-        the next two params are a marker) using Pythagoras.
+    /**
+     * Initializes the map to the user's location upon first opening the map view
+     */
+    private void initializeLocation() {
+        Location userLocation = user.getCurrentLocation();
+        LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
+    }
+
+    /**
+     * Returns the distance between two points (the first two params are the user and
+     * the next two params are a marker) using Pythagoras.
+     * @param userLongitude Longitude coordinate of the user
+     * @param userLatitude Latitude coordinate of the user
+     * @param tempLongitude Longitude coordinate of a marker
+     * @param tempLatitude Latitude coordinate of a marker
+     * @return Distance between user and marker
      */
     private double getPythag(double userLongitude, double userLatitude, double tempLongitude, double tempLatitude){
         double x = Math.pow((userLatitude - tempLatitude), 2);      // x = (ULat - TLat)^2
@@ -342,26 +365,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
     // "Alex Mamo", https://stackoverflow.com/users/5246885/alex-mamo
-    /*
-        Get locations of scanned QR codes from DB and save them as markers on the map
+    /**
+     * Get locations of scanned QR codes from DB and save them as markers on the map
      */
     private void placeMarkers(){
         locations.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        // get the location thing, which is a map, from the DB
-                        Map<String, Object> locations = (Map<String, Object>) document.get("location");
+                        // get the location of QR code from the DB
+                        Map<String, Object> qrLocation = (Map<String, Object>) document.get("location");
 
                         // if user chose not to save location, skip
-                        if (locations == null){
+                        if (qrLocation == null){
                             continue;
                         }
                         // get long and lat
-                        Double longitude = (Double) locations.get("longitude");
-                        Double latitude = (Double) locations.get("latitude");
+                        Double longitude = (Double) qrLocation.get("longitude");
+                        Double latitude = (Double) qrLocation.get("latitude");
                         // get name of marker
                         String tempName = document.getString("name");
                         // create a temporary LatLng object
@@ -379,6 +401,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 }
             }
         });
+    }
+
+    /**
+     * Displays nearby QR codes. Shows up to 5 codes.
+     */
+    private void nearbyQRCodeDialog(String[] qrCodeList) {
+        int qrCodeListLength = qrCodeList.length;
+        int maxListLimit = 5;
+
+        //error check max limit
+        int lowestLength;
+        if (qrCodeListLength < maxListLimit){
+            lowestLength = qrCodeListLength;
+        }
+        else {
+            lowestLength = maxListLimit;
+        }
+
+        //initialize displayed QR codes
+        String[] tempList = new String[lowestLength];
+        int i = 0;
+        while (i < lowestLength){
+            tempList[i] = qrCodeList[i];
+            i++;
+        }
+
+        //moves camera to selected QR code
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LatLng tempLocation = locationDict.get(qrCodeList[which]);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(tempLocation, 16));
+            }
+        };
+
+        //displays QR code list
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle("Nearby QR Codes")
+                .setItems(tempList, listener)
+                .setCancelable(true)
+                .show();
     }
 
     /**

@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/qr_item_bg"
+    android:layout_marginHorizontal="7sp"
+    android:layout_marginVertical="2sp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,9 +18,11 @@
             android:layout_width="32sp"
             android:layout_height="32sp"
             android:src="@drawable/ic_baseline_person_24"
+            android:background="@color/contentBg"
             app:shapeAppearanceOverlay="@style/CircleImageView"
-            app:strokeColor="@color/very_light_grey"
+            app:strokeColor="@color/contentBg"
             app:strokeWidth="2dp"
+            android:padding="2sp"
             android:layout_margin="10sp"/>
 
         <TextView
@@ -25,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Username"
+            android:textColor="@color/boldText"
             android:textStyle="bold"
             android:textSize="20sp"
             android:layout_gravity="center_vertical"/>
@@ -36,6 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sample Comment"
+        android:textColor="@color/contentTexts"
         android:layout_marginHorizontal="10sp"
         android:layout_marginBottom="15sp"/>
 

@@ -1,7 +1,8 @@
 package com.example.qradventure.qrcode;
 
-import android.graphics.drawable.Drawable;
-
+/**
+ * This class represents a QR code
+ */
 public class QRCode {
     private String name;
     private int score;
@@ -81,14 +82,6 @@ public class QRCode {
      */
     public String getComment() {
         return this.comment;
-    }
-
-    /**
-     * Gets the qrcode's drawable class image
-     * @return A drawable class image representing this qrcode
-     */
-    public Drawable getImage() {
-        return null;
     }
 
     /**

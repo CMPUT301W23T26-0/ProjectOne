@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,39 +15,36 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.qradventure.qrcode.QRCode;
 import com.example.qradventure.R;
+import com.example.qradventure.qrcode.QRController;
+import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
 import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.ObjectInputStream;
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class allows the user's profile to be displayed
  */
 public class ProfileFragment extends Fragment {
     // Data
@@ -60,15 +58,8 @@ public class ProfileFragment extends Fragment {
     private EditText profileSearchBar;
     private ProfilesListArrayAdapter qrCodeAdapter;
     private ArrayList<QRCode> qrCodeDataList;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextView deleteInfo;
+    private ImageView profilePic;
 
     /**
      * Constructor for the ProfileFragment
@@ -87,12 +78,7 @@ public class ProfileFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters2
     public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        return new ProfileFragment();
     }
 
     /**
@@ -104,10 +90,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     /**
@@ -122,7 +104,7 @@ public class ProfileFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The newly created View
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -141,6 +123,8 @@ public class ProfileFragment extends Fragment {
         qrCodeDataList = new ArrayList<>();
         qrCodeAdapter = new ProfilesListArrayAdapter(getContext(), qrCodeDataList);
         qrCodeList.setAdapter(qrCodeAdapter);
+        deleteInfo = view.findViewById(R.id.delete_text);
+        profilePic = view.findViewById(R.id.profile_image);
         //qrCodeList.addOnItemTouchListener(this);
         return view;
     }
@@ -163,6 +147,8 @@ public class ProfileFragment extends Fragment {
         // RecyclerView adapter and linear layout
         qrCodeList.setAdapter(qrCodeAdapter);
         qrCodeList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
+        sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
         // Sort Button
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,7 +214,11 @@ public class ProfileFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 Log.d("TEST RESPONSE", "Action ID = " + actionId + "KeyEvent = " + event);
-                searchProfile(v.getText().toString(), view);
+
+                // Without check, gets called twice
+                if (event != null) {
+                    searchProfile(v.getText().toString(), view);
+                }
                 return false;
             }
         });
@@ -237,7 +227,7 @@ public class ProfileFragment extends Fragment {
 
     /**
      * This function updates the score highlights.
-     * @param view
+     * @param view The view to be updated
      */
     private void updateScoreHighlights(View view) {
         TextView totalScore = view.findViewById(R.id.total_score_value);
@@ -282,12 +272,7 @@ public class ProfileFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             if (!task.getResult().isEmpty()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    String id = document.getId();
-                                    viewingUser = id == user.getUserPhoneID();
-                                    CollectionReference profileCodes = db.collection("Users").document(id).collection("Codes");
-                                    displayProfileInfo(profileCodes, username, view);
-                                }
+                                openPlayerInfo(username);
                             } else {
                                 searchAlert.show();
                             }
@@ -306,92 +291,70 @@ public class ProfileFragment extends Fragment {
      */
     private void displayProfileInfo(CollectionReference profileCodes, String username, View view) {
         profileCodes.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            qrCodeDataList.clear();
-                            qrCodeAdapter.notifyDataSetChanged();
-                            // Iterate through user codes
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // Populate user profile using db
-                                Map<String, Object> map = document.getData();
-                                QRCode codeToAdd = new QRCode();
-                                codeToAdd.setName((String) map.get("name"));
-                                // https://stackoverflow.com/questions/17164014/java-lang-classcastexception-java-lang-long-cannot-be-cast-to-java-lang-integer
-                                codeToAdd.setScore(((Long) map.get("score")).intValue());
-                                codeToAdd.setHashValue((String) map.get("hash"));
-                                qrCodeDataList.add(codeToAdd);
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                            }
-
-                            TextView usernameText = (TextView) view.findViewById(R.id.username_text);
-                            usernameText.setText(username);
-
-                            // Set profile image using user data (not required yet)
-                            // ImageView userImg = view.findViewById(R.id.profile_image);
-                            // userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
-
-                            // Updates need to be done in this scope
-                            qrCodeAdapter.notifyDataSetChanged();
-                            updateScoreHighlights(view);
-
-                            // Sort using comparison getScore
-                            qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
-                            Collections.reverse(qrCodeDataList);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        qrCodeDataList.clear();
+                        qrCodeAdapter.notifyDataSetChanged();
+                        // Iterate through user codes
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Populate user profile using db
+                            Map<String, Object> map = document.getData();
+                            QRCode codeToAdd = new QRCode();
+                            codeToAdd.setName((String) map.get("name"));
+                            // https://stackoverflow.com/questions/17164014/java-lang-classcastexception-java-lang-long-cannot-be-cast-to-java-lang-integer
+                            codeToAdd.setScore(((Long) map.get("score")).intValue());
+                            codeToAdd.setHashValue((String) map.get("hash"));
+                            qrCodeDataList.add(codeToAdd);
+                            Log.d(TAG, document.getId() + " => " + document.getData());
                         }
+
+                        TextView usernameText = (TextView) view.findViewById(R.id.username_text);
+                        usernameText.setText(username);
+
+                        // Set profile image using user data (not required yet)
+                        // ImageView userImg = view.findViewById(R.id.profile_image);
+                        // userImg.setImageDrawable(new QRController().generateImage(getContext(), android_id));
+
+                        // Updates need to be done in this scope
+                        qrCodeAdapter.notifyDataSetChanged();
+                        updateScoreHighlights(view);
+
+                        // Sort using comparison getScore
+                        qrCodeDataList.sort(Comparator.comparing(QRCode::getScore));
+                        Collections.reverse(qrCodeDataList);
+
+                        // Sets the delete text to visible only if the viewed profile is owners' profile
+                        deleteInfo.setVisibility(View.VISIBLE);
+
+                        // Sets the profile image
+                        profilePic.setImageDrawable(user.generateUserIcon(getContext(), username));
+
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
                     }
-                });
+                }
+            });
         }
 
     /**
-     * This function enables clicking on an item in recycler view
-     //* @param rv, The recycler view object
-     //* @param e, motion of the action
-     //* @return
-     *      Boolean, if it successfully clicked
-
-     //@Override
-     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-     View item = rv.findChildViewUnder(e.getX(), e.getY()); // gets xy pos of the part clicked
-     if (item != null && e.getAction() == MotionEvent.ACTION_UP) {
-     int pos = rv.getChildAdapterPosition(item);
-     if (pos != RecyclerView.NO_POSITION) {
-     //--- get the QR hash code and player ID
-     int index = rv.getChildAdapterPosition(item);
-     String hash = qrCodeDataList.get(index).getHashValue();
-
-     //--- Put arguments into fragment
-     qrFragment frag = new qrFragment();
-     Bundle args = new Bundle();
-     args.putString("hash", hash);
-     frag.setArguments(args);
-
-     //--- Change fragment
-     // Fragment manager example from the developers guide
-     // https://developer.android.com/guide/fragments/fragmentmanager#java
-     FragmentManager manager = getActivity().getSupportFragmentManager();
-
-     manager.beginTransaction()
-     .replace(R.id.fragments, frag)
-     .setReorderingAllowed(true)
-     .addToBackStack(null)
-     .commit();
-     }
-     }
-     return false;
-     }
-
-     @Override
-     public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-     // Do nothing
-     }
-
-     @Override
-     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-     // Do nothing
-     }
+     * Opens a player's profile after a successful search
+     * @param username The username of a given player
      */
+    private void openPlayerInfo(String username) {
+        Bundle args = new Bundle();
+        args.putString("username", username);
+
+        PlayersFragment playersFragment = new PlayersFragment();
+        playersFragment.setArguments(args);
+        FragmentActivity activity = (FragmentActivity) getContext();
+        FragmentManager manager = activity.getSupportFragmentManager();
+
+        manager.beginTransaction()
+                .replace(R.id.fragments, playersFragment)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
+    }
 }

@@ -1,21 +1,29 @@
 package com.example.qradventure.ui.leaderboard;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qradventure.R;
+import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
+import com.example.qradventure.users.UserDataClass;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/**
+ * This class allows players to be displayed in a list in the LeaderboardFragment
+ */
 public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.ViewHolder> {
-    // RecyclerView needs a custom adapter
-
     private Context context;
     private ArrayList<Player> players;
 
@@ -30,13 +38,13 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
     }
 
     /**
-     * A function that runs a set of instructions upon view creation,
+     * A function that runs a set of instructions upon ViewHolder creation,
      * which includes setting up the view.
      * @param parent The ViewGroup into which the new View will be added after it is bound to
      *               an adapter position.
      * @param viewType The view type of the new View.
      *
-     * @return
+     * @return The newly created ViewHolder
      */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -52,17 +60,39 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Player player = players.get(position);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Player player = players.get(position);
+                Bundle args = new Bundle();
+                args.putString("username", player.getName());
+
+                PlayersFragment playersFragment = new PlayersFragment();
+                //args.putString("hash", qrCode.getHashValue());
+                playersFragment.setArguments(args);
+                FragmentActivity activity = (FragmentActivity) context;
+                FragmentManager manager = activity.getSupportFragmentManager();
+
+                manager.beginTransaction()
+                        .replace(R.id.fragments, playersFragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         holder.playerName.setText(player.getName());
         holder.playerScore.setText(String.valueOf(player.getScore()));
         holder.playerPlace.setText(String.valueOf(position + 1));
+        holder.playerImage.setImageDrawable(UserDataClass.getInstance().generateUserIcon(context, player.getName()));
     }
 
     /**
      * A function that returns the data list size.
-     * @return
+     * @return Size of the data list
      */
     @Override
     public int getItemCount() {

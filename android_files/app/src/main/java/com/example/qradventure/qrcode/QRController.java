@@ -13,6 +13,10 @@ import com.example.qradventure.R;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * This class generates the unique aspects of QR codes, which
+ * include a hash, image, name, and score
+ */
 public class QRController {
 
     /**

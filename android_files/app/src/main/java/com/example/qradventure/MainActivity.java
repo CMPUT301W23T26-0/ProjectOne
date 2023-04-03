@@ -19,7 +19,7 @@ import com.example.qradventure.ui.scan.ScanFragment;
  * LeaderboardFragment, and MapFragment
  */
 public class MainActivity extends AppCompatActivity {
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
 
     /**
      * This function runs a set of instructions upon activity
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * This function allows the main fragments to be navigated
      * through by the user via the app's bottom navigation bar.
-     * @param fragment
+     * @param fragment The fragment to be navigated to
      */
     private void switchFragment(Fragment fragment) {
         // Fragment manager example from the developers guide
