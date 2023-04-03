@@ -169,7 +169,7 @@ public class LeaderboardFragment extends Fragment {
         ImageView thirdImg = view.findViewById(R.id.imageView3);
 
         TextView[] topThree = new TextView[]{first, second, third};
-        ImageView[] topThreeImg = new ImageView[]{firstImg, secondImg, thirdImg};
+        ImageView[] topThreeImg = new ImageView[]{firstImg, thirdImg, secondImg};
 
         int min;
         if (playerAdapter.getItemCount() < 3) {
