@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class SavePictureFragment extends DialogFragment {
     private Bitmap picture;
-    String toastMessage = "Discarding picture...";
+    private String toastMessage = "Discarding picture...";
 
     // Data
     private UserDataClass user;
