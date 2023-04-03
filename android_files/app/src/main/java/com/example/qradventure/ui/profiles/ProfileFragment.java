@@ -156,6 +156,8 @@ public class ProfileFragment extends Fragment {
         // RecyclerView adapter and linear layout
         qrCodeList.setAdapter(qrCodeAdapter);
         qrCodeList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
+        sortButton.setText(sortButton.getText() == "V" ? "Ʌ" : "V");
         // Sort Button
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
