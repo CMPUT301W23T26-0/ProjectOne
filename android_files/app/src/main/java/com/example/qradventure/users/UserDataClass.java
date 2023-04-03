@@ -318,6 +318,12 @@ public class UserDataClass {
         updateField("highestQrHash", hash);
     }
 
+    /**
+     * This function generates a user icon
+     * @param ctx Context of icon
+     * @param uName Username of user
+     * @return Drawable of icon
+     */
     public Drawable generateUserIcon(Context ctx, String uName) {
         // turn username into a hex hash
         byte[] bytes = (uName + "lauremepsumlauremepsum").getBytes();
