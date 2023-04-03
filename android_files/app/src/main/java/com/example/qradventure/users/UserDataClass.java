@@ -3,12 +3,15 @@ package com.example.qradventure.users;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.qrcode.QRController;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,6 +44,7 @@ public class UserDataClass {
     private String userPhoneID;
     private int highestQrScore;
     private String highestQrHash;
+    private final QRController controller = new QRController();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef;
     private CollectionReference userCodesRef;
@@ -293,6 +297,19 @@ public class UserDataClass {
         this.highestQrHash = hash;
         updateField("highestQrScore", score);
         updateField("highestQrHash", hash);
+    }
+
+    public Drawable generateUserIcon(Context ctx, String uName) {
+        // turn username into a hex hash
+        byte[] bytes = (uName + "lauremepsumlauremepsum").getBytes();
+        StringBuilder hex = new StringBuilder();
+        for (byte b : bytes) {
+            hex.append(String.format("%02X", b));
+        }
+        String profileHash = hex.toString();
+        Log.d(TAG, profileHash);
+
+        return controller.generateImage(ctx, profileHash);
     }
 
     /**

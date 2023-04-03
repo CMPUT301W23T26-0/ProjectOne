@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qradventure.R;
 import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
+import com.example.qradventure.users.UserDataClass;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -85,6 +86,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         holder.playerName.setText(player.getName());
         holder.playerScore.setText(String.valueOf(player.getScore()));
         holder.playerPlace.setText(String.valueOf(position + 1));
+        holder.playerImage.setImageDrawable(UserDataClass.getInstance().generateUserIcon(context, player.getName()));
     }
 
     /**

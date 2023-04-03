@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -102,6 +103,10 @@ public class PlayersFragment extends Fragment {
         TextView username = view.findViewById(R.id.username_text);
         String userClicked = args.getString("username");
         username.setText(userClicked);
+
+        // Sets the profile image
+        ImageView profilePic = view.findViewById(R.id.profile_image);
+        profilePic.setImageDrawable(UserDataClass.getInstance().generateUserIcon(getContext(), userClicked));
 
         Query clickedPlayer = db.collection("Users")
                 .whereEqualTo("username", userClicked);

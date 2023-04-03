@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -33,10 +34,6 @@ import com.example.qradventure.R;
  * This class allows the leaderboard to be displayed
  */
 public class LeaderboardFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private String mParam1;
-    private String mParam2;
     private UserDataClass user;
     private RadioGroup leaderboardToggler;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -61,10 +58,6 @@ public class LeaderboardFragment extends Fragment {
      */
     public static LeaderboardFragment newInstance(String param1, String param2) {
         LeaderboardFragment fragment = new LeaderboardFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -76,10 +69,6 @@ public class LeaderboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     /**
@@ -175,7 +164,12 @@ public class LeaderboardFragment extends Fragment {
         TextView second = view.findViewById(R.id.second_place);
         TextView third = view.findViewById(R.id.third_place);
 
+        ImageView firstImg = view.findViewById(R.id.imageView);
+        ImageView secondImg = view.findViewById(R.id.imageView2);
+        ImageView thirdImg = view.findViewById(R.id.imageView3);
+
         TextView[] topThree = new TextView[]{first, second, third};
+        ImageView[] topThreeImg = new ImageView[]{firstImg, secondImg, thirdImg};
 
         int min;
         if (playerAdapter.getItemCount() < 3) {
@@ -185,7 +179,7 @@ public class LeaderboardFragment extends Fragment {
         }
         for (int i = 0; i < min; i++) {
             topThree[i].setText(playerDataList.get(i).getName());
+            topThreeImg[i].setImageDrawable(UserDataClass.getInstance().generateUserIcon(getContext(), playerDataList.get(i).getName()));
         }
     }
-
 }
