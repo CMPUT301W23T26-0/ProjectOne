@@ -43,7 +43,7 @@ import java.util.Map;
  * scanned QR code.
  */
 public class PromptGeolocationFragment extends DialogFragment {
-    String toastMessage = "Skipping geolocation...";
+    private String toastMessage = "Skipping geolocation...";
 
     // Data
     private UserDataClass user;

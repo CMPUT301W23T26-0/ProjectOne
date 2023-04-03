@@ -56,7 +56,7 @@ public class SavePictureFragment extends DialogFragment {
         void promptGeolocationInScanFrag();
     }
 
-    GeolocationInScanFrag scanFrag;
+    private GeolocationInScanFrag scanFrag;
 
     /**
      * This function allows an instance of the

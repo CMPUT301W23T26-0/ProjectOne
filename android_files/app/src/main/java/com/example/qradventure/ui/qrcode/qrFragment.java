@@ -45,7 +45,7 @@ public class qrFragment extends Fragment {
     private TextView qrScore;
     private EditText editText;
     private ImageView userImg;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final ArrayList<Comment> commentList = new ArrayList<>();
     private CommentListAdapter listAdapter;
     final String TAG = "QR Fragment";
