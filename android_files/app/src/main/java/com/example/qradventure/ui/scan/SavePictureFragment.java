@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.scan;
 
 import static android.content.ContentValues.TAG;
 
@@ -17,6 +17,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
+import com.example.qradventure.qrcode.QRCode;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -34,7 +37,7 @@ import java.util.Map;
  */
 public class SavePictureFragment extends DialogFragment {
     private Bitmap picture;
-    String toastMessage = "Discarding picture...";
+    private String toastMessage = "Discarding picture...";
 
     // Data
     private UserDataClass user;
@@ -53,7 +56,7 @@ public class SavePictureFragment extends DialogFragment {
         void promptGeolocationInScanFrag();
     }
 
-    GeolocationInScanFrag scanFrag;
+    private GeolocationInScanFrag scanFrag;
 
     /**
      * This function allows an instance of the

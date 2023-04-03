@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.scan;
 
 import static android.content.ContentValues.TAG;
 
@@ -19,6 +19,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.qradventure.users.UserDataClass;
+import com.example.qradventure.qrcode.QRCode;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -41,7 +43,7 @@ import java.util.Map;
  * scanned QR code.
  */
 public class PromptGeolocationFragment extends DialogFragment {
-    String toastMessage = "Skipping geolocation...";
+    private String toastMessage = "Skipping geolocation...";
 
     // Data
     private UserDataClass user;
@@ -68,7 +70,7 @@ public class PromptGeolocationFragment extends DialogFragment {
      * @param savedInstanceState The last saved instance state of the Fragment,
      * or null if this is a freshly created Fragment.
      *
-     * @return
+     * @return The newly created Dialog
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -197,7 +199,7 @@ public class PromptGeolocationFragment extends DialogFragment {
     /**
      * A function that saves a geolocation to a QR code. This is
      * recorded in the database.
-     * @param geolocation
+     * @param geolocation The user's current geolocation
      */
     private void saveGeolocation(Location geolocation) {
         // ScanFragment already ensures the code exists, don't have to do a check

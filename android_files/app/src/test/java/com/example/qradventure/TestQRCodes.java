@@ -3,6 +3,8 @@ package com.example.qradventure;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import com.example.qradventure.qrcode.QRCode;
+
 public class TestQRCodes {
     private QRCode mockCode() {
         return new QRCode("2f0eb1859e295bcd183127558f3c205270e7a8004ad362e5123bd5b2774e0f9c");

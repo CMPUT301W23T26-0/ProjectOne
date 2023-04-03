@@ -7,13 +7,15 @@
 // https://developers.google.com/maps/documentation/android-sdk/location#:~:text=If%20your%20app%20needs%20to,location%20returned%20by%20the%20API.
 // https://www.geeksforgeeks.org/how-to-get-current-location-inside-android-fragment/
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-package com.example.qradventure;
+package com.example.qradventure.ui.map;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -26,8 +28,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +35,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -47,22 +49,39 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class allows the map to be displayed
  */
-
 public class MapFragment extends Fragment implements OnMapReadyCallback{
-    // Views
     private MapView mapView;
-    EditText edit;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference locations = db.collection("QRCodes");
+    private List<String> docLocations = new ArrayList<>();
+    // https://stackoverflow.com/questions/13543457/how-do-you-create-a-dictionary-in-java
+    // "arshajii" https://stackoverflow.com/users/1357341/arshajii
+    // edited by "Timo Giese", https://stackoverflow.com/users/4440113/timo-giese
+    private Map<String, LatLng> locationDict = new HashMap<>();
+    private Map<String, Double> lengthDict = new HashMap<>();
     private GoogleMap mMap;
     private Location currLocation;
-    Button btLocation;
+    private Button getCloseButton;
     private FusedLocationProviderClient client;
     private UserDataClass user = UserDataClass.getInstance();
+    private boolean currLocationInitialized = false;
 
     /**
      * Constructor for MapFragment
@@ -76,7 +95,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      *
      * @return A new instance of fragment MapFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
@@ -104,7 +122,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The newly created View
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,9 +136,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
         mapView.onCreate(mapBundle);
         mapView.getMapAsync(this);
+
         // Assign variable
-        btLocation = view.findViewById(R.id.bt_location);
-        edit = view.findViewById(R.id.editText);
+        getCloseButton = view.findViewById(R.id.bt_location);
 
         // Initialize location client
         client = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -199,6 +217,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         // Initialize location
                         currLocation = task.getResult();
                         user.setCurrentLocation(task.getResult());
+                        if (!currLocationInitialized) {
+                            currLocationInitialized = true;
+                            initializeLocation();
+                        }
 
                         // Check condition
                         if (currLocation == null) {
@@ -218,6 +240,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     // Initialize location
                                     currLocation = locationResult.getLastLocation();
                                     user.setCurrentLocation(currLocation);
+                                    if (!currLocationInitialized) {
+                                        currLocationInitialized = true;
+                                        initializeLocation();
+                                    }
                                 }
                             };
 
@@ -259,26 +285,163 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //test marker
-        LatLng uofa = new LatLng(53.52682, -113.524493735076);    // u of a coords
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
-        googleMap.addMarker(new MarkerOptions()                         // set marker to uofa
-                .position(uofa)
-                .title("University of Alberta"));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(uofa));      // move to uOfA and Zoom In
-
         // https://stackoverflow.com/questions/55933929/android-display-user-location-on-map-fragment
         // "hio" https://stackoverflow.com/users/8388068/hio
         MapsInitializer.initialize(getActivity());
         mMap = googleMap;
-        updateLocation();
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);                // hybrid map now
 
-        //Placeholder for updating location in map fragment
-        btLocation.setOnClickListener(
-                view1 -> {
-                    updateLocation();
-                });
+        updateLocation();
+        placeMarkers();
+
+        getCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateLocation();
+                // initialize user and marker longs and lats
+                double userLongitude = currLocation.getLongitude();
+                double userLatitude = currLocation.getLatitude();
+                LatLng tempLocation;
+                double tempLongitude;
+                double tempLatitude;
+                double distance;
+
+                // for each marker, get the distance between the user and the marker using pythagoras
+                // https://www.w3schools.com/java/java_hashmap.asp
+                for (String i : locationDict.keySet()) {
+                    tempLocation = locationDict.get(i);
+                    tempLatitude = tempLocation.latitude;
+                    tempLongitude = tempLocation.longitude;
+
+                    // get the distance using pythagoras
+                    distance = getPythag(userLongitude, userLatitude, tempLongitude, tempLatitude);
+
+                    // put each marker with its distance to the user in a dictionary
+                    lengthDict.put(i, distance);
+                }
+                // https://howtodoinjava.com/java/sort/java-sort-map-by-values/
+                // sorts dictionary into a new dictionary
+                LinkedHashMap<String, Double> sortedMap = lengthDict.entrySet()
+                        .stream()
+                        .sorted(Map.Entry.comparingByValue())
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+                // https://www.geeksforgeeks.org/how-to-get-first-or-last-entry-from-java-linkedhashmap/
+                // converts keys of dictionary into an array
+                String[] aKeys = sortedMap.keySet().toArray(new String[sortedMap.size()]);
+
+                // display list of nearby QR codes
+                nearbyQRCodeDialog(aKeys);
+            }
+        });
+
+    }
+
+    /**
+     * Initializes the map to the user's location upon first opening the map view
+     */
+    private void initializeLocation() {
+        Location userLocation = user.getCurrentLocation();
+        LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
+    }
+
+    /**
+     * Returns the distance between two points (the first two params are the user and
+     * the next two params are a marker) using Pythagoras.
+     * @param userLongitude Longitude coordinate of the user
+     * @param userLatitude Latitude coordinate of the user
+     * @param tempLongitude Longitude coordinate of a marker
+     * @param tempLatitude Latitude coordinate of a marker
+     * @return Distance between user and marker
+     */
+    private double getPythag(double userLongitude, double userLatitude, double tempLongitude, double tempLatitude){
+        double x = Math.pow((userLatitude - tempLatitude), 2);      // x = (ULat - TLat)^2
+        double y = Math.pow((userLongitude - tempLongitude), 2);    // y = (ULong - TLong)^2
+        return Math.sqrt(x + y);                                    // sqrt(x + y)
+    }
+
+    // https://stackoverflow.com/questions/50035752/how-to-get-list-of-documents-from-a-collection-in-firestore-android
+    // "Alex Mamo", https://stackoverflow.com/users/5246885/alex-mamo
+    /**
+     * Get locations of scanned QR codes from DB and save them as markers on the map
+     */
+    private void placeMarkers(){
+        locations.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        // get the location of QR code from the DB
+                        Map<String, Object> qrLocation = (Map<String, Object>) document.get("location");
+
+                        // if user chose not to save location, skip
+                        if (qrLocation == null){
+                            continue;
+                        }
+                        // get long and lat
+                        Double longitude = (Double) qrLocation.get("longitude");
+                        Double latitude = (Double) qrLocation.get("latitude");
+                        // get name of marker
+                        String tempName = document.getString("name");
+                        // create a temporary LatLng object
+                        LatLng tempLocation = new LatLng(latitude, longitude);
+                        // add location to list
+                        locationDict.put(tempName, tempLocation);
+                        // add a marker
+                        mMap.addMarker(new MarkerOptions()
+                                .position(tempLocation)
+                                .title(tempName));
+                    }
+                    Log.d("SUCCESS", docLocations.toString());
+                } else {
+                    Log.d("NO BUENO", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    /**
+     * Displays nearby QR codes. Shows up to 5 codes.
+     */
+    private void nearbyQRCodeDialog(String[] qrCodeList) {
+        int qrCodeListLength = qrCodeList.length;
+        int maxListLimit = 5;
+
+        //error check max limit
+        int lowestLength;
+        if (qrCodeListLength < maxListLimit){
+            lowestLength = qrCodeListLength;
+        }
+        else {
+            lowestLength = maxListLimit;
+        }
+
+        //initialize displayed QR codes
+        String[] tempList = new String[lowestLength];
+        int i = 0;
+        while (i < lowestLength){
+            tempList[i] = qrCodeList[i];
+            i++;
+        }
+
+        //moves camera to selected QR code
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LatLng tempLocation = locationDict.get(qrCodeList[which]);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(tempLocation, 16));
+            }
+        };
+
+        //displays QR code list
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle("Nearby QR Codes")
+                .setItems(tempList, listener)
+                .setCancelable(true)
+                .show();
     }
 
     /**

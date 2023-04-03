@@ -1,14 +1,8 @@
-package com.example.qradventure;
+package com.example.qradventure.qrcode;
 
-import android.graphics.drawable.Drawable;
-
-import androidx.core.content.res.ResourcesCompat;
-
-import org.w3c.dom.Comment;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
+/**
+ * This class represents a QR code
+ */
 public class QRCode {
     private String name;
     private int score;
@@ -20,7 +14,7 @@ public class QRCode {
     /**
      * Empty constructor for the QRCode class
      */
-    QRCode() {
+    public QRCode() {
         // Empty
     }
 
@@ -29,7 +23,7 @@ public class QRCode {
      * @param qrContent A string containing the qrcode content after scanning
      */
     // Future: Add comments parameter, as well as longitude / latitude and scanner id (repeats?)
-    QRCode(String qrContent) {
+    public QRCode(String qrContent) {
         this.hashValue = qrController.getHash(qrContent);
         this.name = qrController.generateName(this.hashValue);
         this.comment = "A comment."; // Previously hashValue for debug
@@ -88,14 +82,6 @@ public class QRCode {
      */
     public String getComment() {
         return this.comment;
-    }
-
-    /**
-     * Gets the qrcode's drawable class image
-     * @return A drawable class image representing this qrcode
-     */
-    public Drawable getImage() {
-        return null;
     }
 
     /**

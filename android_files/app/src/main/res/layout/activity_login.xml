@@ -4,124 +4,129 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_500"
+    android:background="@color/contentBg"
     tools:context=".LoginActivity">
 
-
-    <TextView
-        android:id="@+id/emailHeader"
-        android:layout_width="48dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="32dp"
-        android:text="Email:"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/emailContact"
-        app:layout_constraintHorizontal_bias="0.707"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/resultText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameHeader"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/top_info"
+        android:paddingVertical="30sp">
 
-    <TextView
-        android:id="@+id/phoneHeader"
-        android:layout_width="48dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="44dp"
-        android:text="Phone:"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/phoneContact"
-        app:layout_constraintHorizontal_bias="0.707"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailHeader" />
+        <TextView
+            android:layout_width="185sp"
+            android:layout_height="wrap_content"
+            android:text="@string/title"
+            android:textColor="@color/contentBg"
+            android:textSize="70sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/usernameHeader"
-        android:layout_width="75dp"
-        android:layout_height="27dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="48dp"
-        android:text="Username:"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/username"
-        app:layout_constraintHorizontal_bias="0.0"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/qr_item_bg"
+        app:layout_constraintBottom_toTopOf="@+id/login_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/resultText"
-        tools:ignore="MissingConstraints" />
+        android:padding="10sp">
 
-    <TextView
-        android:id="@+id/resultText"
-        android:layout_width="185sp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:layout_marginBottom="252dp"
-        android:text="@string/title"
-        android:textColor="@color/white"
-        android:textSize="70sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/usernameHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username:"
+            android:textColor="@color/contentTexts"
+            android:textStyle="bold"
+            android:paddingEnd="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/username"
+            app:layout_constraintEnd_toStartOf="@+id/username"
+            app:layout_constraintTop_toTopOf="@+id/username"
+            tools:ignore="MissingConstraints" />
 
+        <TextView
+            android:id="@+id/phoneHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone:"
+            android:textColor="@color/contentTexts"
+            android:textStyle="bold"
+            android:paddingEnd="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/phoneContact"
+            app:layout_constraintEnd_toStartOf="@+id/phoneContact"
+            app:layout_constraintTop_toTopOf="@+id/phoneContact" />
 
-    <EditText
-        android:id="@+id/username"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:shadowColor="@color/grey"
-        android:textColor="@color/white"
-        android:textColorHint="@color/light_grey"
-        android:textSize="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resultText" />
+        <TextView
+            android:id="@+id/emailHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email:"
+            android:textColor="@color/contentTexts"
+            android:textStyle="bold"
+            android:paddingEnd="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/emailContact"
+            app:layout_constraintEnd_toStartOf="@+id/emailContact"
+            app:layout_constraintTop_toTopOf="@+id/emailContact" />
 
-    <EditText
-        android:id="@+id/emailContact"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="(optional)"
-        android:inputType="textEmailAddress"
-        android:shadowColor="@color/grey"
-        android:textColor="@color/white"
-        android:textColorHint="@color/light_grey"
-        android:textSize="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username" />
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:shadowColor="@color/contentTexts"
+            android:singleLine="true"
+            android:textColor="@color/contentTexts"
+            android:textColorHint="@color/contentTextsSecondary"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/phoneContact"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="(optional)"
-        android:inputType="phone"
-        android:shadowColor="@color/grey"
-        android:textColor="@color/white"
-        android:textColorHint="@color/light_grey"
-        android:textSize="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailContact" />
+        <EditText
+            android:id="@+id/emailContact"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:hint="(optional)"
+            android:inputType="textEmailAddress"
+            android:shadowColor="@color/contentTexts"
+            android:textColor="@color/contentTexts"
+            android:textColorHint="@color/contentTextsSecondary"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username" />
 
-    <androidx.appcompat.widget.AppCompatButton
+        <EditText
+            android:id="@+id/phoneContact"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:hint="(optional)"
+            android:inputType="phone"
+            android:shadowColor="@color/contentTexts"
+            android:textColor="@color/contentTexts"
+            android:textColorHint="@color/contentTextsSecondary"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/emailContact" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sign_in_text"
-        app:backgroundTint="@android:color/white"
+        android:text="@string/sign_up_text"
+        app:backgroundTint="@color/appBg"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phoneContact"
-        app:layout_constraintVertical_bias="0.215" />
+        app:layout_constraintTop_toBottomOf="@+id/resultText"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

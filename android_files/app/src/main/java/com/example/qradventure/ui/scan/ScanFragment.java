@@ -1,4 +1,4 @@
-package com.example.qradventure;
+package com.example.qradventure.ui.scan;
 
 import static android.content.ContentValues.TAG;
 
@@ -20,6 +20,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.R;
+import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,12 +38,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ScanFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class allows the ScanFragment to be displayed
  */
 public class ScanFragment extends Fragment implements DisplayCodePromptPictureFragment.CameraInScanFrag,
-        SavePictureFragment.GeolocationInScanFrag{
+        SavePictureFragment.GeolocationInScanFrag {
     // For data
     private UserDataClass user;
     private QRCode code;
@@ -180,7 +181,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The newly created View
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -189,8 +190,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
         user = user.getInstance();
 
         // Instantiate data from database
-        userCodes = db.collection("Users").document(user.getUserPhoneID())
-                .collection("Codes");
+        userCodes = user.getUserCodesRef();
         dbCodes = db.collection("QRCodes");
 
         // Inflate the layout for this fragment
@@ -247,19 +247,8 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
                         newCode.put("name", code.getName());
                         newCode.put("score", code.getScore());
                         newCode.put("hash", code.getHashValue());
-                        docRef.set(newCode)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error writing document", e);
-                                    }
-                                });
+
+                        user.addUserCode(code.getHashValue(), newCode);
 
                         // Save it again (but associate user with code this time)
                         saveCodeToDb();
@@ -275,6 +264,7 @@ public class ScanFragment extends Fragment implements DisplayCodePromptPictureFr
             }
         });
     }
+
 
     /**
      * A function that saves QR codes to the database. This is done to keep
