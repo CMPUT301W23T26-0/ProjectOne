@@ -52,8 +52,8 @@
 
         <TextView
             android:id="@+id/qr_players_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="199dp"
+            android:layout_height="27dp"
             android:text="Scanned by..."
             android:textColor="@color/contentTextsSecondary"
             android:textSize="11sp"
