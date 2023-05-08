@@ -13,7 +13,7 @@ More in-depth explanation of main features and other key features not explicitly
 Step by step tutorial on how to run code on android studio
 
 ## Design & Development
-If you would like to see how we organized ourselves to develop this project, please refer to our [GitHub Wiki](https://github.com/CMPUT301W23T26-0/ProjectOne/wiki). It contains a majority of our thought processes behind certain designs in the mobile app.
+If you would like to see how the project was developed, please refer to our [GitHub Wiki](https://github.com/CMPUT301W23T26-0/ProjectOne/wiki). It contains a majority of our thought processes behind certain designs in the mobile app.
 
 ## Acknowledgements
 The creator of the QrAdventure mobile app is Team 26 - also known as Act Now Think Later. The members of this team consist of Abrar Zahin, Jaskirat Saggu, Jvon Mikael Chavez, Carl Rogador, Yuri Sanchez, and Daniel Sacro. This app could not have been a success without the contributions of each and every member, and we also owe a great deal of gratitude to our TA, Ranit Ganguly, who provided support and guidance to the team throughout the Winter 2023 semester.
