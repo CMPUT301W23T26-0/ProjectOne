@@ -1,7 +1,7 @@
 # ProjectOne - QrAdventure
 
 ## App Overview
-Our app is called QrAdventure! It's a game about scanning various QR codes in the real world, which are each associated with a unique name and visual representation. Players can collect these codes to compete with their friends to see who has the highest overall score, the most codes, or the highest scoring QR code. The app also features an interactive map that helps players locate nearby codes!
+Our android app is called QrAdventure! It's a game about scanning various QR codes in the real world, which are each associated with a unique name and visual representation. Players can collect these codes to compete with their friends to see who has the highest overall score, the most codes, or the highest scoring QR code. The app also features an interactive map that helps players locate nearby codes!
 
 ## Demo
 Embedded YT video briefly demoing the main app features - personal profile, scanner, leaderboard, maps
