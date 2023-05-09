@@ -10,6 +10,7 @@
 package com.example.qradventure.ui.map;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
+import static com.google.android.gms.maps.CameraUpdateFactory.newCameraPosition;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -52,6 +53,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -85,6 +87,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private Map<String, Double> lengthDict = new HashMap<>();
     private GoogleMap mMap;
     private Location currLocation;
+    private CameraPosition lastPosition;
     private Button getCloseButton;
     private FusedLocationProviderClient client;
     private UserDataClass user = UserDataClass.getInstance();
@@ -227,6 +230,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         if (!currLocationInitialized) {
                             currLocationInitialized = true;
                             initializeLocation();
+                        } else {
+                            reinitializeLocation();
                         }
 
                         // Check condition
@@ -250,6 +255,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                                     if (!currLocationInitialized) {
                                         currLocationInitialized = true;
                                         initializeLocation();
+                                    } else {
+                                        reinitializeLocation();
                                     }
                                 }
                             };
@@ -354,6 +361,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Location userLocation = user.getCurrentLocation();
         LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
+    }
+
+    /**
+     * Reinitializes the map to the last viewed location when pressing a back button
+     */
+    private void reinitializeLocation() {
+        if (lastPosition != null) {
+            mMap.moveCamera(newCameraPosition(lastPosition));
+        } 
     }
 
     /**
@@ -466,7 +482,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         updateLocation();
     }
 
-    /**
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+        lastPosition = mMap.getCameraPosition();
+    }
+
+     /**
      * Opens a QR fragment when a marker is clicked. QR fragment displays
      * information about the QR code associated with the marker.
      * @param marker The clicked marker
