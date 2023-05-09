@@ -34,8 +34,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.qradventure.R;
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
+import com.example.qradventure.ui.qrcode.qrFragment;
 import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -394,9 +399,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         // add location to list
                         locationDict.put(tempName, tempLocation);
                         // add a marker
-                        mMap.addMarker(new MarkerOptions()
+                        Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(tempLocation)
                                 .title(tempName));
+                        marker.setTag(document.getString("hash"));
                     }
                     Log.d("SUCCESS", docLocations.toString());
                 } else {
@@ -468,9 +474,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public boolean onMarkerClick(final Marker marker) {
         // from https://developers.google.com/maps/documentation/android-sdk/marker
 
-        Toast.makeText(getContext(),
-                "Hello",
-                Toast.LENGTH_SHORT).show();
+        // Get hash associated with marker
+        String qrHash = (String) marker.getTag();
+
+        // Create new fragment using QR code
+        qrFragment frag = new qrFragment();
+        Bundle args = new Bundle();
+        args.putString("hash", qrHash);
+        frag.setArguments(args);
+
+        // Create fragment
+        FragmentActivity activity = (FragmentActivity) getContext();
+        FragmentManager manager = activity.getSupportFragmentManager();
+
+        manager.beginTransaction()
+                .replace(R.id.fragments, frag)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
 
         return false;
     }
