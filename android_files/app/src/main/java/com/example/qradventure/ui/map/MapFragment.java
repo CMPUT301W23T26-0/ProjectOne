@@ -48,6 +48,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -66,7 +67,8 @@ import java.util.stream.Collectors;
 /**
  * This class allows the map to be displayed
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback{
+public class MapFragment extends Fragment implements OnMapReadyCallback,
+    GoogleMap.OnMarkerClickListener {
     private MapView mapView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference locations = db.collection("QRCodes");
@@ -337,6 +339,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
+        mMap.setOnMarkerClickListener(this);
     }
 
     /**
@@ -454,5 +457,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         //update location when switching to map fragment
         updateLocation();
+    }
+
+    /**
+     * Opens a QR fragment when a marker is clicked. QR fragment displays
+     * information about the QR code associated with the marker.
+     * @param marker The clicked marker
+     */
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        // from https://developers.google.com/maps/documentation/android-sdk/marker
+
+        Toast.makeText(getContext(),
+                "Hello",
+                Toast.LENGTH_SHORT).show();
+
+        return false;
     }
 }
