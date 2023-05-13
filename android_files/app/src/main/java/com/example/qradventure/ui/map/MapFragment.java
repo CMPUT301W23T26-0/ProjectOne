@@ -10,6 +10,7 @@
 package com.example.qradventure.ui.map;
 
 import static com.example.qradventure.BuildConfig.MAPS_API_KEY;
+import static com.google.android.gms.maps.CameraUpdateFactory.newCameraPosition;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -34,8 +35,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.qradventure.R;
+import com.example.qradventure.qrcode.QRCode;
+import com.example.qradventure.ui.leaderboard.players.PlayersFragment;
+import com.example.qradventure.ui.qrcode.qrFragment;
 import com.example.qradventure.users.UserDataClass;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -47,7 +53,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -66,7 +74,8 @@ import java.util.stream.Collectors;
 /**
  * This class allows the map to be displayed
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback{
+public class MapFragment extends Fragment implements OnMapReadyCallback,
+    GoogleMap.OnMarkerClickListener {
     private MapView mapView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference locations = db.collection("QRCodes");
@@ -78,6 +87,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private Map<String, Double> lengthDict = new HashMap<>();
     private GoogleMap mMap;
     private Location currLocation;
+    private CameraPosition lastPosition;
     private Button getCloseButton;
     private FusedLocationProviderClient client;
     private UserDataClass user = UserDataClass.getInstance();
@@ -220,6 +230,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         if (!currLocationInitialized) {
                             currLocationInitialized = true;
                             initializeLocation();
+                        } else {
+                            reinitializeLocation();
                         }
 
                         // Check condition
@@ -243,6 +255,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     if (!currLocationInitialized) {
                                         currLocationInitialized = true;
                                         initializeLocation();
+                                    } else {
+                                        reinitializeLocation();
                                     }
                                 }
                             };
@@ -337,6 +351,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
+        mMap.setOnMarkerClickListener(this);
     }
 
     /**
@@ -346,6 +361,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         Location userLocation = user.getCurrentLocation();
         LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 16));
+    }
+
+    /**
+     * Reinitializes the map to the last viewed location when pressing a back button
+     */
+    private void reinitializeLocation() {
+        if (lastPosition != null) {
+            mMap.moveCamera(newCameraPosition(lastPosition));
+        }
     }
 
     /**
@@ -391,9 +415,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         // add location to list
                         locationDict.put(tempName, tempLocation);
                         // add a marker
-                        mMap.addMarker(new MarkerOptions()
+                        Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(tempLocation)
                                 .title(tempName));
+                        marker.setTag(document.getString("hash"));
                     }
                     Log.d("SUCCESS", docLocations.toString());
                 } else {
@@ -454,5 +479,43 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         //update location when switching to map fragment
         updateLocation();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+        lastPosition = mMap.getCameraPosition();
+    }
+
+     /**
+     * Opens a QR fragment when a marker is clicked. QR fragment displays
+     * information about the QR code associated with the marker.
+     * @param marker The clicked marker
+     */
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        // from https://developers.google.com/maps/documentation/android-sdk/marker
+
+        // Get hash associated with marker
+        String qrHash = (String) marker.getTag();
+
+        // Create new fragment using QR code
+        qrFragment frag = new qrFragment();
+        Bundle args = new Bundle();
+        args.putString("hash", qrHash);
+        frag.setArguments(args);
+
+        // Create fragment
+        FragmentActivity activity = (FragmentActivity) getContext();
+        FragmentManager manager = activity.getSupportFragmentManager();
+
+        manager.beginTransaction()
+                .replace(R.id.fragments, frag)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
+
+        return false;
     }
 }
