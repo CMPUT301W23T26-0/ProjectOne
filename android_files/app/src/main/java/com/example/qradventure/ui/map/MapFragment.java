@@ -369,7 +369,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private void reinitializeLocation() {
         if (lastPosition != null) {
             mMap.moveCamera(newCameraPosition(lastPosition));
-        } 
+        }
     }
 
     /**
@@ -476,7 +476,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        currLocationInitialized = false;
 
         //update location when switching to map fragment
         updateLocation();
